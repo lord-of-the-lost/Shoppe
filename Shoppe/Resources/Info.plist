@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NunitoSans-Bold.ttf</string>
+		<string>NunitoSans-Light.ttf</string>
+		<string>NunitoSans-Regular.ttf</string>
+		<string>NunitoSans-SemiBold.ttf</string>
+		<string>Raleway-Bold.otf</string>
+		<string>Raleway-ExtraBold.otf</string>
+		<string>Raleway-Medium.otf</string>
+		<string>Raleway-Regular.otf</string>
+		<string>Raleway-Thin.otf</string>
+	</array>
+</dict>
 </plist>
