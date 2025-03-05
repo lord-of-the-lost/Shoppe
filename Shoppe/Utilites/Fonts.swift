@@ -14,6 +14,7 @@ enum Fonts {
     static let nunitoLight22: UIFont = UIFont(name: "NunitoSans-Light", size: 22) ?? UIFont.systemFont(ofSize: 22)
     static let nunitoRegular: UIFont = UIFont(name: "NunitoSans-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
     static let nunitoSemiBold: UIFont = UIFont(name: "NunitoSans-SemiBold", size: 13) ?? UIFont.systemFont(ofSize: 13)
+    static let ralewayBold50: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 50) ?? UIFont.systemFont(ofSize: 50)
     static let ralewayBold52: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 52) ?? UIFont.systemFont(ofSize: 52)
     static let ralewayBold: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 28) ?? UIFont.systemFont(ofSize: 28)
     static let ralewayExtraBold: UIFont = UIFont(name: "Raleway-v4020-ExtraBold", size: 20) ?? UIFont.systemFont(ofSize: 20)

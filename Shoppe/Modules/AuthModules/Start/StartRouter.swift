@@ -18,13 +18,15 @@ class StartRouter: StartRouterProtocol {
     
     func openLoginScreen() {
         print(#function)
-//        let loginVC = LoginViewController()
-//        viewController?.navigationController?.pushViewController(loginVC, animated: true)
+//        let vc = LoginViewController()
+//        vc.modalPresentationStyle = .fullScreen
+//        present(vc, animated: true, completion: nil)
     }
     
     func openRegistrationScreen() {
         print(#function)
-//        let registerVC = RegisterViewController()
-//        viewController?.navigationController?.pushViewController(registerVC, animated: true)
+        let vc = RegisterFactory.makeModule()
+        vc.modalPresentationStyle = .fullScreen
+        viewController?.present(vc, animated: true)
     }
 }
