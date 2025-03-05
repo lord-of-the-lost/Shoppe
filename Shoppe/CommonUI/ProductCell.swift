@@ -8,7 +8,6 @@
 import UIKit
 
 class ProductCell: UICollectionViewCell {
-    
     //MARK: - Properties
     static let identifier = ProductCell.description()
     
@@ -24,17 +23,16 @@ class ProductCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
-     lazy var imageView: UIImageView = {
+    lazy var imageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "product")
-         image.clipsToBounds = true
+        image.clipsToBounds = true
         image.layer.cornerRadius = 5
         image.contentMode = .scaleAspectFill
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
-     lazy var descriptionLabel: UILabel = {
+    lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.text = "Lorem ipsum dolor sit amet consectetur"
@@ -43,14 +41,13 @@ class ProductCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-     lazy var priceLabel: UILabel = {
+    lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.text = "$17,00"
-         label.font = Fonts.ralewayExtraBold
+        label.font = Fonts.ralewayExtraBold
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
     private lazy var addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Add to cart", for: .normal)
@@ -61,21 +58,19 @@ class ProductCell: UICollectionViewCell {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
     private lazy var wishButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "heartFill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-  
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setAction()
         setupUI()
         makeConstraints()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,7 +78,16 @@ class ProductCell: UICollectionViewCell {
     //MARK: - Methods
     private func setAction() {        
     }
-    private func setupUI() {
+
+    func configureCell(image: UIImage?, description: String, price: String) {
+        imageView.image = image
+        descriptionLabel.text = description
+        priceLabel.text = price
+    }
+}
+// MARK: - Extensions Constraint
+private extension ProductCell {
+     func setupUI() {
         addSubview(shadowView)
         shadowView.addSubview(imageView)
         [descriptionLabel,
@@ -92,15 +96,7 @@ class ProductCell: UICollectionViewCell {
          wishButton
         ].forEach { addSubview($0) }
     }
-    func configureCell(image: UIImage?, description: String, price: String) {
-        imageView.image = image
-        descriptionLabel.text = description
-        priceLabel.text = price
-    }
-}
-// MARK: - Extensions Constraint
-extension ProductCell {
-    private func makeConstraints() {
+     func makeConstraints() {
         NSLayoutConstraint.activate([
             shadowView.topAnchor.constraint(equalTo: topAnchor),
             shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
