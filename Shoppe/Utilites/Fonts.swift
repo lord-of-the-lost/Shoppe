@@ -9,7 +9,9 @@ import UIKit
 
 enum Fonts {
     static let baseFont: UIFont = UIFont.systemFont(ofSize: 16) // заменить
+    static let nunitoLight15: UIFont = UIFont(name: "NunitoSans-Light", size: 15) ?? UIFont.systemFont(ofSize: 15)
     static let nunitoLight: UIFont = UIFont(name: "NunitoSans-Light", size: 19) ?? UIFont.systemFont(ofSize: 19)
+    static let nunitoLight22: UIFont = UIFont(name: "NunitoSans-Light", size: 22) ?? UIFont.systemFont(ofSize: 22)
     static let nunitoRegular: UIFont = UIFont(name: "NunitoSans-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
     static let nunitoSemiBold: UIFont = UIFont(name: "NunitoSans-SemiBold", size: 13) ?? UIFont.systemFont(ofSize: 13)
     static let ralewayBold52: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 52) ?? UIFont.systemFont(ofSize: 52)
