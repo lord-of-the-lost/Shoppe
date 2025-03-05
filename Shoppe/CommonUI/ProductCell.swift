@@ -58,7 +58,7 @@ final class ProductCell: UICollectionViewCell {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.text = "$17,00"
-        label.font = Fonts.ralewayExtraBold
+        label.font = Fonts.ralewayBold
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
