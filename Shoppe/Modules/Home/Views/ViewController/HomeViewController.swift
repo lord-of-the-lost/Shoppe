@@ -5,24 +5,28 @@
 //  Created by Daniil Murzin on 04.03.2025.
 //
 
-
 import UIKit
+import SwiftUI
 
-protocol HomeViewProtocol: AnyObject {}
+protocol HomeViewProtocol: AnyObject {
+    func viewDidLoad()
+    func updateUI(categories: [Category])
+}
 
 final class HomeViewController: UIViewController {
+    
+    //MARK: - Properties
     private let presenter: HomePresenterProtocol
+    private let dataSource: HomeViewDataSource
+    private let collectionView: UICollectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: HomeViewCompLayout().createLayout()
+    )
     
-    private lazy var screenTitle: UILabel = {
-        let label = UILabel()
-        label.text = "Exemple"
-        label.font = Fonts.baseFont
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
+    //MARK: - Init
     init(presenter: HomePresenterProtocol) {
         self.presenter = presenter
+        self.dataSource = HomeViewDataSource(collectionView)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,27 +35,86 @@ final class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCollectionView()
         setupView()
         setupConstraints()
+        presenter.viewDidLoad()
     }
 }
 
-// MARK: - MainMenuViewProtocol
-extension HomeViewController: HomeViewProtocol {}
+// MARK: - HomeViewProtocol
+extension HomeViewController: HomeViewProtocol {
+    func updateUI(categories: [Category]) {
+        dataSource.updateSnapshot(categories: categories)
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        collectionView.deselectItem(at: indexPath, animated: false)
+        
+        switch dataSource.itemAt(indexPath) {
+        case let .category(category):
+            break
+        case let .justForYou(justForYou):
+            break
+        case let .popular(popular):
+            break
+        case .none:
+            assertionFailure("passed invalid IndexPath")
+        }
+    }
+}
 
 // MARK: - Private Methods
 private extension HomeViewController {
+    
+    func setupCollectionView() {
+       collectionView.translatesAutoresizingMaskIntoConstraints = false
+       collectionView.backgroundColor = .white
+       collectionView.delegate = self
+   }
     func setupView() {
-        view.backgroundColor = Palette.accentColor
-        view.addSubview(screenTitle)
+        view.backgroundColor = .white
+        view.addSubview(collectionView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            screenTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            screenTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50)
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+}
+
+//MARK: - SwiftUi preview
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        Container().edgesIgnoringSafeArea(.all)
+    }
+    
+    struct Container: UIViewControllerRepresentable {
+        
+        func makeUIViewController(context: Context) -> UIViewController {
+            return UINavigationController(
+                rootViewController: HomeViewController(
+                    presenter: HomePresenter()))
+            
+        }
+        
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+            
+        }
+        
+        typealias UIViewControllerType = UIViewController
     }
 }

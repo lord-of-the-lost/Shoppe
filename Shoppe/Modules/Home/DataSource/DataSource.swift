@@ -24,13 +24,10 @@ final class HomeViewDataSource {
     init(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
         self.collectionView.dataSource = dataSource
-        collectionView.register(
-            CategoriesCell.self,
-            forCellWithReuseIdentifier: CategoriesCell.identifier
-        )
+        collectionView.register(CategoriesCell.self, forCellWithReuseIdentifier: CategoriesCell.identifier)
     }
     
-    func updateSnapshot(categories: [Category], popular: [Popular], justForYou: [JustForYou]) {
+    func updateSnapshot(categories: [Category]) {
         dataSource.apply(Snapshot(categories: categories), animatingDifferences: true)
     }
     
@@ -38,8 +35,9 @@ final class HomeViewDataSource {
         dataSource.itemIdentifier(for: indexPath)
     }
 }
-//MARK: - Private part
-private extension HomeViewDataSource {
+
+    //MARK: - Private part
+    private extension HomeViewDataSource {
     
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
@@ -52,21 +50,23 @@ private extension HomeViewDataSource {
         return DataSource(collectionView: collectionView) { collectionView, indexPath, item in
             switch item {
             case .category(let category):
-                nil
-            case .popular:
-                nil
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoriesCell.identifier, for: indexPath) as! CategoriesCell
+                cell.configure(model: category)
+                return cell
+            case .popular(let popular):
+                return UICollectionViewCell()
             case .justForYou:
-                nil
+                return UICollectionViewCell()
             }
-            
-            }
+        }
     }
 }
-// TODO: sections
-private extension HomeViewDataSource.Snapshot {
+
+    // TODO: sections
+    private extension HomeViewDataSource.Snapshot {
     init(categories: [Category]) {
         self.init()
-        appendSections(HomeViewDataSource.Section.allCases)
+        appendSections([.categories])
         appendItems(categories.map { HomeViewDataSource.Item.category($0) }, toSection: .categories)
     }
 }

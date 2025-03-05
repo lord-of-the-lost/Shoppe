@@ -10,15 +10,21 @@ import Foundation
 
 protocol HomePresenterProtocol: AnyObject {
     func setupView(_ view: HomeViewProtocol)
-    func settingsButtonTapped()
+    func viewDidLoad()
 }
 
 // MARK: - Presenter
 final class HomePresenter: HomePresenterProtocol {
+    
+    private var categories: [Category] = Categories.all
     private weak var view: HomeViewProtocol?
     
     func setupView(_ view: HomeViewProtocol) {
         self.view = view
+    }
+    
+    func viewDidLoad() {
+        view?.updateUI(categories: categories)
     }
     
     func settingsButtonTapped() {

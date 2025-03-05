@@ -8,8 +8,6 @@
 import UIKit
 import SwiftUI
 
-
-
 final class CategoriesCell: UICollectionViewCell {
 
     // MARK: - Drawings
@@ -22,15 +20,12 @@ final class CategoriesCell: UICollectionViewCell {
         static let countLabelCornerRadius: CGFloat = 6.0
         static let countLabelWidth: CGFloat = 40.0
         static let countLabelHeight: CGFloat = 24.0
-        static let categoryTitle = "Clothing"
-        static let categoryCount = "102"
-        static let placeholderImage = "photo"
     }
     
     //MARK: - Properties
     static let identifier = "CategoriesCell"
     
-    // MARK: - UI Элементы
+    // MARK: - UI
     private let imagesContainerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +36,6 @@ final class CategoriesCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.image = UIImage(systemName: Drawings.placeholderImage)
         return imageView
     }
     
@@ -56,7 +50,6 @@ final class CategoriesCell: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = Drawings.categoryTitle
         label.font = Fonts.ralewayBold17
         label.textColor = .customBlack
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -65,7 +58,6 @@ final class CategoriesCell: UICollectionViewCell {
     
     private let countLabel: UILabel = {
         let label = UILabel()
-        label.text = Drawings.categoryCount
         label.font = Fonts.ralewayBold12
         label.textColor = .customBlack
         label.textAlignment = .center
@@ -73,13 +65,19 @@ final class CategoriesCell: UICollectionViewCell {
         label.layer.cornerRadius = Drawings.countLabelCornerRadius
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        label.heightAnchor.constraint(equalToConstant: 24).isActive = true
         return label
     }()
     
-    //MARK: - Init
+    func configure(model: Category) {
+        titleLabel.text = model.name
+        countLabel.text = "\(model.count)"
+        
+        for (index, imageView) in imageViews.enumerated() {
+            imageView.image = index < model.images.count ? model.images[index] : nil
+        }
+    }
     
+    //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -90,10 +88,17 @@ final class CategoriesCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //MARK: - LayoutSubviews (Грид картинок)
+    //MARK: - LayoutSubviews
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+        layoutImageViews()
+    }
+}
+
+//MARK: - Private Methods
+private extension CategoriesCell {
+    
+     func layoutImageViews() {
         let imageSize = (contentView.frame.width - Drawings.imageSpacing) / CGFloat(Drawings.gridSize)
         
         for (index, imageView) in imageViews.enumerated() {
@@ -109,24 +114,20 @@ final class CategoriesCell: UICollectionViewCell {
         }
     }
     
-    //MARK: - Private funcs
+    func setupViews() {
+        contentView.addSubview(imagesContainerView)
+        contentView.addSubview(textStackView)
+        textStackView.addArrangedSubview(titleLabel)
+        textStackView.addArrangedSubview(countLabel)
+        imageViews.forEach {imagesContainerView.addSubview($0)}}
     
-    private func setupViews() {
-        [imagesContainerView, textStackView].forEach(contentView.addSubview)
-        
-        imageViews.forEach { imagesContainerView.addSubview($0) }
-        
-        [titleLabel, countLabel].forEach(textStackView.addArrangedSubview)
-    }
-    
-    private func setupConstraints() {
+    func setupConstraints() {
         NSLayoutConstraint.activate([
             
             imagesContainerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imagesContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imagesContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imagesContainerView.heightAnchor.constraint(equalTo: contentView.widthAnchor),
-            
             
             textStackView.topAnchor.constraint(equalTo: imagesContainerView.bottomAnchor, constant: Drawings.textTopPadding),
             textStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
