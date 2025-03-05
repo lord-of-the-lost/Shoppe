@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum Section: Int {
+enum Section: Int{
     case categories
     case popular
     case justForYou

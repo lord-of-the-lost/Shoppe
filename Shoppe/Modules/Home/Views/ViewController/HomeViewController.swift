@@ -10,7 +10,11 @@ import SwiftUI
 
 protocol HomeViewProtocol: AnyObject {
     func viewDidLoad()
-    func updateUI(categories: [Category])
+    func updateUI(
+        categories: [CategoryCellViewModel],
+        popular: [PopularCellViewModel],
+        justForYou: [JustForYourCellViewModel]
+    )
 }
 
 final class HomeViewController: UIViewController {
@@ -47,8 +51,16 @@ final class HomeViewController: UIViewController {
 
 // MARK: - HomeViewProtocol
 extension HomeViewController: HomeViewProtocol {
-    func updateUI(categories: [Category]) {
-        dataSource.updateSnapshot(categories: categories)
+    func updateUI(
+        categories: [CategoryCellViewModel],
+        popular: [PopularCellViewModel],
+        justForYou: [JustForYourCellViewModel]
+    )  {
+        dataSource.updateSnapshot(
+            categories: categories,
+            popular: popular,
+            justForYou: justForYou
+        )
     }
 }
 
@@ -61,11 +73,11 @@ extension HomeViewController: UICollectionViewDelegate {
         collectionView.deselectItem(at: indexPath, animated: false)
         
         switch dataSource.itemAt(indexPath) {
-        case let .category(category):
+        case  .category:
             break
-        case let .justForYou(justForYou):
+        case .justForYou:
             break
-        case let .popular(popular):
+        case .popular:
             break
         case .none:
             assertionFailure("passed invalid IndexPath")

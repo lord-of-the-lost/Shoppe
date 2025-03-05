@@ -16,7 +16,9 @@ protocol HomePresenterProtocol: AnyObject {
 // MARK: - Presenter
 final class HomePresenter: HomePresenterProtocol {
     
-    private var categories: [Category] = Categories.all
+    private var categories: [CategoryCellViewModel] = Categories.all
+    private var popular: [PopularCellViewModel] = PopularMock.all
+    private var justForYou: [JustForYourCellViewModel] = JustForYouMock.all
     private weak var view: HomeViewProtocol?
     
     func setupView(_ view: HomeViewProtocol) {
@@ -24,13 +26,16 @@ final class HomePresenter: HomePresenterProtocol {
     }
     
     func viewDidLoad() {
-        view?.updateUI(categories: categories)
+        view?.updateUI(
+            categories: categories,
+            popular: popular,
+            justForYou: justForYou
+        )
     }
     
     func settingsButtonTapped() {
         
     }
-    
 }
 
 // MARK: - Private Methods

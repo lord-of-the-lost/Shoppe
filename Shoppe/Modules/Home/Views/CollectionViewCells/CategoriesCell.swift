@@ -23,7 +23,7 @@ final class CategoriesCell: UICollectionViewCell {
     }
     
     //MARK: - Properties
-    static let identifier = "CategoriesCell"
+    static let identifier = CategoriesCell.description()
     
     // MARK: - UI
     private let imagesContainerView: UIView = {
@@ -68,15 +68,7 @@ final class CategoriesCell: UICollectionViewCell {
         return label
     }()
     
-    func configure(model: Category) {
-        titleLabel.text = model.name
-        countLabel.text = "\(model.count)"
-        
-        for (index, imageView) in imageViews.enumerated() {
-            imageView.image = index < model.images.count ? model.images[index] : nil
-        }
-    }
-    
+
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,6 +84,18 @@ final class CategoriesCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutImageViews()
+    }
+}
+
+// MARK: - ConfigurableViewProtocol
+extension CategoriesCell: ConfigurableViewProtocol {
+    func configure(with model: CategoryCellViewModel) {
+        titleLabel.text = model.name
+        countLabel.text = "\(model.count)"
+        
+        for (index, imageView) in imageViews.enumerated() {
+            imageView.image = index < model.images.count ? model.images[index] : nil
+        }
     }
 }
 
@@ -143,19 +147,23 @@ private extension CategoriesCell {
 // MARK: - SwiftUI Preview for UIKit View
 struct CategoriesCell_Preview: PreviewProvider {
     static var previews: some View {
-        CatagoriesCellViewWrapper()
+        CategoriesCellViewWrapper(category: Categories.all.first!)
             .previewLayout(.sizeThatFits)
             .padding()
             .frame(width: 165, height: 192)
     }
 }
 
-struct CatagoriesCellViewWrapper: UIViewRepresentable {
-  
-    func makeUIView(context: Context) -> UIView {
-        let categoriesView = CategoriesCell()
-        return categoriesView
+struct CategoriesCellViewWrapper: UIViewRepresentable {
+    let category: CategoryCellViewModel
+    
+    func makeUIView(context: Context) -> CategoriesCell {
+        let cell = CategoriesCell()
+        cell.configure(with: category)
+        return cell
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_ uiView: CategoriesCell, context: Context) {
+        uiView.configure(with: category)
+    }
 }
