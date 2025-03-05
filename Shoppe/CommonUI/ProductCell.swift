@@ -7,11 +7,22 @@
 
 import UIKit
 
-class ProductCell: UICollectionViewCell {
+struct ProductCellViewModel {
+    let image: UIImage?
+    let description: String
+    let price: String
+}
+
+protocol ProductCellDelegate: AnyObject {
+    func addButtonTapped()
+}
+
+final class ProductCell: UICollectionViewCell {
     //MARK: - Properties
     static let identifier = ProductCell.description()
+    weak var delegate: ProductCellDelegate?
     
-    private let shadowView: UIView = {
+    private lazy var shadowView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 5
@@ -23,7 +34,8 @@ class ProductCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    lazy var imageView: UIImageView = {
+    
+    private lazy var imageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "product")
         image.clipsToBounds = true
@@ -32,7 +44,8 @@ class ProductCell: UICollectionViewCell {
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
-    lazy var descriptionLabel: UILabel = {
+    
+    private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.text = "Lorem ipsum dolor sit amet consectetur"
@@ -41,13 +54,15 @@ class ProductCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    lazy var priceLabel: UILabel = {
+    
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.text = "$17,00"
         label.font = Fonts.ralewayExtraBold
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
     private lazy var addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Add to cart", for: .normal)
@@ -55,9 +70,11 @@ class ProductCell: UICollectionViewCell {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 10)
         button.backgroundColor = .customBlue
         button.layer.cornerRadius = 4
+        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
     private lazy var wishButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "heartFill"), for: .normal)
@@ -67,36 +84,36 @@ class ProductCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setAction()
         setupUI()
         makeConstraints()
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    //MARK: - Methods
-    private func setAction() {        
-    }
+}
 
-    func configureCell(image: UIImage?, description: String, price: String) {
-        imageView.image = image
-        descriptionLabel.text = description
-        priceLabel.text = price
+// MARK: - ConfigurableViewProtocol
+extension ProductCell: ConfigurableViewProtocol {
+    func configure(with model: ProductCellViewModel) {
+        imageView.image = model.image
+        descriptionLabel.text = model.description
+        priceLabel.text = model.price
     }
 }
-// MARK: - Extensions Constraint
+
+// MARK: - Private Methods
 private extension ProductCell {
-     func setupUI() {
+    func setupUI() {
         addSubview(shadowView)
+        addSubview(descriptionLabel)
+        addSubview(priceLabel)
+        addSubview(addButton)
+        addSubview(wishButton)
         shadowView.addSubview(imageView)
-        [descriptionLabel,
-         priceLabel,
-         addButton,
-         wishButton
-        ].forEach { addSubview($0) }
     }
-     func makeConstraints() {
+    
+    func makeConstraints() {
         NSLayoutConstraint.activate([
             shadowView.topAnchor.constraint(equalTo: topAnchor),
             shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
@@ -126,5 +143,9 @@ private extension ProductCell {
             wishButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             wishButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
         ])
+    }
+    
+    @objc func addButtonTapped() {
+        delegate?.addButtonTapped()
     }
 }
