@@ -9,6 +9,17 @@ import UIKit
 
 final class WishlistViewController: UIViewController {
     //MARK: - Properties
+    
+    lazy var configs: [ProductCellViewModel] = [
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+    ]
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Wishlist"
@@ -18,6 +29,7 @@ final class WishlistViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
     private lazy var searchButton: UIButton = {
         let button = UIButton()
         button.setTitle("Search", for: .normal)
@@ -26,6 +38,7 @@ final class WishlistViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
     private lazy var textField: UITextField = {
         let text = UITextField()
         text.backgroundColor = .customLightGray
@@ -33,17 +46,18 @@ final class WishlistViewController: UIViewController {
         text.translatesAutoresizingMaskIntoConstraints = false
         return text
     }()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        //        layout.itemSize = CGSize(width: (view.bounds.width - 30) / 2, height: 300)
+        layout.itemSize = CGSize(width: (view.bounds.width - 30) / 2, height: 300)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
-        layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        //            collectionView.register(ProductCell.self, forCellWithReuseIdentifier: ProductCell.identifier)
-        collectionView.backgroundColor = .customRed
-        //            collectionView.dataSource = self
-        //            collectionView.delegate = self
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.register(ProductCell.self, forCellWithReuseIdentifier: ProductCell.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -59,17 +73,15 @@ final class WishlistViewController: UIViewController {
 private extension WishlistViewController {
     func setupView() {
         view.backgroundColor = .white
-        [
-            searchButton,
-            textField,
-            collectionView
-        ].forEach { view.addSubview($0) }
+        view.addSubview(searchButton)
+        view.addSubview(textField)
+        view.addSubview(collectionView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
             
-            searchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 18),
+            searchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             searchButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
             searchButton.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -20),
             
@@ -81,35 +93,26 @@ private extension WishlistViewController {
             
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 10)
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 10)
         ])
     }
 }
-//extension WishlistViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-//    
-//    
-//    // MARK: UICollectionViewDataSource
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-////        return configs.count
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-////        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as! ProductCell
-////        let config = configs[indexPath.item]
-////        cell.configureCell(image:UIImage(named: config.image), description: config.description, price: config.price)
-////        
-////        return cell
-//    }
-// 
-//    // MARK: UICollectionViewDelegate
-//    
-//    
-//}
-//// MARK: - UICollectionViewDelegateFlowLayout
-//extension WishlistViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let width = (collectionView.bounds.width - 30) / 2 // Ширина экрана минус отступы, деленная на 2
-//        let height: CGFloat = 300
-//        return CGSize(width: width, height: height)
-//    }
-//}
+extension WishlistViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    // MARK: UICollectionViewDataSource
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return configs.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as! ProductCell
+        let config = configs[indexPath.item]
+        cell.configure(with: ProductCellViewModel(image: config.image, description: config.description, price: config.price))
+        
+        return cell
+       
+        }
+
+    }
+    
+    // MARK: UICollectionViewDelegate

@@ -118,7 +118,7 @@ private extension ProductCell {
             shadowView.topAnchor.constraint(equalTo: topAnchor),
             shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-            shadowView.heightAnchor.constraint(equalToConstant: 181),
+            shadowView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
             
             imageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor, constant: 4),
             imageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor, constant: -4),
@@ -137,6 +137,7 @@ private extension ProductCell {
             addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             addButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             addButton.trailingAnchor.constraint(equalTo: wishButton.leadingAnchor, constant: -20),
+            addButton.heightAnchor.constraint(equalToConstant: 31),
             
             wishButton.heightAnchor.constraint(equalToConstant: 21),
             wishButton.widthAnchor.constraint(equalToConstant: 22),
