@@ -26,6 +26,7 @@ final class HomeViewController: UIViewController {
         frame: .zero,
         collectionViewLayout: HomeViewCompLayout().createLayout()
     )
+    private let header: MainHeaderView = MainHeaderView()
     
     //MARK: - Init
     init(presenter: HomePresenterProtocol) {
@@ -96,14 +97,20 @@ private extension HomeViewController {
     func setupView() {
         view.backgroundColor = .white
         view.addSubview(collectionView)
+        view.addSubview(header)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            header.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            header.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            header.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            header.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.15),
+            
+            collectionView.topAnchor.constraint(equalTo: header.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 }

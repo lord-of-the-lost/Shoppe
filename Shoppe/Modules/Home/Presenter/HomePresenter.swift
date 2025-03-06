@@ -32,10 +32,6 @@ final class HomePresenter: HomePresenterProtocol {
             justForYou: justForYou
         )
     }
-    
-    func settingsButtonTapped() {
-        
-    }
 }
 
 // MARK: - Private Methods

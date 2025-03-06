@@ -24,19 +24,7 @@ final class HomeViewDataSource {
     init(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
         self.collectionView.dataSource = dataSource
-        
-        collectionView.register(
-            CategoriesCell.self,
-            forCellWithReuseIdentifier: CategoriesCell.identifier
-        )
-        collectionView.register(
-            PopularCell.self,
-            forCellWithReuseIdentifier: PopularCell.identifier
-        )
-        collectionView.register(
-            JustForYouCell.self,
-            forCellWithReuseIdentifier: JustForYouCell.identifier
-        )
+        registerCells()
     }
     
     func updateSnapshot(
@@ -98,9 +86,23 @@ private extension HomeViewDataSource {
             }
         }
     }
+    
+    func registerCells() {
+        collectionView.register(
+            CategoriesCell.self,
+            forCellWithReuseIdentifier: CategoriesCell.identifier
+        )
+        collectionView.register(
+            PopularCell.self,
+            forCellWithReuseIdentifier: PopularCell.identifier
+        )
+        collectionView.register(
+            JustForYouCell.self,
+            forCellWithReuseIdentifier: JustForYouCell.identifier
+        )
+    }
 }
 
-// TODO: sections
 private extension HomeViewDataSource.Snapshot {
     init(
         categories: [CategoryCellViewModel],
