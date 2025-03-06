@@ -1,5 +1,5 @@
 //
-//  RegisterRouter.swift
+//  LoginRouter.swift
 //  Shoppe
 //
 //  Created by Кирилл Бахаровский on 3/6/25.
@@ -8,18 +8,16 @@
 
 import UIKit
 
-protocol RegisterRouterProtocol {
-    func openLoginScreen()
+protocol LoginRouterProtocol {
+    func openMainScreen()
     func dismissOnStart()
 }
 
-class RegisterRouter: RegisterRouterProtocol {
+class LoginRouter: LoginRouterProtocol {
     weak var viewController: UIViewController?
     
-    func openLoginScreen() {
-        let vc = LoginFactory.makeModule()
-        vc.modalPresentationStyle = .fullScreen
-        viewController?.present(vc, animated: true)
+    func openMainScreen() {
+        print(#function)
     }
     
     func dismissOnStart() {

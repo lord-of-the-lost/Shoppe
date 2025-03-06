@@ -18,9 +18,9 @@ class StartRouter: StartRouterProtocol {
     
     func openLoginScreen() {
         print(#function)
-//        let vc = LoginViewController()
-//        vc.modalPresentationStyle = .fullScreen
-//        present(vc, animated: true, completion: nil)
+        let vc = LoginFactory.makeModule()
+        vc.modalPresentationStyle = .fullScreen
+        viewController?.present(vc, animated: true)
     }
     
     func openRegistrationScreen() {

@@ -35,6 +35,10 @@ class CustomTextField: UITextField {
         self.font = UIFont.systemFont(ofSize: 16)
         self.backgroundColor = .customGray
         self.textColor = .black
+        self.textContentType = .none
+        self.autocorrectionType = .no
+        self.autocapitalizationType = .none
+        self.spellCheckingType = .no
         
         if isPasswordField {
             self.isSecureTextEntry = true

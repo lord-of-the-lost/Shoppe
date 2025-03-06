@@ -28,7 +28,13 @@ final class RegisterPresenter: RegisterPresenterProtocol {
     }
 
     
-    func doneButtonTapped() { router.openMainScreen() }
+    func doneButtonTapped() {
+        guard let email = view?.getEmail() else { return }
+        guard let password = view?.getPassword() else { return }
+        print(email, password)
+        saveUser(username: email, password: password)
+        router.openLoginScreen()
+    }
     
     func cancelButtonTapped() { router.dismissOnStart() }
 
@@ -36,5 +42,8 @@ final class RegisterPresenter: RegisterPresenterProtocol {
 
 // MARK: - Private Methods
 private extension RegisterPresenter {
-    
+    func saveUser(username: String, password: String) {
+        let user = User(username: username, password: password)
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .username)
+    }
 }

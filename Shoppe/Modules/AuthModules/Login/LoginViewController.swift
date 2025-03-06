@@ -8,27 +8,35 @@
 
 import UIKit
 
-protocol RegisterViewProtocol: AnyObject {
+protocol LoginViewProtocol: AnyObject {
     func getEmail() -> String?
     func getPassword() -> String?
+    func updateButtonTitle(_ title: String)
+    func switchToPasswordField()
 }
 
-final class RegisterViewController: UIViewController {
-    private let presenter: RegisterPresenterProtocol
-    private var password: String?
+final class LoginViewController: UIViewController {
+    private let presenter: LoginPresenterProtocol
     
     private lazy var backgroundView: UIImageView = {
         let logoView = UIImageView()
-        logoView.image = UIImage(named: "backgroundCreateAccount")
+        logoView.image = UIImage(named: "backgroundLogin")
         return logoView
     }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Create Account"
+        label.text = "Login"
         label.font = Fonts.ralewayBold50
         label.textAlignment = .left
-        label.numberOfLines = 2
+        return label
+    }()
+    
+    private lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Good to see you back! 🖤"
+        label.font = Fonts.nunitoLight
+        label.textAlignment = .left
         return label
     }()
     
@@ -48,10 +56,10 @@ final class RegisterViewController: UIViewController {
         return textField
     }()
     
-    private lazy var doneButton: CustomButton = {
+    private lazy var nextButton: CustomButton = {
         let button = CustomButton(type: .system)
-        button.setTitle("Done", for: .normal)
-        button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
+        button.setTitle("Next", for: .normal)
+        button.addTarget(self, action: #selector(nextButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
     
@@ -66,7 +74,7 @@ final class RegisterViewController: UIViewController {
     }()
     
     
-    init(presenter: RegisterPresenterProtocol) {
+    init(presenter: LoginPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -84,23 +92,32 @@ final class RegisterViewController: UIViewController {
     }
 }
 
-extension RegisterViewController: RegisterViewProtocol {
-    func getPassword() -> String? {
-        return password
-    }
-    
+extension LoginViewController: LoginViewProtocol {
     func getEmail() -> String? {
         return emailTextField.text
+    }
+    
+    func getPassword() -> String? {
+        return passwordTextField.text
+    }
+    
+    func updateButtonTitle(_ title: String) {
+        nextButton.setTitle(title, for: .normal)
+    }
+    
+    func switchToPasswordField() {
+        emailTextField.isHidden = true
+        passwordTextField.isHidden = false
     }
 }
 
 // MARK: - Private Methods
-private extension RegisterViewController {
+private extension LoginViewController {
     func setupViews() {
         view.backgroundColor = .white
-        passwordTextField.delegate = self
+        passwordTextField.isHidden = true
         
-        [backgroundView, titleLabel, emailTextField, passwordTextField, doneButton, cancelLabel].forEach {
+        [backgroundView, titleLabel, descriptionLabel, emailTextField, passwordTextField, nextButton, cancelLabel].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -110,34 +127,39 @@ private extension RegisterViewController {
         NSLayoutConstraint.activate([
             backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 122),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            titleLabel.widthAnchor.constraint(equalToConstant: 250)
+            titleLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -4),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
         ])
         
         NSLayoutConstraint.activate([
-            emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -8),
+            descriptionLabel.bottomAnchor.constraint(equalTo: emailTextField.topAnchor, constant: -16),
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+        ])
+        
+        NSLayoutConstraint.activate([
+            emailTextField.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -37),
             emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             emailTextField.heightAnchor.constraint(equalToConstant: 52)
         ])
         
         NSLayoutConstraint.activate([
-            passwordTextField.bottomAnchor.constraint(equalTo: doneButton.topAnchor, constant: -61),
+            passwordTextField.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -37),
             passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             passwordTextField.heightAnchor.constraint(equalToConstant: 52)
         ])
         
         NSLayoutConstraint.activate([
-            doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            doneButton.bottomAnchor.constraint(equalTo: cancelLabel.topAnchor, constant: -24),
-            doneButton.heightAnchor.constraint(equalToConstant: 61)
+            nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            nextButton.bottomAnchor.constraint(equalTo: cancelLabel.topAnchor, constant: -24),
+            nextButton.heightAnchor.constraint(equalToConstant: 61)
         ])
         
         NSLayoutConstraint.activate([
@@ -146,8 +168,8 @@ private extension RegisterViewController {
         ])
     }
     
-    @objc func doneButtonTapped() {
-        presenter.doneButtonTapped()
+    @objc func nextButtonTapped(_ sender: UIButton) {
+        presenter.nextButtonTapped(button: sender)
     }
     
     @objc func cancelButtonTapped() {
@@ -155,7 +177,7 @@ private extension RegisterViewController {
     }
 }
 
-extension RegisterViewController {
+extension LoginViewController {
     func hideKeyboardWhenTappedAround() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -164,11 +186,5 @@ extension RegisterViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
-    }
-}
-
-extension RegisterViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField){
-        password = textField.text
     }
 }
