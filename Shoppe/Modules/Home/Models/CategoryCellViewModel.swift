@@ -17,31 +17,31 @@ struct CategoryCellViewModel: Hashable {
 struct Categories {
     static var all: [CategoryCellViewModel] = [
         CategoryCellViewModel(id: 0, name: "Electronics", images: [
-            UIImage(systemName: "desktopcomputer") ?? UIImage(),
-            UIImage(systemName: "tv") ?? UIImage(),
-            UIImage(systemName: "headphones") ?? UIImage(),
-            UIImage(systemName: "camera") ?? UIImage()
-        ], count: 0),
+            UIImage.monitor,
+            UIImage.playStation,
+            UIImage.airpods,
+            UIImage.earphones
+        ], count: 103),
         
         CategoryCellViewModel(id: 1, name: "Clothing", images: [
-            UIImage(systemName: "tshirt") ?? UIImage(),
-            UIImage(systemName: "shoe.fill") ?? UIImage(),
-            UIImage(systemName: "hat") ?? UIImage(),
-            UIImage(systemName: "handbag") ?? UIImage()
-        ], count: 0),
+            UIImage.clothing1,
+            UIImage.clothing2,
+            UIImage.clothing3,
+            UIImage.clothing4
+        ], count: 5),
         
-        CategoryCellViewModel(id: 2, name: "Home & Kitchen", images: [
-            UIImage(systemName: "house") ?? UIImage(),
-            UIImage(systemName: "lamp.ceiling.fill") ?? UIImage(),
-            UIImage(systemName: "cup.and.saucer.fill") ?? UIImage(),
-            UIImage(systemName: "bed.double.fill") ?? UIImage()
-        ], count: 0),
+        CategoryCellViewModel(id: 2, name: "Home goods", images: [
+            UIImage.candles,
+            UIImage.blanket,
+            UIImage.coffee,
+            UIImage.mixer
+        ], count: 200),
         
         CategoryCellViewModel(id: 3, name: "Sports", images: [
-            UIImage(systemName: "sportscourt.fill") ?? UIImage(),
-            UIImage(systemName: "bicycle") ?? UIImage(),
-            UIImage(systemName: "tennisball.fill") ?? UIImage(),
-            UIImage(systemName: "figure.run") ?? UIImage()
-        ], count: 0)
+            UIImage.sport1,
+            UIImage.sport2,
+            UIImage.sport4,
+            UIImage.sport3
+        ], count: 2000)
     ]
 }

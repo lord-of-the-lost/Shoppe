@@ -14,25 +14,41 @@ final class PopularCell: UICollectionViewCell {
     
     // MARK: - Drawings
     private enum Drawings {
-        static let cornerRadius: CGFloat = 12.0
-        static let padding: CGFloat = 10.0
+        static let cornerRadius: CGFloat = 10.0
+        static let shadowOffset: CGSize = CGSize(width: 0, height: 10)
+        static let shadowOpacity: Float = 0.1
+        static let shadowRadius: CGFloat = 4
+        static let cellPadding: CGFloat = 8
         static let spacing: CGFloat = 8.0
         static let priceFontSize: CGFloat = 18.0
         static let descriptionFontSize: CGFloat = 14.0
     }
     
+    private let shadowView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = Drawings.shadowOffset
+        view.layer.shadowOpacity = Drawings.shadowOpacity
+        view.layer.shadowRadius = Drawings.shadowRadius
+        view.layer.cornerRadius = Drawings.cornerRadius
+        view.layer.masksToBounds = false
+        return view
+    }()
+    
     private let productImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = Drawings.cornerRadius
-        imageView.layer.masksToBounds = true
+        imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: Drawings.descriptionFontSize, weight: .medium)
+        label.font = Fonts.nunitoRegular
         label.textColor = .black
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +57,7 @@ final class PopularCell: UICollectionViewCell {
     
     private let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: Drawings.priceFontSize)
+        label.font = Fonts.ralewayBold.withSize(Drawings.priceFontSize)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -49,6 +65,7 @@ final class PopularCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        contentView.layer.masksToBounds = false
         setupViews()
         setupConstraints()
     }
@@ -64,27 +81,32 @@ final class PopularCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        contentView.layer.cornerRadius = Drawings.cornerRadius
-        contentView.layer.masksToBounds = true
-        contentView.backgroundColor = .white
-        contentView.addSubview(productImageView)
-        contentView.addSubview(descriptionLabel)
-        contentView.addSubview(priceLabel)
+        addSubview(shadowView)
+        shadowView.addSubview(productImageView)
+        addSubview(descriptionLabel)
+        addSubview(priceLabel)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            productImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Drawings.padding),
-            productImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Drawings.padding),
-            productImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Drawings.padding),
-            productImageView.heightAnchor.constraint(equalTo: productImageView.widthAnchor),
             
-            descriptionLabel.topAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: Drawings.spacing),
-            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Drawings.padding),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Drawings.padding),
-            
+            shadowView.topAnchor.constraint(equalTo: topAnchor, constant: Drawings.cellPadding),
+            shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Drawings.cellPadding),
+            shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Drawings.cellPadding),
+            shadowView.heightAnchor.constraint(equalTo: shadowView.widthAnchor),
+
+            productImageView.topAnchor.constraint(equalTo: shadowView.topAnchor, constant: 2),
+            productImageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor, constant: 2),
+            productImageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor, constant: -2),
+            productImageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: -2),
+
+            descriptionLabel.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: Drawings.spacing),
+            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Drawings.cellPadding),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Drawings.cellPadding),
+
             priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: Drawings.spacing / 2),
-            priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Drawings.padding),
+            priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Drawings.cellPadding),
+            priceLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -Drawings.cellPadding)
         ])
     }
 }
@@ -92,10 +114,13 @@ final class PopularCell: UICollectionViewCell {
 // MARK: - SwiftUI Preview
 struct PopularCell_Preview: PreviewProvider {
     static var previews: some View {
-        PopularCellViewWrapper(model: PopularMock.all.first!)
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .frame(width: 180, height: 250)
+        ZStack {
+            Color.gray.edgesIgnoringSafeArea(.all)
+            PopularCellViewWrapper(model: PopularMock.all.first!)
+                .previewLayout(.sizeThatFits)
+                .padding()
+                .frame(width: 180, height: 250)
+        }
     }
 }
 
@@ -112,3 +137,4 @@ struct PopularCellViewWrapper: UIViewRepresentable {
         uiView.configure(with: model)
     }
 }
+

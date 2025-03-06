@@ -16,7 +16,7 @@ final class HomeViewCompLayout {
             
             switch Section(rawValue: sectionIndex) {
             case .categories:
-                let spacing: CGFloat = 8.0
+                let spacing: CGFloat = 5
                 
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(0.5),
@@ -51,22 +51,15 @@ final class HomeViewCompLayout {
                 return section
             case .popular:
                 let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .absolute(256),
-                    heightDimension: .absolute(256)
+                    widthDimension: .absolute(150),
+                    heightDimension: .estimated(220)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 
-                item.contentInsets = NSDirectionalEdgeInsets(
-                    top: 12,
-                    leading: 8,
-                    bottom: 24,
-                    trailing: 8
-                )
-                
                 let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .absolute(272),
-                    heightDimension: .absolute(296)
+                    widthDimension: .estimated(150),
+                    heightDimension: .absolute(250)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -75,7 +68,6 @@ final class HomeViewCompLayout {
                 )
                 
                 let section = NSCollectionLayoutSection(group: group)
-                
                 section.orthogonalScrollingBehavior = .continuous
                 
                 return section

@@ -18,31 +18,31 @@ struct PopularMock {
     static let all: [PopularCellViewModel] = [
         PopularCellViewModel(
             id: 0,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.monitor,
             price: 17.00,
             description: "Stylish sneakers for daily wear."
         ),
         PopularCellViewModel(
             id: 1,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.blanket,
             price: 45.99,
             description: "Elegant dress for special occasions."
         ),
         PopularCellViewModel(
             id: 2,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.sport1,
             price: 89.50,
             description: "Modern smartwatch with fitness tracking."
         ),
         PopularCellViewModel(
             id: 3,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.product,
             price: 22.99,
             description: "Comfortable cotton t-shirt."
         ),
         PopularCellViewModel(
             id: 4,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.clothing2,
             price: 12.49,
             description: "Casual baseball cap, one size fits all."
         ),
