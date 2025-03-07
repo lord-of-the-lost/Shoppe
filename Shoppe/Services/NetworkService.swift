@@ -16,7 +16,12 @@ protocol NetworkServiceProtocol {
 
 // MARK: - NetworkError
 enum NetworkError: Error {
-    case badURL, requestFailed, badResponse, invalidData, decodeError
+    case badURL, requestFailed, requestBodyFailed, badResponse, invalidData, decodeError
+}
+
+// MARK: - HTTPMethods
+enum HTTPMethods: String {
+    case GET, POST, PUT, DELETE
 }
 
 // MARK: - NetworkService
@@ -36,51 +41,45 @@ final class NetworkService: NetworkServiceProtocol {
     
     /// Добавить новый продукт
     func addProduct(_ product: ProductModel, completion: @escaping (Result<ProductModel, NetworkError>) -> Void) {
-        performRequest(urlString: baseURL, method: "POST", body: product, completion: completion)
+        performRequest(urlString: baseURL, method: .POST, body: product, completion: completion)
     }
     
     /// Обновить продукт
     func updateProduct(_ product: ProductModel, completion: @escaping (Result<ProductModel, NetworkError>) -> Void) {
         let urlString = "\(baseURL)/\(product.id)"
-        performRequest(urlString: urlString, method: "PUT", body: product, completion: completion)
+        performRequest(urlString: urlString, method: .PUT, body: product, completion: completion)
     }
     
     /// Удалить продукт
     func deleteProduct(id: Int, completion: @escaping (Result<ProductModel, NetworkError>) -> Void) {
         let urlString = "\(baseURL)/\(id)"
-        performRequest(urlString: urlString, method: "DELETE", completion: completion)
+        performRequest(urlString: urlString, method: .DELETE, completion: completion)
     }
     
     /// Загрузка картинки
     func loadImage(from urlString: String, completion: @escaping (Result<UIImage, NetworkError>) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(.failure(NetworkError.badURL))
-            return
+        performDataRequest(urlString: urlString) { result in
+            switch result {
+            case .success(let data):
+                guard let image = UIImage(data: data) else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                completion(.success(image))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let _ = error {
-                completion(.failure(NetworkError.badResponse))
-                return
-            }
-            
-            guard let data, let image = UIImage(data: data) else {
-                completion(.failure(NetworkError.invalidData))
-                return
-            }
-            
-            completion(.success(image))
-        }.resume()
     }
 }
 
-// MARK: Private Methods
+// MARK: - Private Methods
 private extension NetworkService {
-    func performRequest<T: Codable>(
+    func performDataRequest(
         urlString: String,
-        method: String = "GET",
+        method: HTTPMethods = .GET,
         body: Codable? = nil,
-        completion: @escaping (Result<T, NetworkError>) -> Void
+        completion: @escaping (Result<Data, NetworkError>) -> Void
     ) {
         guard let url = URL(string: urlString) else {
             DispatchQueue.main.async { completion(.failure(.badURL)) }
@@ -88,16 +87,16 @@ private extension NetworkService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = method
+        request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        if let body {
-            do {
+        do {
+            if let body {
                 request.httpBody = try JSONEncoder().encode(body)
-            } catch {
-                DispatchQueue.main.async { completion(.failure(.requestFailed)) }
-                return
             }
+        } catch {
+            DispatchQueue.main.async { completion(.failure(.requestBodyFailed)) }
+            return
         }
         
         URLSession.shared.dataTask(with: request) { data, _, error in
@@ -111,13 +110,28 @@ private extension NetworkService {
                 return
             }
             
-            do {
-                let decodedData = try JSONDecoder().decode(T.self, from: data)
-                DispatchQueue.main.async { completion(.success(decodedData)) }
-            } catch {
-                DispatchQueue.main.async { completion(.failure(.decodeError)) }
-            }
+            DispatchQueue.main.async { completion(.success(data)) }
         }.resume()
     }
+    
+    func performRequest<T: Codable>(
+        urlString: String,
+        method: HTTPMethods = .GET,
+        body: Codable? = nil,
+        completion: @escaping (Result<T, NetworkError>) -> Void
+    ) {
+        performDataRequest(urlString: urlString, method: method, body: body) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let decodedData = try JSONDecoder().decode(T.self, from: data)
+                    completion(.success(decodedData))
+                } catch {
+                    completion(.failure(.decodeError))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }
-
