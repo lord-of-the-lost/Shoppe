@@ -16,12 +16,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = MainTabBarFactory.makeModule()
         window?.makeKeyAndVisible()
         
-        configureTabBarAppearance()
         return true
     }
-    private func configureTabBarAppearance() {
-            let tabBarAppearance = UITabBarAppearance()
-            tabBarAppearance.configureWithOpaqueBackground()
-            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        }
-    }
+}

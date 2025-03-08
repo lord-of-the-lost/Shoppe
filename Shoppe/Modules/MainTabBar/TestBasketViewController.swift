@@ -7,7 +7,6 @@
 import UIKit
 
 final class TestBasketViewController: UIViewController {
-    
     // MARK: - UI Elements
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()

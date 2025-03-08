@@ -11,7 +11,6 @@ protocol BasketServiceProtocol {
     var itemsCount: Int { get }
     func addItem()
     func removeItem()
-    func observeBasketUpdates(observer: Any, selector: Selector)
 }
 
 final class BasketService: BasketServiceProtocol {
@@ -32,14 +31,5 @@ final class BasketService: BasketServiceProtocol {
     func removeItem() {
         if !items.isEmpty { items.removeLast() }
         NotificationCenter.default.post(name: .basketDidUpdate, object: nil)
-    }
-    
-    func observeBasketUpdates(observer: Any, selector: Selector) {
-        NotificationCenter.default.addObserver(
-            observer,
-            selector: selector,
-            name: .basketDidUpdate,
-            object: nil
-        )
     }
 }

@@ -8,41 +8,50 @@
 import UIKit
 
 // MARK: - Protocol
-
 protocol MainTabBarPresenterProtocol: AnyObject {
     func viewDidLoad()
 }
 
 // MARK: - Presenter
-
-final class MainTabBarPresenter: MainTabBarPresenterProtocol {
-    weak var view: MainTabBarViewProtocol?
+final class MainTabBarPresenter {
+    private weak var view: MainTabBarViewProtocol?
     private let basketService: BasketServiceProtocol
     
+    // MARK: Lifecycle
     init(basketService: BasketServiceProtocol) {
         self.basketService = basketService
         setupObservers()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: Internal Methods
+    func setupView(_ view: MainTabBarViewProtocol) {
+        self.view = view
+    }
+}
+
+// MARK: - MainTabBarPresenterProtocol
+extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     func viewDidLoad() {
         view?.updateBasketBadge(count: basketService.itemsCount)
     }
 }
 
 // MARK: - Private Methods
-
 private extension MainTabBarPresenter {
     func setupObservers() {
-        basketService.observeBasketUpdates(
-            observer: self,
-            selector: #selector(handleBasketUpdate)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleBasketUpdate),
+            name: .basketDidUpdate,
+            object: nil
         )
     }
     
-    @objc private func handleBasketUpdate() {
+    @objc func handleBasketUpdate() {
         view?.updateBasketBadge(count: basketService.itemsCount)
     }
 }
-
-    
-

@@ -11,7 +11,7 @@ enum MainTabBarFactory {
     static func makeModule() -> UIViewController {
         let presenter = MainTabBarPresenter(basketService: BasketService.shared)
         let viewController = MainTabBarController(presenter: presenter)
-        presenter.view = viewController
+        presenter.setupView(viewController)
         return viewController
     }
 }
