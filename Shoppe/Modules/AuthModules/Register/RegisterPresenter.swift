@@ -24,20 +24,22 @@ final class RegisterPresenter: RegisterPresenterProtocol {
     }
     
     func setupView(_ view: RegisterViewProtocol) {
-    self.view = view
+        self.view = view
     }
-
+    
     
     func doneButtonTapped() {
-        guard let email = view?.getEmail() else { return }
-        guard let password = view?.getPassword() else { return }
+        guard
+            let email = view?.getEmail(),
+            let password = view?.getPassword()
+        else { return }
         print(email, password)
         saveUser(username: email, password: password)
         router.openLoginScreen()
     }
     
     func cancelButtonTapped() { router.dismissOnStart() }
-
+    
 }
 
 // MARK: - Private Methods

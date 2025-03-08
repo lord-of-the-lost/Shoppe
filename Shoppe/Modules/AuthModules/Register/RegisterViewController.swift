@@ -106,6 +106,12 @@ private extension RegisterViewController {
         }
     }
     
+    func hideKeyboardWhenTappedAround() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
     func setConstraints() {
         NSLayoutConstraint.activate([
             backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -153,14 +159,6 @@ private extension RegisterViewController {
     @objc func cancelButtonTapped() {
         presenter.cancelButtonTapped()
     }
-}
-
-extension RegisterViewController {
-    func hideKeyboardWhenTappedAround() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-    }
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
@@ -168,7 +166,7 @@ extension RegisterViewController {
 }
 
 extension RegisterViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField){
+    func textFieldDidEndEditing(_ textField: UITextField) {
         password = textField.text
     }
 }

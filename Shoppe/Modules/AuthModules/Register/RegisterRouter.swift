@@ -23,7 +23,6 @@ class RegisterRouter: RegisterRouterProtocol {
     }
     
     func dismissOnStart() {
-        print(#function)
         viewController?.dismiss(animated: true, completion: nil)
     }
 }

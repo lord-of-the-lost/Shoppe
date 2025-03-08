@@ -61,16 +61,16 @@ class CustomTextField: UITextField {
     }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: padding)
+        bounds.inset(by: padding)
     }
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: padding)
+        bounds.inset(by: padding)
     }
     
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
-            let width: CGFloat = 50
-            let height = bounds.height
-            return CGRect(x: bounds.width - width - rightViewPadding, y: 0, width: width, height: height)
-        }
+        let width: CGFloat = 50
+        let height = bounds.height
+        return CGRect(x: bounds.width - width - rightViewPadding, y: 0, width: width, height: height)
+    }
 }

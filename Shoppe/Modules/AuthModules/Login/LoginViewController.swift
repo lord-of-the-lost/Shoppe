@@ -20,7 +20,7 @@ final class LoginViewController: UIViewController {
     
     private lazy var backgroundView: UIImageView = {
         let logoView = UIImageView()
-        logoView.image = UIImage(named: "backgroundLogin")
+        logoView.image = UIImage(resource: .backgroundLogin)
         return logoView
     }()
     
@@ -59,7 +59,7 @@ final class LoginViewController: UIViewController {
     private lazy var nextButton: CustomButton = {
         let button = CustomButton(type: .system)
         button.setTitle("Next", for: .normal)
-        button.addTarget(self, action: #selector(nextButtonTapped(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -94,11 +94,11 @@ final class LoginViewController: UIViewController {
 
 extension LoginViewController: LoginViewProtocol {
     func getEmail() -> String? {
-        return emailTextField.text
+        emailTextField.text
     }
     
     func getPassword() -> String? {
-        return passwordTextField.text
+        passwordTextField.text
     }
     
     func updateButtonTitle(_ title: String) {
@@ -128,12 +128,14 @@ private extension LoginViewController {
             backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            titleLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -4),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
         ])
         
         NSLayoutConstraint.activate([
-            titleLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -4),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+           
         ])
         
         NSLayoutConstraint.activate([

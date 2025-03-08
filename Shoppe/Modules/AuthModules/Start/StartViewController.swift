@@ -8,8 +8,7 @@
 
 import UIKit
 
-protocol StartViewProtocol: AnyObject {
-}
+protocol StartViewProtocol: AnyObject {}
 
 final class StartViewController: UIViewController {
     private let presenter: StartPresenterProtocol
@@ -79,9 +78,7 @@ final class StartViewController: UIViewController {
     }
 }
 
-extension StartViewController: StartViewProtocol {
-    
-}
+extension StartViewController: StartViewProtocol {}
 
 // MARK: - Private Methods
 private extension StartViewController {

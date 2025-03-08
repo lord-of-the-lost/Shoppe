@@ -7,7 +7,6 @@
 
 
 import UIKit
-import Foundation
 
 protocol LoginPresenterProtocol: AnyObject {
     func setupView(_ view: LoginViewProtocol)

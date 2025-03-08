@@ -24,15 +24,10 @@ final class StartPresenter: StartPresenterProtocol {
     }
     
     func setupView(_ view: StartViewProtocol) {
-    self.view = view
+        self.view = view
     }
     
     func startButtonTapped() { router.openRegistrationScreen() }
     
     func alreadyButtonTapped() { router.openLoginScreen() }
-}
-
-// MARK: - Private Methods
-private extension StartPresenter {
-    
 }

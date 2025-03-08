@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CustomButton: UIButton {
+final class CustomButton: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupButton()
@@ -20,9 +20,9 @@ class CustomButton: UIButton {
     }
 
     private func setupButton() {
-        self.setTitleColor(.white, for: .normal)
-        self.backgroundColor = .customBlue
-        self.layer.cornerRadius = 16
-        self.titleLabel?.font = Fonts.nunitoLight22
+        setTitleColor(.white, for: .normal)
+        backgroundColor = .customBlue
+        layer.cornerRadius = 16
+        titleLabel?.font = Fonts.nunitoLight22
     }
 }
