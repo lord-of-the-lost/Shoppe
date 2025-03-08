@@ -17,18 +17,23 @@ final class MainTabBarPresenter {
         setupObservers()
     }
     
-    private func setupObservers() {
+    func viewDidLoad() {
+        view?.updateBasketBadge(count: basketService.itemsCount)
+    }
+}
+
+// MARK: - Private Methods
+
+private extension MainTabBarPresenter {
+    
+     func setupObservers() {
         basketService.observeBasketUpdates(
             observer: self,
             selector: #selector(handleBasketUpdate)
         )
     }
-    
-    @objc private func handleBasketUpdate() {
+    @objc func handleBasketUpdate() {
         view?.updateBasketBadge(count: basketService.itemsCount)
     }
     
-    func viewDidLoad() {
-        view?.updateBasketBadge(count: basketService.itemsCount)
-    }
 }

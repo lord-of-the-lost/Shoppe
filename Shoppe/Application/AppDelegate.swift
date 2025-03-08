@@ -20,10 +20,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     private func configureTabBarAppearance() {
-        if #available(iOS 15.0, *) {
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithOpaqueBackground()
             UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         }
     }
-}

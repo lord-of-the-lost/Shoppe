@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct TabItemConfig {
+struct TabItemModel {
     let viewController: UIViewController
     let iconName: String
     let selectedIconName: String

@@ -16,6 +16,10 @@ protocol BasketServiceProtocol {
 
 final class BasketService: BasketServiceProtocol {
     static let shared = BasketService()
+    
+    private init() {}
+    
+// TODO: Заменить на тип данных продукта
     private var items: [String] = []
     
     var itemsCount: Int { items.count }

@@ -21,19 +21,19 @@ final class MainTabBarController: UITabBarController {
     private let basketTabIndex = 3
     
     // MARK: - Initialization
-     convenience init() {
-         self.init(nibName: nil, bundle: nil)
-     }
-     
-     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-         _ = presenter
-     }
-     
-     required init?(coder: NSCoder) {
-         super.init(coder: coder)
-         _ = presenter
-     }
+    convenience init() {
+        self.init(nibName: nil, bundle: nil)
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        _ = presenter
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        _ = presenter
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -41,37 +41,42 @@ final class MainTabBarController: UITabBarController {
         setupViewControllers()
         presenter.viewDidLoad()
     }
-
+    
     // MARK: - Setup
-    private lazy var tabItems: [TabItemConfig] = [
-        TabItemConfig(
+    private var tabItems: [TabItemModel] = [
+        TabItemModel(
             viewController: TestBasketViewController(),
             iconName: "Home",
             selectedIconName: "HomeSelected"
         ),
-        TabItemConfig(
+        TabItemModel(
             viewController: UIViewController(),
             iconName: "Heart",
             selectedIconName: "HeartSelected"
         ),
-        TabItemConfig(
+        TabItemModel(
             viewController: UIViewController(),
             iconName: "Categories",
             selectedIconName: "CategoriesSelected"
         ),
-        TabItemConfig(
+        TabItemModel(
             viewController: UIViewController(),
             iconName: "Bag",
             selectedIconName: "BagSelected"
         ),
-        TabItemConfig(
+        TabItemModel(
             viewController: UIViewController(),
             iconName: "Person",
             selectedIconName: "PersonSelected"
         )
     ]
     
-    private func setupViewControllers() {
+}
+// MARK: - Private Methods
+
+private extension MainTabBarController {
+    
+    func setupViewControllers() {
         viewControllers = tabItems.map { config in
             let navController = UINavigationController(rootViewController: config.viewController)
             navController.tabBarItem = createTabBarItem(
@@ -82,7 +87,7 @@ final class MainTabBarController: UITabBarController {
         }
     }
     
-    private func createTabBarItem(iconName: String, selectedIconName: String) -> UITabBarItem {
+    func createTabBarItem(iconName: String, selectedIconName: String) -> UITabBarItem {
         UITabBarItem(
             title: nil,
             image: UIImage(named: iconName)?.withRenderingMode(.alwaysOriginal),
