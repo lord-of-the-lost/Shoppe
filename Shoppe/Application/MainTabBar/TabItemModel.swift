@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol TabItemFactoryProtocol {
+    static func makeModule() -> UIViewController
+}
+
 struct TabItemModel {
     let viewController: UIViewController
     let iconName: String

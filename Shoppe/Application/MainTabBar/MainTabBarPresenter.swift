@@ -7,12 +7,19 @@
 
 import UIKit
 
-final class MainTabBarPresenter {
+// MARK: - Protocol
+
+protocol MainTabBarPresenterProtocol: AnyObject {
+    func viewDidLoad()
+}
+
+// MARK: - Presenter
+
+final class MainTabBarPresenter: MainTabBarPresenterProtocol {
     weak var view: MainTabBarViewProtocol?
     private let basketService: BasketServiceProtocol
     
-    init(view: MainTabBarViewProtocol, basketService: BasketServiceProtocol = BasketService.shared) {
-        self.view = view
+    init(basketService: BasketServiceProtocol) {
         self.basketService = basketService
         setupObservers()
     }
@@ -25,15 +32,17 @@ final class MainTabBarPresenter {
 // MARK: - Private Methods
 
 private extension MainTabBarPresenter {
-    
-     func setupObservers() {
+    func setupObservers() {
         basketService.observeBasketUpdates(
             observer: self,
             selector: #selector(handleBasketUpdate)
         )
     }
-    @objc func handleBasketUpdate() {
+    
+    @objc private func handleBasketUpdate() {
         view?.updateBasketBadge(count: basketService.itemsCount)
     }
-    
 }
+
+    
+

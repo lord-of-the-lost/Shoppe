@@ -7,32 +7,25 @@
 
 import UIKit
 
+// MARK: - Protocol
+
 protocol MainTabBarViewProtocol: AnyObject {
     func updateBasketBadge(count: Int)
 }
+// MARK: - MainTabBarController
 
 final class MainTabBarController: UITabBarController {
     
-    // MARK: - Properties
-    private lazy var presenter: MainTabBarPresenter = {
-        MainTabBarPresenter(view: self)
-    }()
-    
+    private let presenter: MainTabBarPresenterProtocol
     private let basketTabIndex = 3
-    
-    // MARK: - Initialization
-    convenience init() {
-        self.init(nibName: nil, bundle: nil)
-    }
-    
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        _ = presenter
+     
+    init(presenter: MainTabBarPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        _ = presenter
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Lifecycle
