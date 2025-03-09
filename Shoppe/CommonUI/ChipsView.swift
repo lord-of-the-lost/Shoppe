@@ -7,15 +7,12 @@
 
 import UIKit
 
-struct ChipsViewModel {
-    let text: String
-}
-
 final class ChipsView: UIView {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.font = Fonts.ralewayRegular.withSize(14)
+        label.setContentHuggingPriority(.required, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,8 +32,8 @@ final class ChipsView: UIView {
 
 // MARK: - ConfigurableViewProtocol
 extension ChipsView: ConfigurableViewProtocol {
-    func configure(with model: ChipsViewModel) {
-        titleLabel.text = model.text
+    func configure(with text: String) {
+        titleLabel.text = text
     }
 }
 
