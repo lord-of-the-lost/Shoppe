@@ -7,18 +7,16 @@
 
 import UIKit
 
-final class WishlistViewController: UIViewController {
+
+protocol WishlistView: AnyObject {
+    func updateProducts(_ products: [ProductCellViewModel])
+}
+
+final class WishlistViewController: UIViewController, WishlistView {
     //MARK: - Properties
+    var presenter: WishlistPresenter?
     
-    lazy var configs: [ProductCellViewModel] = [
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-        ProductCellViewModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-    ]
+    lazy var configs: [ProductCellViewModel] = []
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -61,12 +59,22 @@ final class WishlistViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.titleView = titleLabel
         setupView()
         setupConstraints()
+        presenter?.loadProducts()
+    }
+    
+    // MARK: - WishlistView
+    
+    func updateProducts(_ products: [ProductCellViewModel]) {
+        configs = products
+        print("Updating with \(configs.count) products")
+        collectionView.reloadData()
     }
 }
 //MARK: - Extensions Constraints
@@ -101,6 +109,7 @@ extension WishlistViewController: UICollectionViewDataSource, UICollectionViewDe
     
     // MARK: UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         return configs.count
     }
     
@@ -110,9 +119,7 @@ extension WishlistViewController: UICollectionViewDataSource, UICollectionViewDe
         cell.configure(with: ProductCellViewModel(image: config.image, description: config.description, price: config.price))
         
         return cell
-       
-        }
-
     }
-    
-    // MARK: UICollectionViewDelegate
+}
+
+// MARK: UICollectionViewDelegate
