@@ -8,56 +8,36 @@
 
 import UIKit
 
-class CustomTextField: UITextField {
+final class CustomTextField: UITextField {
     private let rightViewPadding: CGFloat = 10
     private let padding = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 50)
     private let toggleButton = UIButton(type: .custom)
+    private let fieldType: TextFieldType
     
-    var isPasswordField: Bool = false {
-        didSet {
-            setupTextField()
-        }
+    enum TextFieldType {
+        case email
+        case password
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(type fieldType: TextFieldType = .email) {
+        self.fieldType = fieldType
+        super.init(frame: .zero)
         setupTextField()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupTextField()
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupTextField() {
-        self.borderStyle = .none
-        self.layer.cornerRadius = 26
-        self.font = UIFont.systemFont(ofSize: 16)
-        self.backgroundColor = .customGray
-        self.textColor = .black
-        self.textContentType = .none
-        self.autocorrectionType = .no
-        self.autocapitalizationType = .none
-        self.spellCheckingType = .no
+        configureCommonSettings()
         
-        if isPasswordField {
-            self.isSecureTextEntry = true
-            
-            toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-            toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
-            toggleButton.tintColor = .black
-            self.rightView = toggleButton
-            self.rightViewMode = .always
-        } else {
-            self.isSecureTextEntry = false
-            self.rightView = nil
+        switch fieldType {
+        case .email:
+            configureAsEmail()
+        case .password:
+            configureAsPassword()
         }
-    }
-    
-    @objc private func togglePasswordVisibility() {
-        self.isSecureTextEntry.toggle()
-        let imageName = self.isSecureTextEntry ? "eye.slash" : "eye"
-        toggleButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
@@ -72,5 +52,44 @@ class CustomTextField: UITextField {
         let width: CGFloat = 50
         let height = bounds.height
         return CGRect(x: bounds.width - width - rightViewPadding, y: 0, width: width, height: height)
+    }
+}
+
+
+// MARK: - Private Methods
+private extension CustomTextField {
+    func configureCommonSettings() {
+        borderStyle = .none
+        layer.cornerRadius = 26
+        font = Fonts.baseFont
+        backgroundColor = .customGray
+        textColor = .black
+        autocorrectionType = .no
+        autocapitalizationType = .none
+        spellCheckingType = .no
+    }
+    
+    func configureAsEmail() {
+        keyboardType = .emailAddress
+        textContentType = .emailAddress
+        isSecureTextEntry = false
+        rightView = nil
+    }
+    
+    func configureAsPassword() {
+        keyboardType = .default
+        textContentType = .oneTimeCode
+        isSecureTextEntry = true
+        toggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+        toggleButton.tintColor = .black
+        rightView = toggleButton
+        rightViewMode = .always
+    }
+    
+    @objc func togglePasswordVisibility() {
+        isSecureTextEntry.toggle()
+        let imageName = self.isSecureTextEntry ? "eye.slash" : "eye"
+        toggleButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
 }

@@ -11,8 +11,13 @@ import UIKit
 protocol LoginViewProtocol: AnyObject {
     func getEmail() -> String?
     func getPassword() -> String?
-    func updateButtonTitle(_ title: String)
-    func switchToPasswordField()
+    func updateNextButtonTitle(_ title: String)
+    func updateCancelButtonTitle(_ title: String) 
+    func switchToPasswordField(is bool: Bool)
+    func keyboardWillShow(height: CGFloat)
+    func keyboardWillHide()
+    func showAlert(title: String, message: String?)
+    func hideKeyboard()
 }
 
 final class LoginViewController: UIViewController {
@@ -49,10 +54,10 @@ final class LoginViewController: UIViewController {
     }()
     
     private lazy var passwordTextField: CustomTextField = {
-        let textField = CustomTextField()
+        let textField = CustomTextField(type: .password)
         textField.placeholder = "Password"
         textField.font = UIFont.systemFont(ofSize: 14)
-        textField.isPasswordField = true
+        textField.isHidden = true
         return textField
     }()
     
@@ -89,10 +94,39 @@ final class LoginViewController: UIViewController {
         setupViews()
         setConstraints()
         hideKeyboardWhenTappedAround()
+        addKeyboardObservers()
+        setDelegate()
+    }
+    
+    deinit {
+        removeKeyboardObservers()
     }
 }
 
 extension LoginViewController: LoginViewProtocol {
+    func hideKeyboard() {
+        self.view.endEditing(true)
+    }
+    
+    func keyboardWillShow(height: CGFloat) {
+        if emailTextField.isFirstResponder || passwordTextField.isFirstResponder {
+            let distanceFromBottom = getDistanceFromBottom(textField: passwordTextField)
+            
+            if distanceFromBottom < height {
+                let offset = height - distanceFromBottom
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y = -offset - 8
+                }
+            }
+        }
+    }
+    
+    func keyboardWillHide() {
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y = 0
+        }
+    }
+    
     func getEmail() -> String? {
         emailTextField.text
     }
@@ -101,13 +135,34 @@ extension LoginViewController: LoginViewProtocol {
         passwordTextField.text
     }
     
-    func updateButtonTitle(_ title: String) {
+    func updateNextButtonTitle(_ title: String) {
         nextButton.setTitle(title, for: .normal)
     }
     
-    func switchToPasswordField() {
-        emailTextField.isHidden = true
-        passwordTextField.isHidden = false
+    func updateCancelButtonTitle(_ title: String) {
+        cancelLabel.text = title
+    }
+    
+    func switchToPasswordField(is bool: Bool) {
+        emailTextField.isHidden = bool
+        passwordTextField.isHidden = !bool
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension LoginViewController: UITextFieldDelegate {
+    @objc func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == emailTextField {
+            passwordTextField.becomeFirstResponder()
+            presenter.nextButtonTapped()
+            return false
+        }
+        if textField == passwordTextField {
+            textField.resignFirstResponder()
+            presenter.nextButtonTapped()
+            return true
+        }
+        return true
     }
 }
 
@@ -115,12 +170,22 @@ extension LoginViewController: LoginViewProtocol {
 private extension LoginViewController {
     func setupViews() {
         view.backgroundColor = .white
-        passwordTextField.isHidden = true
         
         [backgroundView, titleLabel, descriptionLabel, emailTextField, passwordTextField, nextButton, cancelLabel].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
+    }
+    
+    func setDelegate() {
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
+    }
+    
+    func hideKeyboardWhenTappedAround() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     func setConstraints() {
@@ -131,62 +196,76 @@ private extension LoginViewController {
             backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             titleLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -4),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
         
-        NSLayoutConstraint.activate([
-           
-        ])
-        
-        NSLayoutConstraint.activate([
             descriptionLabel.bottomAnchor.constraint(equalTo: emailTextField.topAnchor, constant: -16),
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ])
-        
-        NSLayoutConstraint.activate([
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+       
             emailTextField.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -37),
             emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            emailTextField.heightAnchor.constraint(equalToConstant: 52)
-        ])
-        
-        NSLayoutConstraint.activate([
+            emailTextField.heightAnchor.constraint(equalToConstant: 52),
+       
             passwordTextField.bottomAnchor.constraint(equalTo: nextButton.topAnchor, constant: -37),
             passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 52)
-        ])
+            passwordTextField.heightAnchor.constraint(equalToConstant: 52),
         
-        NSLayoutConstraint.activate([
             nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             nextButton.bottomAnchor.constraint(equalTo: cancelLabel.topAnchor, constant: -24),
-            nextButton.heightAnchor.constraint(equalToConstant: 61)
-        ])
+            nextButton.heightAnchor.constraint(equalToConstant: 61),
         
-        NSLayoutConstraint.activate([
             cancelLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             cancelLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -67)
         ])
     }
     
-    @objc func nextButtonTapped(_ sender: UIButton) {
-        presenter.nextButtonTapped(button: sender)
+    @objc func nextButtonTapped() {
+        presenter.nextButtonTapped()
     }
     
     @objc func cancelButtonTapped() {
         presenter.cancelButtonTapped()
     }
-}
-
-extension LoginViewController {
-    func hideKeyboardWhenTappedAround() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-    }
     
     @objc func dismissKeyboard() {
-        view.endEditing(true)
+        hideKeyboard()
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        presenter.keyboardWillShow(height: keyboardFrame.height)
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        presenter.keyboardWillHide()
+    }
+    
+    func addKeyboardObservers() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow(notification:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide(notification:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
+    }
+    
+    func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIResponder.keyboardWillShowNotification,
+                                                  object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIResponder.keyboardWillHideNotification,
+                                                  object: nil)
+    }
+    
+    func getDistanceFromBottom(textField: UITextField) -> CGFloat {
+        let textFieldBottomY = textField.frame.maxY
+        let viewBottomY = view.frame.height
+        return viewBottomY - textFieldBottomY
     }
 }

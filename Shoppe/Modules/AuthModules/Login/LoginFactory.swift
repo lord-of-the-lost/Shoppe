@@ -13,7 +13,7 @@ enum LoginFactory {
         let router = LoginRouter()
         let presenter = LoginPresenter(router: router)
         let viewController = LoginViewController(presenter: presenter)
-        router.viewController = viewController
+        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

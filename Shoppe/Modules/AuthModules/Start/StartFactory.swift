@@ -13,7 +13,7 @@ enum StartFactory {
         let router = StartRouter()
         let presenter = StartPresenter(router: router)
         let viewController = StartViewController(presenter: presenter)
-        router.viewController = viewController
+        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

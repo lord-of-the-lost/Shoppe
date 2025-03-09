@@ -13,8 +13,12 @@ protocol RegisterRouterProtocol {
     func dismissOnStart()
 }
 
-class RegisterRouter: RegisterRouterProtocol {
+final class RegisterRouter: RegisterRouterProtocol {
     weak var viewController: UIViewController?
+    
+    func setupView(_ view: RegisterViewProtocol) {
+        self.viewController = view as? UIViewController
+    }
     
     func openLoginScreen() {
         let vc = LoginFactory.makeModule()

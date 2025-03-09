@@ -13,7 +13,7 @@ enum RegisterFactory {
         let router = RegisterRouter()
         let presenter = RegisterPresenter(router: router)
         let viewController = RegisterViewController(presenter: presenter)
-        router.viewController = viewController
+        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

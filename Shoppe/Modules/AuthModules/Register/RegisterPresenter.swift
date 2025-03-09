@@ -9,8 +9,10 @@
 import Foundation
 
 protocol RegisterPresenterProtocol: AnyObject {
+    func doneButtonTapped(email: String?, password: String?)
+    func keyboardWillShow(height: CGFloat)
+    func keyboardWillHide()
     func setupView(_ view: RegisterViewProtocol)
-    func doneButtonTapped()
     func cancelButtonTapped()
 }
 
@@ -28,24 +30,51 @@ final class RegisterPresenter: RegisterPresenterProtocol {
     }
     
     
-    func doneButtonTapped() {
+    func doneButtonTapped(email: String?, password: String?) {
         guard
-            let email = view?.getEmail(),
-            let password = view?.getPassword()
-        else { return }
-        print(email, password)
-        saveUser(username: email, password: password)
+            let email = email,
+            let password = password,
+            validateEmail(),
+            validatePassword()
+        else {
+            return
+        }
+        saveUser(email: email, password: password)
         router.openLoginScreen()
     }
     
     func cancelButtonTapped() { router.dismissOnStart() }
     
+    func keyboardWillShow(height: CGFloat) {
+        view?.keyboardWillShow(height: height)
+    }
+    
+    func keyboardWillHide() {
+        view?.keyboardWillHide()
+    }
+    
 }
 
 // MARK: - Private Methods
 private extension RegisterPresenter {
-    func saveUser(username: String, password: String) {
-        let user = User(username: username, password: password)
+    func saveUser(email: String, password: String) {
+        let user = User(username: "", email: email, password: password)
         UserDefaultsService.shared.saveCustomObject(user, forKey: .username)
+    }
+    
+    private func validateEmail() -> Bool {
+        guard let email = view?.getEmail(), !email.isEmpty else {
+            view?.showAlert(title: "Please enter your email address", message: nil)
+            return false
+        }
+        return true
+    }
+    
+    private func validatePassword() -> Bool {
+        guard let password = view?.getPassword(), !password.isEmpty else {
+            view?.showAlert(title: "Please enter your password", message: nil)
+            return false
+        }
+        return true
     }
 }

@@ -11,15 +11,17 @@ import UIKit
 protocol RegisterViewProtocol: AnyObject {
     func getEmail() -> String?
     func getPassword() -> String?
+    func keyboardWillShow(height: CGFloat)
+    func keyboardWillHide()
+    func showAlert(title: String, message: String?)
 }
 
 final class RegisterViewController: UIViewController {
     private let presenter: RegisterPresenterProtocol
-    private var password: String?
     
     private lazy var backgroundView: UIImageView = {
         let logoView = UIImageView()
-        logoView.image = UIImage(named: "backgroundCreateAccount")
+        logoView.image = UIImage(resource: .backgroundCreateAccount)
         return logoView
     }()
     
@@ -41,10 +43,9 @@ final class RegisterViewController: UIViewController {
     }()
     
     private lazy var passwordTextField: CustomTextField = {
-        let textField = CustomTextField()
+        let textField = CustomTextField(type: .password)
         textField.placeholder = "Password"
         textField.font = UIFont.systemFont(ofSize: 14)
-        textField.isPasswordField = true
         return textField
     }()
     
@@ -81,16 +82,56 @@ final class RegisterViewController: UIViewController {
         setupViews()
         setConstraints()
         hideKeyboardWhenTappedAround()
+        addKeyboardObservers()
+        setDelegate()
+    }
+    
+    deinit {
+        removeKeyboardObservers()
     }
 }
 
 extension RegisterViewController: RegisterViewProtocol {
-    func getPassword() -> String? {
-        return password
+    func keyboardWillShow(height: CGFloat) {
+        if passwordTextField.isFirstResponder {
+            let distanceFromBottom = getDistanceFromBottom(textField: passwordTextField)
+            
+            if distanceFromBottom < height {
+                let offset = height - distanceFromBottom
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y = -offset - 8
+                }
+            }
+        }
+    }
+    
+    func keyboardWillHide() {
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y = 0
+        }
     }
     
     func getEmail() -> String? {
-        return emailTextField.text
+        emailTextField.text
+    }
+    
+    func getPassword() -> String? {
+        passwordTextField.text
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension RegisterViewController: UITextFieldDelegate {
+    @objc func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == emailTextField {
+            passwordTextField.becomeFirstResponder()
+            return false
+        }
+        if textField == passwordTextField {
+            textField.resignFirstResponder()
+            return true
+        }
+        return true
     }
 }
 
@@ -98,12 +139,15 @@ extension RegisterViewController: RegisterViewProtocol {
 private extension RegisterViewController {
     func setupViews() {
         view.backgroundColor = .white
-        passwordTextField.delegate = self
-        
         [backgroundView, titleLabel, emailTextField, passwordTextField, doneButton, cancelLabel].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
+    }
+    
+    func setDelegate() {
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
     }
     
     func hideKeyboardWhenTappedAround() {
@@ -116,44 +160,34 @@ private extension RegisterViewController {
         NSLayoutConstraint.activate([
             backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 122),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            titleLabel.widthAnchor.constraint(equalToConstant: 250)
-        ])
-        
-        NSLayoutConstraint.activate([
+            titleLabel.widthAnchor.constraint(equalToConstant: 250),
+            
             emailTextField.bottomAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: -8),
             emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            emailTextField.heightAnchor.constraint(equalToConstant: 52)
-        ])
-        
-        NSLayoutConstraint.activate([
+            emailTextField.heightAnchor.constraint(equalToConstant: 52),
+            
             passwordTextField.bottomAnchor.constraint(equalTo: doneButton.topAnchor, constant: -61),
             passwordTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             passwordTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 52)
-        ])
-        
-        NSLayoutConstraint.activate([
+            passwordTextField.heightAnchor.constraint(equalToConstant: 52),
+            
             doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             doneButton.bottomAnchor.constraint(equalTo: cancelLabel.topAnchor, constant: -24),
-            doneButton.heightAnchor.constraint(equalToConstant: 61)
-        ])
-        
-        NSLayoutConstraint.activate([
+            doneButton.heightAnchor.constraint(equalToConstant: 61),
+            
             cancelLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             cancelLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -67)
         ])
     }
     
     @objc func doneButtonTapped() {
-        presenter.doneButtonTapped()
+        presenter.doneButtonTapped(email: getEmail(), password: getPassword())
     }
     
     @objc func cancelButtonTapped() {
@@ -163,10 +197,40 @@ private extension RegisterViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-}
-
-extension RegisterViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        password = textField.text
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        presenter.keyboardWillShow(height: keyboardFrame.height)
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        presenter.keyboardWillHide()
+    }
+    
+    func addKeyboardObservers() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow(notification:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide(notification:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
+    }
+    
+    func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIResponder.keyboardWillShowNotification,
+                                                  object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIResponder.keyboardWillHideNotification,
+                                                  object: nil)
+    }
+    
+    func getDistanceFromBottom(textField: UITextField) -> CGFloat {
+        let textFieldBottomY = textField.frame.maxY
+        let viewBottomY = view.frame.height
+        return viewBottomY - textFieldBottomY
     }
 }

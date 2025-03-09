@@ -15,7 +15,7 @@ final class StartViewController: UIViewController {
     
     private lazy var logoView: UIImageView = {
         let logoView = UIImageView()
-        logoView.image = UIImage(named: "LogoStart")
+        logoView.image = UIImage(resource: .logoStart)
         logoView.layer.shadowColor = UIColor.black.cgColor
         logoView.layer.shadowOpacity = 0.16
         logoView.layer.shadowOffset = CGSize(width: 0, height: 3)
@@ -99,22 +99,16 @@ private extension StartViewController {
             logoView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 188),
             logoView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoView.heightAnchor.constraint(equalToConstant: 134),
-            logoView.widthAnchor.constraint(equalToConstant: 134)
-        ])
+            logoView.widthAnchor.constraint(equalToConstant: 134),
         
-        NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: logoView.bottomAnchor, constant: 24),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
         
-        NSLayoutConstraint.activate([
             startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             startButton.bottomAnchor.constraint(equalTo: alreadyStackView.topAnchor, constant: -24),
-            startButton.heightAnchor.constraint(equalToConstant: 61)
-        ])
+            startButton.heightAnchor.constraint(equalToConstant: 61),
         
-        NSLayoutConstraint.activate([
             alreadyStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             alreadyStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -67)
         ])
