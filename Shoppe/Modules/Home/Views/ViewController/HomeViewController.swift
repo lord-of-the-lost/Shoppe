@@ -92,12 +92,17 @@ extension HomeViewController: UICollectionViewDelegate {
         collectionView.deselectItem(at: indexPath, animated: false)
         
         switch dataSource.itemAt(indexPath) {
-        case  .category:
-            presenter.show
-        case .justForYou:
-            break
-        case .popular:
-            break
+        case .category(let category):
+            print("Category tapped: \(category)")
+        
+        case .justForYou(let product):
+            print("JustForYou tapped: \(product)")
+//            presenter.showDetailView(with: product)
+            
+        case .popular(let product):
+            print("Popular tapped: \(product)")
+//            presenter.showDetailView(with: product)
+            
         case .none:
             assertionFailure("passed invalid IndexPath")
         }
