@@ -25,10 +25,10 @@ final class HomeViewCompLayout {
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(
-                    top: spacing,
+                    top: 0,
                     leading: spacing,
                     bottom: spacing,
-                    trailing: spacing
+                    trailing: 0
                 )
                 
                 let groupSize = NSCollectionLayoutSize(
@@ -43,11 +43,12 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(
-                    top: spacing,
+                    top: 0,
                     leading: spacing,
                     bottom: spacing,
-                    trailing: spacing
+                    trailing: 0
                 )
+                section.boundarySupplementaryItems = [self.createHeader()]
                 return section
             case .popular:
                 let itemSize = NSCollectionLayoutSize(
@@ -69,7 +70,7 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .continuous
-                
+                section.boundarySupplementaryItems = [self.createHeader()]
                 return section
                 
             case .justForYou:
@@ -100,12 +101,12 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(
-                    top: spacing,
+                    top: 0,
                     leading: spacing,
-                    bottom: spacing,
+                    bottom: 0,
                     trailing: spacing
                 )
-                
+                section.boundarySupplementaryItems = [self.createHeader()]
                 return section
             default:
                 assertionFailure()
@@ -113,5 +114,23 @@ final class HomeViewCompLayout {
             }
         }
         return layout
+    }
+    
+    private func createHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(50)
+        )
+        
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .topLeading
+        )
+        
+        header.pinToVisibleBounds = false
+        header.contentInsets = .zero
+        
+        return header
     }
 }

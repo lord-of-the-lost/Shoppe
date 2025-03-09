@@ -9,12 +9,19 @@ import UIKit
 import SwiftUI
 
 protocol HomeViewProtocol: AnyObject {
-    func viewDidLoad()
+    
     func updateUI(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
         justForYou: [JustForYourCellViewModel]
     )
+}
+
+enum MainVCInteraction {
+    case searchFieldDidChange(String)
+    case didTapCell
+    case didTapSeeAll
+    case didTapAddToCart
 }
 
 final class HomeViewController: UIViewController {
@@ -26,12 +33,14 @@ final class HomeViewController: UIViewController {
         frame: .zero,
         collectionViewLayout: HomeViewCompLayout().createLayout()
     )
-    private let header: MainHeaderView = MainHeaderView()
+    private let header = MainHeaderView()
+    private let sectionHeader = SectionHeader()
     
     //MARK: - Init
     init(presenter: HomePresenterProtocol) {
         self.presenter = presenter
-        self.dataSource = HomeViewDataSource(collectionView)
+        self.dataSource = HomeViewDataSource(
+            collectionView: collectionView)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -52,6 +61,15 @@ final class HomeViewController: UIViewController {
 
 // MARK: - HomeViewProtocol
 extension HomeViewController: HomeViewProtocol {
+    
+    func didTap(action: MainVCInteraction) {
+        
+    }
+    
+    func showDetailView(with product: ProductModel) {
+        
+    }
+    
     func updateUI(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
@@ -75,7 +93,7 @@ extension HomeViewController: UICollectionViewDelegate {
         
         switch dataSource.itemAt(indexPath) {
         case  .category:
-            break
+            presenter.show
         case .justForYou:
             break
         case .popular:

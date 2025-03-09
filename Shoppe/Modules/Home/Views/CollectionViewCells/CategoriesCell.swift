@@ -15,12 +15,12 @@ final class CategoriesCell: UICollectionViewCell {
         static let imageCount = 4
         static let gridSize = 2
         static let imageCornerRadius: CGFloat = 5
-        static let imageSpacing: CGFloat = 4.0
-        static let stackSpacing: CGFloat = 8.0
-        static let textTopPadding: CGFloat = 8.0
-        static let countLabelCornerRadius: CGFloat = 6.0
-        static let countLabelWidth: CGFloat = 40.0
-        static let countLabelHeight: CGFloat = 24.0
+        static let imageSpacing: CGFloat = 4
+        static let stackSpacing: CGFloat = 8
+        static let textTopPadding: CGFloat = 8
+        static let countLabelCornerRadius: CGFloat = 6
+        static let countLabelWidth: CGFloat = 40
+        static let countLabelHeight: CGFloat = 24
         static let shadowOffset: CGSize = CGSize(width: 0, height: 10)
         static let shadowOpacity: Float = 0.102
         static let shadowRadius: CGFloat = 10
@@ -132,9 +132,7 @@ private extension CategoriesCell {
         textStackView.addArrangedSubview(titleLabel)
         textStackView.addArrangedSubview(countLabel)
         imageViews.forEach { imagesContainerView.addSubview($0) }
-        
         contentView.layer.cornerRadius = Drawings.cellCornerRadius
-        contentView.backgroundColor = .white
     }
     
     func setupShadow() {

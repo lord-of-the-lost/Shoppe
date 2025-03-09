@@ -1,5 +1,5 @@
 //
-//  ShopTitleView.swift
+//  HomeTitleView.swift
 //  Shoppe
 //
 //  Created by Daniil Murzin on 06.03.2025.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class ShopTitleView: UIView {
+final class HomeTitleView: UIView {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -21,18 +21,13 @@ final class ShopTitleView: UIView {
         super.init(frame: .zero)
         titleLabel.text = title
         titleLabel.font = Fonts.ralewayBold
-        setupView()
+        addSubview(titleLabel)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func setupView() {
-        addSubview(titleLabel)
-    }
-    
-    
+
     override var intrinsicContentSize: CGSize {
         return titleLabel.intrinsicContentSize
     }

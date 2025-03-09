@@ -12,7 +12,7 @@ final class MainHeaderView: UIView {
     
     // MARK: - UI Elements
     private let addressView = AddressView()
-    private let shopTitleView = ShopTitleView(title: "Shop")
+    private let shopTitleView = HomeTitleView(title: "Shop")
     private let searchBarView = SearchBarView()
     
     private let shopStackView: UIStackView = {

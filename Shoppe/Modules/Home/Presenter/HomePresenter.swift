@@ -11,15 +11,43 @@ import Foundation
 protocol HomePresenterProtocol: AnyObject {
     func setupView(_ view: HomeViewProtocol)
     func viewDidLoad()
+    func didTap(action: MainVCInteraction)
+    func showDetailView(with product: ProductModel)
 }
 
 // MARK: - Presenter
-final class HomePresenter: HomePresenterProtocol {
-    
-    private var categories: [CategoryCellViewModel] = Categories.all
-    private var popular: [PopularCellViewModel] = PopularMock.all
-    private var justForYou: [JustForYourCellViewModel] = JustForYouMock.all
+final class HomePresenter {
+    private let categories: [CategoryCellViewModel] = Categories.all
+    private let popular: [PopularCellViewModel] = PopularMock.all
+    private let justForYou: [JustForYourCellViewModel] = JustForYouMock.all
     private weak var view: HomeViewProtocol?
+}
+
+// MARK: - Private Methods
+private extension HomePresenter {
+    func handleSearch(query: String) {
+        Task {}
+    }
+}
+
+extension HomePresenter: HomePresenterProtocol {
+    func didTap(action: MainVCInteraction) {
+    
+        switch action {
+        case .searchFieldDidChange(_):
+            break
+        case .didTapCell:
+            break
+        case .didTapSeeAll:
+            break
+        case .didTapAddToCart:
+            break
+        }
+    }
+    
+    func showDetailView(with product: ProductModel) {
+        
+    }
     
     func setupView(_ view: HomeViewProtocol) {
         self.view = view
@@ -32,9 +60,5 @@ final class HomePresenter: HomePresenterProtocol {
             justForYou: justForYou
         )
     }
-}
-
-// MARK: - Private Methods
-private extension HomePresenter {
-  
+    
 }
