@@ -9,5 +9,4 @@ import Foundation
 
 extension Notification.Name {
     static let basketDidUpdate = Notification.Name("BasketDidUpdateNotification")
-    static let showEditAddressAlert = Notification.Name("ShowEditAddressAlertNotification")
 }
