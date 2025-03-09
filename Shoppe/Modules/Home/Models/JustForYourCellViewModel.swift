@@ -47,7 +47,7 @@ struct JustForYouMock {
         ),
         JustForYourCellViewModel(
             id: 4,
-            image: UIImage(named: "product") ?? UIImage(),
+            image: UIImage.plscomeagain,
             price: "$12.49",
             description: "Comfortable cotton t-shirt",
             isFavorite: false

@@ -30,11 +30,6 @@ final class ShopTitleView: UIView {
     
     private func setupView() {
         addSubview(titleLabel)
-        
-        
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor , constant: 10)
-        ])
     }
     
     
@@ -42,5 +37,3 @@ final class ShopTitleView: UIView {
         return titleLabel.intrinsicContentSize
     }
 }
-
-

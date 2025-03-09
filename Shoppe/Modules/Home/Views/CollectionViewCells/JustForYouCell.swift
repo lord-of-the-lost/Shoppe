@@ -8,26 +8,21 @@
 import UIKit
 import SwiftUI
 
-#warning("change constraints")
 final class JustForYouCell: UICollectionViewCell {
     
     //MARK: - Properties
     static let identifier = JustForYouCell.description()
     
-    private lazy var shadowView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 5
-        view.layer.masksToBounds = false
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.4
-        view.layer.shadowOffset = CGSize(width: 2, height: 2)
-        view.layer.shadowRadius = 2
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    private let priceStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillProportionally
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
     }()
     
-    private lazy var imageView: UIImageView = {
+    private let imageView: UIImageView = {
         let image = UIImageView()
         image.clipsToBounds = true
         image.layer.cornerRadius = 5
@@ -36,7 +31,7 @@ final class JustForYouCell: UICollectionViewCell {
         return image
     }()
     
-    private lazy var descriptionLabel: UILabel = {
+    private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.font = Fonts.nunitoRegular
@@ -45,25 +40,25 @@ final class JustForYouCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var priceLabel: UILabel = {
+    private let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold
+        label.font = Fonts.ralewayBold.withSize(17)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private lazy var addButton: UIButton = {
+    private let addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Add to cart", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 10)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
         button.backgroundColor = .customBlue
         button.layer.cornerRadius = 4
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private lazy var wishButton: UIButton = {
+    private let wishButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "heartFill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -93,47 +88,51 @@ extension JustForYouCell: ConfigurableViewProtocol {
 // MARK: - Private Methods
 private extension JustForYouCell {
     func setupUI() {
-        addSubview(shadowView)
+        addSubview(imageView)
         addSubview(descriptionLabel)
-        addSubview(priceLabel)
+        addSubview(priceStackView)
+        priceStackView.addArrangedSubview(priceLabel)
+        priceStackView.addArrangedSubview(wishButton)
         addSubview(addButton)
-        addSubview(wishButton)
-        shadowView.addSubview(imageView)
     }
     
     func makeConstraints() {
         NSLayoutConstraint.activate([
-            shadowView.topAnchor.constraint(equalTo: topAnchor),
-            shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-            shadowView.heightAnchor.constraint(equalToConstant: 181),
             
-            imageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor, constant: 4),
-            imageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor, constant: -4),
-            imageView.topAnchor.constraint(equalTo: shadowView.topAnchor, constant: 4),
-            imageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: -4),
+            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: topAnchor),
+            imageView.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 1),
             
-            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 30),
-            descriptionLabel.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: 10),
+            descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
             
-            priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 8),
-            priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            priceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 50),
+            priceStackView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor),
+            priceStackView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            priceStackView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
             
-            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10),
-            addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            addButton.bottomAnchor.constraint(equalTo: bottomAnchor),
-            addButton.trailingAnchor.constraint(equalTo: wishButton.leadingAnchor, constant: -20),
             
-            wishButton.heightAnchor.constraint(equalToConstant: 21),
-            wishButton.widthAnchor.constraint(equalToConstant: 22),
-            wishButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            wishButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
+            addButton.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            addButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            addButton.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.2)
         ])
     }
 }
 
+
+struct JustForYouCell_Preview: PreviewProvider {
+    static var previews: some View {
+        ZStack {
+            Color.gray.edgesIgnoringSafeArea(.all)
+            JustForYouCellViewWrapper(model: JustForYouMock.all.first!)
+                .previewLayout(.sizeThatFits)
+                .padding()
+                .frame(width: 160, height: 279)
+        }
+    }
+}
 
 struct JustForYouCellViewWrapper: UIViewRepresentable {
     let model: JustForYourCellViewModel

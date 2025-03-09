@@ -163,7 +163,6 @@ private extension CategoriesCell {
     }
 }
 
-
 // MARK: - SwiftUI Preview for UIKit View
 struct CategoriesCell_Preview: PreviewProvider {
     static var previews: some View {

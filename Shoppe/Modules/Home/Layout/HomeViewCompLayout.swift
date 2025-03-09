@@ -77,20 +77,20 @@ final class HomeViewCompLayout {
                 
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(0.5),
-                    heightDimension: .fractionalWidth(0.6)
+                    heightDimension: .fractionalHeight(0.5)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(
-                    top: spacing,
+                    top: 0,
                     leading: spacing,
-                    bottom: spacing,
+                    bottom: 0,
                     trailing: spacing
                 )
                 
                 let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .fractionalWidth(0.6)
+                    widthDimension: .fractionalWidth(1.0),
+                    heightDimension: .fractionalHeight(0.42)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -105,6 +105,7 @@ final class HomeViewCompLayout {
                     bottom: spacing,
                     trailing: spacing
                 )
+                
                 return section
             default:
                 assertionFailure()
