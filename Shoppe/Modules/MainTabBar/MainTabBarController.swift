@@ -35,7 +35,7 @@ final class MainTabBarController: UITabBarController {
             selectedIconName: "CategoriesSelected"
         ),
         TabItemModel(
-            viewController: UIViewController(),
+            viewController: CartFactory.makeModule(),
             iconName: "Bag",
             selectedIconName: "BagSelected"
         ),
