@@ -10,7 +10,19 @@ import SwiftUI
 
 final class JustForYouCell: UICollectionViewCell {
     
-    //MARK: - Properties
+    // MARK: - Drawings
+    private enum Drawings {
+        static let cornerRadius: CGFloat = 5.0
+        static let addButtonCornerRadius: CGFloat = 4.0
+        static let addButtonHeightMultiplier: CGFloat = 0.2
+        static let descriptionTopSpacing: CGFloat = 10.0
+        static let addButtonTopSpacing: CGFloat = 8.0
+        static let zeroSpacing: CGFloat = 0.0
+
+        static let addButtonText = "Add to cart"
+    }
+    
+    // MARK: - Properties
     static let identifier = JustForYouCell.description()
     
     private let priceStackView: UIStackView = {
@@ -25,7 +37,7 @@ final class JustForYouCell: UICollectionViewCell {
     private let imageView: UIImageView = {
         let image = UIImageView()
         image.clipsToBounds = true
-        image.layer.cornerRadius = 5
+        image.layer.cornerRadius = Drawings.cornerRadius
         image.contentMode = .scaleAspectFill
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
@@ -42,25 +54,25 @@ final class JustForYouCell: UICollectionViewCell {
     
     private let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold.withSize(17)
+        label.font = Fonts.ralewayBold17
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let addButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Add to cart", for: .normal)
+        button.setTitle(Drawings.addButtonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        button.titleLabel?.font = Fonts.baseFont12
         button.backgroundColor = .customBlue
-        button.layer.cornerRadius = 4
+        button.layer.cornerRadius = Drawings.addButtonCornerRadius
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private let wishButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "heartFill"), for: .normal)
+        button.setImage(UIImage.heartFill, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -98,7 +110,6 @@ private extension JustForYouCell {
     
     func makeConstraints() {
         NSLayoutConstraint.activate([
-            
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageView.topAnchor.constraint(equalTo: topAnchor),
@@ -106,44 +117,17 @@ private extension JustForYouCell {
             
             descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
+            descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: Drawings.descriptionTopSpacing),
             
             priceStackView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor),
             priceStackView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             priceStackView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
             
-            
-            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 8),
+            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: Drawings.addButtonTopSpacing),
             addButton.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             addButton.trailingAnchor.constraint(equalTo: trailingAnchor),
-            addButton.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.2)
+            addButton.heightAnchor.constraint(equalTo: widthAnchor, multiplier: Drawings.addButtonHeightMultiplier)
         ])
     }
 }
 
-
-struct JustForYouCell_Preview: PreviewProvider {
-    static var previews: some View {
-        ZStack {
-            Color.gray.edgesIgnoringSafeArea(.all)
-            JustForYouCellViewWrapper(model: JustForYouMock.all.first!)
-                .previewLayout(.sizeThatFits)
-                .padding()
-                .frame(width: 160, height: 279)
-        }
-    }
-}
-
-struct JustForYouCellViewWrapper: UIViewRepresentable {
-    let model: JustForYourCellViewModel
-    
-    func makeUIView(context: Context) -> JustForYouCell {
-        let cell = JustForYouCell()
-        cell.configure(with: model)
-        return cell
-    }
-    
-    func updateUIView(_ uiView: JustForYouCell, context: Context) {
-        uiView.configure(with: model)
-    }
-}

@@ -12,7 +12,7 @@ final class SearchBarView: UIView {
     private let searchField: UITextField = {
         let textField = PaddedTextField()
         textField.placeholder = "Search"
-        textField.font = Fonts.ralewayMedium.withSize(16)
+        textField.font = Fonts.ralewayMedium16
         textField.textColor = UIColor.customGrayLighterText
         textField.backgroundColor = UIColor.customLightGray
         textField.layer.cornerRadius = 10

@@ -91,7 +91,7 @@ private extension HomeViewDataSource {
         return dataSource
     }
     
-
+    //TODO: - вынести создание хеддеров из дата сорс
     func makeHeader() -> DataSource.SupplementaryViewProvider {
         return { collectionView, kind, indexPath in
             guard kind == UICollectionView.elementKindSectionHeader else { return nil }

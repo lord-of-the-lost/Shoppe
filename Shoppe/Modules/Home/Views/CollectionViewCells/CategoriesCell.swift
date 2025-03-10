@@ -12,18 +12,23 @@ final class CategoriesCell: UICollectionViewCell {
 
     // MARK: - Drawings
     private enum Drawings {
+        
         static let imageCount = 4
         static let gridSize = 2
         static let imageCornerRadius: CGFloat = 5
         static let imageSpacing: CGFloat = 4
+        
         static let stackSpacing: CGFloat = 8
         static let textTopPadding: CGFloat = 8
+        
         static let countLabelCornerRadius: CGFloat = 6
         static let countLabelWidth: CGFloat = 40
         static let countLabelHeight: CGFloat = 24
+        
         static let shadowOffset: CGSize = CGSize(width: 0, height: 10)
         static let shadowOpacity: Float = 0.102
         static let shadowRadius: CGFloat = 10
+        
         static let cellCornerRadius: CGFloat = 10
         static let cellPadding: CGFloat = 8
     }
@@ -58,7 +63,7 @@ final class CategoriesCell: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold.withSize(17)
+        label.font = Fonts.ralewayBold17
         label.textColor = .customBlack
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -66,7 +71,7 @@ final class CategoriesCell: UICollectionViewCell {
     
     private let countLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold.withSize(12)
+        label.font = Fonts.ralewayBold12
         label.textColor = .customBlack
         label.textAlignment = .center
         label.backgroundColor = .customBlueForHome

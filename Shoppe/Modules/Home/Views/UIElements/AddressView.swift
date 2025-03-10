@@ -2,36 +2,44 @@ import UIKit
 
 final class AddressView: UIView {
     
-    // MARK: - Constants
+    // MARK: - Drawings
     private enum Drawings {
-        static let deliveryFontSize: CGFloat = 10
-        static let addressFontSize: CGFloat = 12
-        static let badgeFontSize: CGFloat = 7
-        static let badgeSize: CGFloat = 11
-        static let addressTopSpacing: CGFloat = -8
-        static let addressLeadingSpacing: CGFloat = -12
+        static let badgeSize: CGFloat = 11.0
+
+        static let addressTopSpacing: CGFloat = -8.0
+        static let addressLeadingSpacing: CGFloat = -12.0
+        static let imagePadding: CGFloat = 4.0
+
+        static let deliveryText = "Delivery address"
+        static let addressText = "Salatiga City, Central Java"
+        static let badgeText = "2"
+
+        // Цвета
+        static let deliveryTextColor: UIColor = .gray
+        static let addressTextColor: UIColor = .black
+        static let badgeTextColor: UIColor = .white
+        static let badgeBackgroundColor: UIColor = UIColor.customRed
     }
 
     // MARK: - UI Elements
     private let deliveryLabel: UILabel = {
         let label = UILabel()
-        label.text = "Delivery address"
-        label.font = UIFont.systemFont(ofSize: Drawings.deliveryFontSize, weight: .regular)
-        label.textColor = .gray
+        label.text = Drawings.deliveryText
+        label.font = Fonts.baseFont10
+        label.textColor = Drawings.deliveryTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let addressButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .black
+        config.baseForegroundColor = Drawings.addressTextColor
         config.image = UIImage.chevron
         config.imagePlacement = .trailing
-        config.imagePadding = 4
+        config.imagePadding = Drawings.imagePadding
         config.attributedTitle = AttributedString(
-            "Salatiga City, Central Java",
-            attributes: AttributeContainer([.font: UIFont.systemFont(
-                ofSize: Drawings.addressFontSize, weight: .medium)])
+            Drawings.addressText,
+            attributes: AttributeContainer([.font: Fonts.baseFontMedium12])
         )
         let button = UIButton(configuration: config)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -42,18 +50,18 @@ final class AddressView: UIView {
         let button = UIButton(type: .system)
         let image = UIImage(systemName: "cart")
         button.setImage(image, for: .normal)
-        button.tintColor = .black
+        button.tintColor = Drawings.addressTextColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private let badgeLabel: UILabel = {
         let label = UILabel()
-        label.text = "2"
-        label.font = UIFont.systemFont(ofSize: Drawings.badgeFontSize, weight: .bold)
-        label.textColor = .white
+        label.text = Drawings.badgeText
+        label.font = Fonts.baseFont7
+        label.textColor = Drawings.badgeTextColor
         label.textAlignment = .center
-        label.backgroundColor = UIColor.customRed
+        label.backgroundColor = Drawings.badgeBackgroundColor
         label.layer.cornerRadius = Drawings.badgeSize / 2
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -104,3 +112,4 @@ private extension AddressView {
         ])
     }
 }
+

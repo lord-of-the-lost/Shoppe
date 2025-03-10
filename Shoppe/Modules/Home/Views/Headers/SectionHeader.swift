@@ -10,9 +10,13 @@ import UIKit
 
 final class SectionHeader: UICollectionReusableView {
     
-    // MARK: - Constants
+    // MARK: - Drawings
     private enum Drawings {
-        static let horizontalSpacing: CGFloat = 10
+        static let horizontalSpacing: CGFloat = 10.0
+        static let seeAllButtonImagePadding: CGFloat = 4.0
+        static let titleTextColor: UIColor = .black
+        static let seeAllButtonColor: UIColor = .black
+        static let seeAllText = "See All"
     }
     
     static let identifier = SectionHeader.description()
@@ -20,8 +24,8 @@ final class SectionHeader: UICollectionReusableView {
     // MARK: - UI Elements
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold.withSize(21)
-        label.textColor = .black
+        label.font = Fonts.ralewayBold21
+        label.textColor = Drawings.titleTextColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -30,11 +34,11 @@ final class SectionHeader: UICollectionReusableView {
         var config = UIButton.Configuration.plain()
         config.image = UIImage.seeAllButton
         config.imagePlacement = .trailing
-        config.baseForegroundColor = .black
-        config.imagePadding = 4
+        config.baseForegroundColor = Drawings.seeAllButtonColor
+        config.imagePadding = Drawings.seeAllButtonImagePadding
         config.attributedTitle = AttributedString(
-            "See All",
-            attributes: AttributeContainer([.font: Fonts.ralewayBold.withSize(15)])
+            Drawings.seeAllText,
+            attributes: AttributeContainer([.font: Fonts.ralewayBold15])
         )
         let button = UIButton(configuration: config)
         button.translatesAutoresizingMaskIntoConstraints = false

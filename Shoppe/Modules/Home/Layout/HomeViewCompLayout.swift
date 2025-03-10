@@ -9,6 +9,36 @@ import UIKit
 
 final class HomeViewCompLayout {
     
+    private enum Drawings {
+        // Header
+        static let headerHeight: CGFloat = 50
+        static let headerFractionalWidth: CGFloat = 1
+        static let zeroSpacing: CGFloat = 0.0
+
+        // Categories Section
+        static let categoriesSpacing: CGFloat = 5.0
+        static let categoriesItemWidth: CGFloat = 0.5
+        static let categoriesItemHeight: CGFloat = 0.6
+        static let categoriesGroupHeight: CGFloat = 0.6
+        static let categoriesGroupWidth: CGFloat = 1
+
+        // Popular Section
+        static let popularItemWidth: CGFloat = 150
+        static let popularItemHeight: CGFloat = 220
+        static let popularGroupHeight: CGFloat = 250
+        static let popularGroupWidth: CGFloat = 1
+        // JustForYou Section
+        static let justForYouSpacing: CGFloat = 8.0
+        static let justForYouItemWidth: CGFloat = 0.5
+        static let justForYouItemHeight: CGFloat = 0.5
+        static let justForYouGroupHeight: CGFloat = 0.42
+        static let justForYouGroupWidth: CGFloat = 1
+
+        // Strings
+        static let headerElementKind = UICollectionView.elementKindSectionHeader
+    }
+
+    
     func createLayout() -> UICollectionViewLayout {
         
         let layout = UICollectionViewCompositionalLayout {
@@ -16,24 +46,24 @@ final class HomeViewCompLayout {
             
             switch Section(rawValue: sectionIndex) {
             case .categories:
-                let spacing: CGFloat = 5
+                let spacing = Drawings.categoriesSpacing
                 
                 let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.5),
-                    heightDimension: .fractionalWidth(0.6)
+                    widthDimension: .fractionalWidth(Drawings.categoriesItemWidth),
+                    heightDimension: .fractionalWidth(Drawings.categoriesItemHeight)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(
-                    top: 0,
+                    top: Drawings.zeroSpacing,
                     leading: spacing,
                     bottom: spacing,
-                    trailing: 0
+                    trailing: Drawings.zeroSpacing
                 )
                 
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .fractionalWidth(0.6)
+                    heightDimension: .fractionalWidth(Drawings.categoriesGroupHeight)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -43,24 +73,25 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(
-                    top: 0,
+                    top: Drawings.zeroSpacing,
                     leading: spacing,
                     bottom: spacing,
-                    trailing: 0
+                    trailing: Drawings.zeroSpacing
                 )
                 section.boundarySupplementaryItems = [self.createHeader()]
                 return section
+
             case .popular:
                 let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .absolute(150),
-                    heightDimension: .estimated(220)
+                    widthDimension: .absolute(Drawings.popularItemWidth),
+                    heightDimension: .estimated(Drawings.popularItemHeight)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 
                 let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .estimated(150),
-                    heightDimension: .absolute(250)
+                    widthDimension: .estimated(Drawings.popularItemWidth),
+                    heightDimension: .absolute(Drawings.popularGroupHeight)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -74,24 +105,24 @@ final class HomeViewCompLayout {
                 return section
                 
             case .justForYou:
-                let spacing: CGFloat = 8.0
+                let spacing = Drawings.justForYouSpacing
                 
                 let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.5),
-                    heightDimension: .fractionalHeight(0.5)
+                    widthDimension: .fractionalWidth(Drawings.justForYouItemWidth),
+                    heightDimension: .fractionalHeight(Drawings.justForYouItemHeight)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
                 item.contentInsets = NSDirectionalEdgeInsets(
-                    top: 0,
+                    top: Drawings.zeroSpacing,
                     leading: spacing,
-                    bottom: 0,
+                    bottom: Drawings.zeroSpacing,
                     trailing: spacing
                 )
                 
                 let groupSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .fractionalHeight(0.42)
+                    widthDimension: .fractionalWidth(Drawings.justForYouGroupWidth),
+                    heightDimension: .fractionalHeight(Drawings.justForYouGroupHeight)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -101,13 +132,14 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.contentInsets = NSDirectionalEdgeInsets(
-                    top: 0,
+                    top: Drawings.zeroSpacing,
                     leading: spacing,
-                    bottom: 0,
+                    bottom: Drawings.zeroSpacing,
                     trailing: spacing
                 )
                 section.boundarySupplementaryItems = [self.createHeader()]
                 return section
+
             default:
                 assertionFailure()
                 return nil
@@ -118,13 +150,13 @@ final class HomeViewCompLayout {
     
     private func createHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
         let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(50)
+            widthDimension: .fractionalWidth(Drawings.headerFractionalWidth),
+            heightDimension: .absolute(Drawings.headerHeight)
         )
         
         let header = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
+            elementKind: Drawings.headerElementKind,
             alignment: .topLeading
         )
         
@@ -134,3 +166,4 @@ final class HomeViewCompLayout {
         return header
     }
 }
+

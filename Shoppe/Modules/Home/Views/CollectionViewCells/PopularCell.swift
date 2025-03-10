@@ -15,13 +15,13 @@ final class PopularCell: UICollectionViewCell {
     // MARK: - Drawings
     private enum Drawings {
         static let cornerRadius: CGFloat = 10.0
+        
         static let shadowOffset: CGSize = CGSize(width: 0, height: 10)
         static let shadowOpacity: Float = 0.1
         static let shadowRadius: CGFloat = 4
         static let cellPadding: CGFloat = 8
+        
         static let spacing: CGFloat = 8.0
-        static let priceFontSize: CGFloat = 18.0
-        static let descriptionFontSize: CGFloat = 14.0
     }
     
     private let shadowView: UIView = {
@@ -57,7 +57,7 @@ final class PopularCell: UICollectionViewCell {
     
     private let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.ralewayBold.withSize(Drawings.priceFontSize)
+        label.font = Fonts.ralewayBold18
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

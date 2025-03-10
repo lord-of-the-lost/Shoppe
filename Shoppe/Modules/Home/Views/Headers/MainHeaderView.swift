@@ -10,23 +10,31 @@ import SwiftUI
 
 final class MainHeaderView: UIView {
     
+    // MARK: - Drawings
+    private enum Drawings {
+        static let shopTitle = "Shop"
+        static let shopStackSpacing: CGFloat = 20.0
+        static let mainStackSpacing: CGFloat = 12.0
+        static let sidePadding: CGFloat = 10.0
+    }
+    
     // MARK: - UI Elements
     private let addressView = AddressView()
-    private let shopTitleView = HomeTitleView(title: "Shop")
+    private let shopTitleView = HomeTitleView(title: Drawings.shopTitle)
     private let searchBarView = SearchBarView()
     
     private let shopStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 20
+        stackView.spacing = Drawings.shopStackSpacing
         return stackView
     }()
     
     private let mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 12
+        stackView.spacing = Drawings.mainStackSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
@@ -56,8 +64,8 @@ private extension MainHeaderView {
         addSubview(mainStackView)
         
         NSLayoutConstraint.activate([
-            mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor,constant: -10),
+            mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Drawings.sidePadding),
+            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Drawings.sidePadding),
         ])
     }
 }
