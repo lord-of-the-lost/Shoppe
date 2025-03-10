@@ -54,5 +54,3 @@ private extension ExampleViewController {
         ])
     }
 }
-
-
