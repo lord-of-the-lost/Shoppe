@@ -40,7 +40,7 @@ final class HomeViewController: UIViewController {
     init(presenter: HomePresenterProtocol) {
         self.presenter = presenter
         self.dataSource = HomeViewDataSource(
-            collectionView: collectionView)
+            collectionView)
         super.init(nibName: nil, bundle: nil)
     }
     

@@ -14,7 +14,6 @@ final class AddressView: UIView {
         static let addressText = "Salatiga City, Central Java"
         static let badgeText = "2"
 
-        // Цвета
         static let deliveryTextColor: UIColor = .gray
         static let addressTextColor: UIColor = .black
         static let badgeTextColor: UIColor = .white
@@ -58,7 +57,7 @@ final class AddressView: UIView {
     private let badgeLabel: UILabel = {
         let label = UILabel()
         label.text = Drawings.badgeText
-        label.font = Fonts.baseFont7
+        label.font = Fonts.baseFont7Bold
         label.textColor = Drawings.badgeTextColor
         label.textAlignment = .center
         label.backgroundColor = Drawings.badgeBackgroundColor
@@ -112,4 +111,3 @@ private extension AddressView {
         ])
     }
 }
-

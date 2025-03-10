@@ -10,37 +10,32 @@ import UIKit
 
 final class HomeViewDataSource {
     
-    // MARK: - Properties
-    private let collectionView: UICollectionView
-    private lazy var dataSource: DataSource = makeDataSource()
-    
+    // MARK: - Item Enum
     enum Item: Hashable {
         case category(CategoryCellViewModel)
         case popular(PopularCellViewModel)
         case justForYou(JustForYourCellViewModel)
     }
     
+    // MARK: - Properties
+    private let collectionView: UICollectionView
+    private lazy var dataSource: DataSource = makeDataSource()
+    
     // MARK: - Init
-    init(collectionView: UICollectionView) {
+    init(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
+        self.collectionView.dataSource = dataSource
         registerElements()
-        self.dataSource = makeDataSource()
-        collectionView.dataSource = dataSource
     }
     
+    // MARK: - Update Snapshot
     func updateSnapshot(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
         justForYou: [JustForYourCellViewModel]
     ) {
-
         dataSource.supplementaryViewProvider = makeHeader()
-        var snapshot = Snapshot()
-        snapshot.appendSections([.categories, .popular, .justForYou])
-        snapshot.appendItems(categories.map(Item.category), toSection: .categories)
-        snapshot.appendItems(popular.map(Item.popular), toSection: .popular)
-        snapshot.appendItems(justForYou.map(Item.justForYou), toSection: .justForYou)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.apply(Snapshot(categories: categories, popular: popular, justForYou: justForYou), animatingDifferences: true)
     }
     
     func itemAt(_ indexPath: IndexPath) -> Item? {
@@ -48,50 +43,46 @@ final class HomeViewDataSource {
     }
 }
 
-// MARK: - Private part
+// MARK: - Private Extension
 private extension HomeViewDataSource {
     
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
     
     enum Section: Int, Hashable, CaseIterable {
-        case categories = 0, popular, justForYou
+        case categories, popular, justForYou
     }
     
     func makeDataSource() -> DataSource {
-        let dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, item in
+        return DataSource(collectionView: collectionView) { collectionView, indexPath, item in
             switch item {
             case .category(let category):
-                let cell = collectionView.dequeueReusableCell(
+                guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: CategoriesCell.identifier,
                     for: indexPath
-                ) as! CategoriesCell
+                ) as? CategoriesCell else { return nil }
                 cell.configure(with: category)
                 return cell
                 
             case .popular(let popular):
-                let cell = collectionView.dequeueReusableCell(
+                guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: PopularCell.identifier,
                     for: indexPath
-                ) as! PopularCell
+                ) as? PopularCell else { return nil }
                 cell.configure(with: popular)
                 return cell
                 
             case .justForYou(let justForYou):
-                let cell = collectionView.dequeueReusableCell(
+                guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: JustForYouCell.identifier,
                     for: indexPath
-                ) as! JustForYouCell
+                ) as? JustForYouCell else { return nil }
                 cell.configure(with: justForYou)
                 return cell
             }
         }
-//        dataSource.supplementaryViewProvider = makeHeader()
-        
-        return dataSource
     }
     
-    //TODO: - вынести создание хеддеров из дата сорс
     func makeHeader() -> DataSource.SupplementaryViewProvider {
         return { collectionView, kind, indexPath in
             guard kind == UICollectionView.elementKindSectionHeader else { return nil }
@@ -101,72 +92,53 @@ private extension HomeViewDataSource {
                 withReuseIdentifier: SectionHeader.identifier,
                 for: indexPath
             ) as? SectionHeader else {
-                return nil
+                return UICollectionReusableView()
             }
             
+            guard let section = Section(rawValue: indexPath.section) else { return nil }
+
             let headerModel: HeaderViewModel
-            switch Section(rawValue: indexPath.section) {
+            switch section {
             case .categories:
                 headerModel = HeaderViewModel(
                     title: "Categories",
                     action: { print("See All tapped") },
                     isHidden: false
                 )
-                
             case .popular:
                 headerModel = HeaderViewModel(
                     title: "Popular",
                     action: { print("See All tapped") },
                     isHidden: false
                 )
-                
             case .justForYou:
                 headerModel = HeaderViewModel(
                     title: "Just For You",
                     action: { print("See All tapped") },
                     isHidden: false
                 )
-                
-            default:
-                return nil
             }
             
             header.configure(headerModel)
             return header
         }
     }
-    
+
     func registerElements() {
-        collectionView.register(
-            CategoriesCell.self,
-            forCellWithReuseIdentifier: CategoriesCell.identifier
-        )
-        collectionView.register(
-            PopularCell.self,
-            forCellWithReuseIdentifier: PopularCell.identifier
-        )
-        collectionView.register(
-            JustForYouCell.self,
-            forCellWithReuseIdentifier: JustForYouCell.identifier
-        )
-        collectionView.register(
-            SectionHeader.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SectionHeader.identifier
-        )
+        collectionView.register(CategoriesCell.self, forCellWithReuseIdentifier: CategoriesCell.identifier)
+        collectionView.register(PopularCell.self, forCellWithReuseIdentifier: PopularCell.identifier)
+        collectionView.register(JustForYouCell.self, forCellWithReuseIdentifier: JustForYouCell.identifier)
+        collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.identifier)
     }
 }
 
+// MARK: - Snapshot Custom Init
 private extension HomeViewDataSource.Snapshot {
-    init(
-        categories: [CategoryCellViewModel],
-        popular: [PopularCellViewModel],
-        justForYou: [JustForYourCellViewModel]) {
-            self.init()
-            
-            appendSections(HomeViewDataSource.Section.allCases)
-            appendItems(categories.map { HomeViewDataSource.Item.category($0) }, toSection: .categories)
-            appendItems(popular.map { HomeViewDataSource.Item.popular($0) }, toSection: .popular)
-            appendItems(justForYou.map { HomeViewDataSource.Item.justForYou($0) }, toSection: .justForYou)
-        }
+    init(categories: [CategoryCellViewModel], popular: [PopularCellViewModel], justForYou: [JustForYourCellViewModel]) {
+        self.init()
+        appendSections(HomeViewDataSource.Section.allCases)
+        appendItems(categories.map { HomeViewDataSource.Item.category($0) }, toSection: .categories)
+        appendItems(popular.map { HomeViewDataSource.Item.popular($0) }, toSection: .popular)
+        appendItems(justForYou.map { HomeViewDataSource.Item.justForYou($0) }, toSection: .justForYou)
+    }
 }
