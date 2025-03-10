@@ -24,7 +24,7 @@ final class PopularCell: UICollectionViewCell {
         static let spacing: CGFloat = 8.0
     }
     
-    private let shadowView: UIView = {
+    private lazy var shadowView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
@@ -37,7 +37,7 @@ final class PopularCell: UICollectionViewCell {
         return view
     }()
     
-    private let productImageView: UIImageView = {
+    private lazy var productImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = Drawings.cornerRadius
@@ -46,7 +46,7 @@ final class PopularCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let descriptionLabel: UILabel = {
+    private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.nunitoRegular
         label.textColor = .black
@@ -55,7 +55,7 @@ final class PopularCell: UICollectionViewCell {
         return label
     }()
     
-    private let priceLabel: UILabel = {
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold18
         label.textColor = .black

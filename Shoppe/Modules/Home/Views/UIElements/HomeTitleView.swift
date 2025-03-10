@@ -9,8 +9,7 @@
 import UIKit
 
 final class HomeTitleView: UIView {
-    
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,6 +28,6 @@ final class HomeTitleView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        return titleLabel.intrinsicContentSize
+        titleLabel.intrinsicContentSize
     }
 }

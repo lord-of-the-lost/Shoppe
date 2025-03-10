@@ -21,7 +21,7 @@ final class AddressView: UIView {
     }
 
     // MARK: - UI Elements
-    private let deliveryLabel: UILabel = {
+    private lazy var deliveryLabel: UILabel = {
         let label = UILabel()
         label.text = Drawings.deliveryText
         label.font = Fonts.baseFont10
@@ -30,7 +30,7 @@ final class AddressView: UIView {
         return label
     }()
     
-    private let addressButton: UIButton = {
+    private lazy var addressButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.baseForegroundColor = Drawings.addressTextColor
         config.image = UIImage.chevron
@@ -45,7 +45,7 @@ final class AddressView: UIView {
         return button
     }()
     
-    private let cartButton: UIButton = {
+    private lazy var cartButton: UIButton = {
         let button = UIButton(type: .system)
         let image = UIImage(systemName: "cart")
         button.setImage(image, for: .normal)
@@ -54,7 +54,7 @@ final class AddressView: UIView {
         return button
     }()
     
-    private let badgeLabel: UILabel = {
+    private lazy var badgeLabel: UILabel = {
         let label = UILabel()
         label.text = Drawings.badgeText
         label.font = Fonts.baseFont7Bold
@@ -80,7 +80,6 @@ final class AddressView: UIView {
 
 // MARK: - Private Methods
 private extension AddressView {
-    
     func setupView() {
         addSubview(deliveryLabel)
         addSubview(addressButton)

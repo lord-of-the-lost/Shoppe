@@ -52,7 +52,6 @@ final class MainHeaderView: UIView {
 
 // MARK: - Private Methods
 private extension MainHeaderView {
-    
     func setupView() {
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)

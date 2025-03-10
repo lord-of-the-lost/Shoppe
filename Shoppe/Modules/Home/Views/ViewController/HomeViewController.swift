@@ -9,7 +9,6 @@ import UIKit
 import SwiftUI
 
 protocol HomeViewProtocol: AnyObject {
-    
     func updateUI(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
@@ -31,7 +30,7 @@ final class HomeViewController: UIViewController {
     private let dataSource: HomeViewDataSource
     private let collectionView: UICollectionView = UICollectionView(
         frame: .zero,
-        collectionViewLayout: HomeViewCompLayout().createLayout()
+        collectionViewLayout: HomeViewCompLayout.createLayout()
     )
     private let header = MainHeaderView()
     private let sectionHeader = SectionHeader()
@@ -61,7 +60,6 @@ final class HomeViewController: UIViewController {
 
 // MARK: - HomeViewProtocol
 extension HomeViewController: HomeViewProtocol {
-    
     func didTap(action: MainVCInteraction) {
         
     }

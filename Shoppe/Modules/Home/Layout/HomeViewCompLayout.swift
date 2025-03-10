@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeViewCompLayout {
+enum HomeViewCompLayout {
     
     private enum Drawings {
         // Header
@@ -39,8 +39,7 @@ final class HomeViewCompLayout {
     }
 
     
-    func createLayout() -> UICollectionViewLayout {
-        
+    static func createLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout {
             (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             
@@ -78,7 +77,7 @@ final class HomeViewCompLayout {
                     bottom: spacing,
                     trailing: Drawings.zeroSpacing
                 )
-                section.boundarySupplementaryItems = [self.createHeader()]
+                section.boundarySupplementaryItems = [createHeader()]
                 return section
 
             case .popular:
@@ -101,7 +100,7 @@ final class HomeViewCompLayout {
                 
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .continuous
-                section.boundarySupplementaryItems = [self.createHeader()]
+                section.boundarySupplementaryItems = [createHeader()]
                 return section
                 
             case .justForYou:
@@ -137,7 +136,7 @@ final class HomeViewCompLayout {
                     bottom: Drawings.zeroSpacing,
                     trailing: spacing
                 )
-                section.boundarySupplementaryItems = [self.createHeader()]
+                section.boundarySupplementaryItems = [createHeader()]
                 return section
 
             default:
@@ -148,7 +147,7 @@ final class HomeViewCompLayout {
         return layout
     }
     
-    private func createHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
+    private static func createHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(Drawings.headerFractionalWidth),
             heightDimension: .absolute(Drawings.headerHeight)
