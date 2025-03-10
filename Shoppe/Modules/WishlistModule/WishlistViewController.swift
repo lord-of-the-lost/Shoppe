@@ -7,17 +7,14 @@
 
 import UIKit
 
-
-protocol WishlistView: AnyObject {
-    func updateProducts(_ products: [ProductCellViewModel])
+protocol WishlistViewProtocol: AnyObject {
+    func reloadData()
 }
 
-final class WishlistViewController: UIViewController, WishlistView {
+final class WishlistViewController: UIViewController {
     //MARK: - Properties
-    var presenter: WishlistPresenter?
-    
-    lazy var configs: [ProductCellViewModel] = []
-    
+    private let presenter: WishlistPresenterProtocol
+        
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Wishlist"
@@ -66,18 +63,69 @@ final class WishlistViewController: UIViewController, WishlistView {
         navigationItem.titleView = titleLabel
         setupView()
         setupConstraints()
-        presenter?.loadProducts()
     }
     
-    // MARK: - WishlistView
+    init(presenter: WishlistPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
     
-    func updateProducts(_ products: [ProductCellViewModel]) {
-        configs = products
-        print("Updating with \(configs.count) products")
+    @available(*, unavailable, message: "unavailable")
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: WishlistViewProtocol
+extension WishlistViewController: WishlistViewProtocol {
+    func reloadData() {
         collectionView.reloadData()
     }
 }
-//MARK: - Extensions Constraints
+
+// MARK: UICollectionViewDataSource
+extension WishlistViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        presenter.getProductsCount()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as? ProductCell,
+            let model = presenter.getProduct(at: indexPath.item)
+        else {
+            assertionFailure()
+            return UICollectionViewCell()
+        }
+        let cellModel = ProductCellViewModel(image: model.image, description: model.description, price: model.price)
+        cell.configure(with: cellModel)
+        cell.delegate = self
+        return cell
+    }
+}
+
+// MARK: UICollectionViewDelegate
+extension WishlistViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter.didTapProduct(at: indexPath.row)
+    }
+}
+
+// MARK: ProductCellDelegate
+// TODO: Сейчас не работает, переделать через замыкания
+extension WishlistViewController: ProductCellDelegate {
+    func addToCartTapped(_ cell: ProductCell) {
+        guard let index = collectionView.indexPath(for: cell)?.item else { return }
+        presenter.addToCartProduct(at: index)
+    }
+    
+    func likeTapped(_ cell: ProductCell) {
+        guard let index = collectionView.indexPath(for: cell)?.item else { return }
+        presenter.toggleProductLike(at: index)
+    }
+}
+
+//MARK: - Private Methods
 private extension WishlistViewController {
     func setupView() {
         view.backgroundColor = .white
@@ -88,7 +136,6 @@ private extension WishlistViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            
             searchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             searchButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
             searchButton.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -20),
@@ -100,26 +147,8 @@ private extension WishlistViewController {
             textField.heightAnchor.constraint(equalToConstant: 36),
             
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 10),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 10)
         ])
     }
 }
-extension WishlistViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    
-    // MARK: UICollectionViewDataSource
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return configs.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as! ProductCell
-        let config = configs[indexPath.item]
-        cell.configure(with: ProductCellViewModel(image: config.image, description: config.description, price: config.price))
-        
-        return cell
-    }
-}
-
-// MARK: UICollectionViewDelegate

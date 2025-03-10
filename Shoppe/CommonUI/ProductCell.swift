@@ -11,16 +11,22 @@ struct ProductCellViewModel {
     let image: UIImage?
     let description: String
     let price: String
+    var isOnCart: Bool = false
+    var isOnWishlist: Bool = false
 }
 
 protocol ProductCellDelegate: AnyObject {
-    func addButtonTapped()
+    func addToCartTapped(_ cell: ProductCell)
+    func likeTapped(_ cell: ProductCell)
 }
 
 final class ProductCell: UICollectionViewCell {
     //MARK: - Properties
     static let identifier = ProductCell.description()
     weak var delegate: ProductCellDelegate?
+    
+    private var isOnCart: Bool = false
+    private var isOnWishlist: Bool = false
     
     private lazy var shadowView: UIView = {
         let view = UIView()
@@ -76,8 +82,13 @@ final class ProductCell: UICollectionViewCell {
     }()
     
     private lazy var wishButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "heart")
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 24, weight: .regular, scale: .default)
         let button = UIButton()
-        button.setImage(UIImage(named: "heartFill"), for: .normal)
+        button.tintColor = .customRed
+        button.configuration = config
+        button.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -99,6 +110,10 @@ extension ProductCell: ConfigurableViewProtocol {
         imageView.image = model.image
         descriptionLabel.text = model.description
         priceLabel.text = model.price
+        self.isOnCart = model.isOnCart
+        self.isOnWishlist = model.isOnWishlist
+        configureAddButton()
+        configureLikeButton()
     }
 }
 
@@ -111,6 +126,16 @@ private extension ProductCell {
         addSubview(addButton)
         addSubview(wishButton)
         shadowView.addSubview(imageView)
+    }
+    
+    func configureLikeButton() {
+        let image = isOnWishlist ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        wishButton.setImage(image, for: .normal)
+    }
+    
+    func configureAddButton() {
+        let text = isOnCart ? "Remove from cart" : "Add to cart"
+        addButton.setTitle(text, for: .normal)
     }
     
     func makeConstraints() {
@@ -139,14 +164,22 @@ private extension ProductCell {
             addButton.trailingAnchor.constraint(equalTo: wishButton.leadingAnchor, constant: -20),
             addButton.heightAnchor.constraint(equalToConstant: 31),
             
-            wishButton.heightAnchor.constraint(equalToConstant: 21),
-            wishButton.widthAnchor.constraint(equalToConstant: 22),
-            wishButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            wishButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+            wishButton.heightAnchor.constraint(equalToConstant: 40),
+            wishButton.widthAnchor.constraint(equalToConstant: 40),
+            wishButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            wishButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor)
         ])
     }
     
     @objc func addButtonTapped() {
-        delegate?.addButtonTapped()
+        isOnCart.toggle()
+        configureAddButton()
+        delegate?.addToCartTapped(self)
+    }
+    
+    @objc func likeTapped() {
+        isOnWishlist.toggle()
+        configureLikeButton()
+        delegate?.likeTapped(self)
     }
 }
