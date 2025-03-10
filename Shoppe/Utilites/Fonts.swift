@@ -8,14 +8,17 @@
 import UIKit
 
 enum Fonts {
+    static let nunitoLight15: UIFont = UIFont(name: "NunitoSans-Light", size: 15) ?? UIFont.systemFont(ofSize: 15)
     static let baseFont: UIFont = UIFont.systemFont(ofSize: 16)
     static let baseFont10: UIFont = UIFont.systemFont(ofSize: 10)
     static let baseFont12: UIFont = UIFont.systemFont(ofSize: 12)
     static let baseFontMedium12: UIFont = UIFont.systemFont(ofSize: 12, weight: .medium)
     static let baseFont7Bold: UIFont = UIFont.systemFont(ofSize: 7, weight: .bold)
     static let nunitoLight: UIFont = UIFont(name: "NunitoSans-Light", size: 19) ?? UIFont.systemFont(ofSize: 19)
+    static let nunitoLight22: UIFont = UIFont(name: "NunitoSans-Light", size: 22) ?? UIFont.systemFont(ofSize: 22)
     static let nunitoRegular: UIFont = UIFont(name: "NunitoSans-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
     static let nunitoSemiBold: UIFont = UIFont(name: "NunitoSans-SemiBold", size: 13) ?? UIFont.systemFont(ofSize: 13)
+    static let ralewayBold50: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 50) ?? UIFont.systemFont(ofSize: 50)
     static let ralewayBold: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 28) ?? UIFont.systemFont(ofSize: 28)
     static let ralewayBold12: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 12) ?? UIFont.systemFont(ofSize: 12)
     static let ralewayBold15: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 15) ?? UIFont.systemFont(ofSize: 15)
