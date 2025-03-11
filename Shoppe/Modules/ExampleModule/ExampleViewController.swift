@@ -43,7 +43,7 @@ extension ExampleViewController: ExampleViewProtocol {}
 // MARK: - Private Methods
 private extension ExampleViewController {
     func setupView() {
-        view.backgroundColor = Palette.accentColor
+        view.backgroundColor = .customWhite
         view.addSubview(screenTitle)
     }
     

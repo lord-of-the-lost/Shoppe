@@ -1,5 +1,5 @@
 //
-//  UIViewController+Extension.swift
+//  UIView+Extension.swift
 //  Shoppe
 //
 //  Created by Николай Игнатов on 10.03.2025.
@@ -8,8 +8,8 @@
 
 import UIKit
 
-extension UIViewController {
+extension UIView {
     func addSubviews(_ views: UIView...) {
-        views.forEach { view.addSubview($0) }
+        views.forEach { addSubview($0) }
     }
 }
