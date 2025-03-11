@@ -19,7 +19,7 @@ final class MainHeaderView: UIView {
     }
     
     // MARK: - UI Elements
-    private let addressView = AddressView()
+    private let addressView = HeaderAddressView()
     private let shopTitleView = HomeTitleView(title: Drawings.shopTitle)
     private let searchBarView = SearchBarView()
     
