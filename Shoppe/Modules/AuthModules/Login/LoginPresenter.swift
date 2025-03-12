@@ -77,10 +77,12 @@ private extension LoginPresenter {
         return savedUser.email == email && savedUser.password == password
     }
     
-    private func handlePasswordEntry() {
+    func handlePasswordEntry() {
         guard let password = view?.getPassword() else { return }
         if checkIfUserExists(email: emailUser, password: password) {
+            userIsLogin()
             router.openMainScreen()
+            
         } else {
             if validatePassword() {
                 view?.hideKeyboard()
@@ -89,7 +91,7 @@ private extension LoginPresenter {
         }
     }
     
-    private func handleEmailEntry() {
+    func handleEmailEntry() {
         guard let email = view?.getEmail() else { return }
         
         emailUser = email
@@ -99,7 +101,7 @@ private extension LoginPresenter {
         view?.switchToPasswordField(is: true)
     }
     
-    private func validateEmail() -> Bool {
+    func validateEmail() -> Bool {
         guard let email = view?.getEmail(), !email.isEmpty else {
             view?.hideKeyboard()
             view?.showAlert(title: "Please enter your email address", message: nil)
@@ -108,12 +110,16 @@ private extension LoginPresenter {
         return true
     }
     
-    private func validatePassword() -> Bool {
+    func validatePassword() -> Bool {
         guard let password = view?.getPassword(), !password.isEmpty else {
             view?.hideKeyboard()
             view?.showAlert(title: "Please enter your password", message: nil)
             return false
         }
         return true
+    }
+    
+    func userIsLogin() {
+        UserDefaultsService.shared.set(value: true, forKey: .isUserLoggedIn)
     }
 }
