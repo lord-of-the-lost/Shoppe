@@ -7,17 +7,46 @@
 
 
 import UIKit
-import SwiftUI
 
-final class ShippingOptionsTableView: UITableView {
+final class ShippingOptionsTableView: UIView {
     
     // MARK: - Properties
     private var selectedIndex: Int = 0
     
+    // MARK: - UI Elements
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Shipping Options"
+        label.font = Fonts.ralewayBold21
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.register(ShippingOptionCell.self, forCellReuseIdentifier: "ShippingOptionCell")
+        table.separatorStyle = .none
+        table.delegate = self
+        table.dataSource = self
+        table.isScrollEnabled = false
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.rowHeight = 60
+        return table
+    }()
+    
+    private lazy var deliveryDateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Delivered on or before Thursday, 23 April 2020"
+        label.font = Fonts.nunitoRegular
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     // MARK: - Init
-    override init(frame: CGRect, style: UITableView.Style) {
-        super.init(frame: frame, style: style)
-        setupTableView()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
     }
     
     required init?(coder: NSCoder) {
@@ -27,12 +56,28 @@ final class ShippingOptionsTableView: UITableView {
 
 // MARK: - Setup
 private extension ShippingOptionsTableView {
-    func setupTableView() {
+    func setupView() {
         translatesAutoresizingMaskIntoConstraints = false
-        delegate = self
-        dataSource = self
-        register(ShippingOptionCell.self, forCellReuseIdentifier: "ShippingOptionCell")
-        separatorStyle = .none
+        addSubview(titleLabel)
+        addSubview(tableView)
+        addSubview(deliveryDateLabel)
+        
+        NSLayoutConstraint.activate([
+            
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+
+            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            tableView.heightAnchor.constraint(equalToConstant: 120),
+
+            deliveryDateLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 10),
+            deliveryDateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            deliveryDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            deliveryDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
+        ])
     }
 }
 
@@ -40,7 +85,7 @@ private extension ShippingOptionsTableView {
 extension ShippingOptionsTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedIndex = indexPath.row
-        reloadData()
+        tableView.reloadData()
     }
 }
 
@@ -51,7 +96,9 @@ extension ShippingOptionsTableView: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = dequeueReusableCell(withIdentifier: "ShippingOptionCell", for: indexPath) as! ShippingOptionCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShippingOptionCell", for: indexPath) as? ShippingOptionCell else {
+            fatalError()
+        }
         
         if indexPath.row == 0 {
             cell.setMockData(title: "Standard", deliveryTime: "5-7 days", price: "FREE")

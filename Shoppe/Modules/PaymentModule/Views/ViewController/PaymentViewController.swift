@@ -9,14 +9,82 @@
 import UIKit
 import SwiftUI
 
-protocol PaymentViewProtocol: AnyObject {}
+protocol PaymentViewProtocol: AnyObject {
+    func reloadData()
+}
 
 final class PaymentViewController: UIViewController {
     private let presenter: PaymentPresenterProtocol
-    private let addressView  = PaymentInformationView(type: .contact)
+
+    // MARK: - UI Elements
+    private let addressView = PaymentInformationView(type: .contact)
     private let shippingView = PaymentInformationView(type: .shipping)
     private let shippingOptionsTableView = ShippingOptionsTableView()
-   
+    private let paymentMethodView = PaymentMethodView()
+    private let totalPaymentView = TotalPaymentView()
+
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private lazy var itemsContainer: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [itemsTitleLabel, itemsCountLabel, addVoucherButton])
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.distribution = .equalSpacing
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    private lazy var itemsTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Items"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var itemsCountLabel: UILabel = {
+        let label = UILabel()
+        label.text = "2"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textAlignment = .center
+        label.textColor = .black
+        label.backgroundColor = UIColor.systemGray5
+        label.layer.cornerRadius = 12
+        label.clipsToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var addVoucherButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Add Voucher", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.blue.cgColor
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -25,30 +93,14 @@ final class PaymentViewController: UIViewController {
         table.dataSource = self
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
-        table.rowHeight = 105
+        table.isScrollEnabled = false
+        table.rowHeight = 70
         return table
     }()
     
-    private lazy var ItemsLabel: UILabel = {
-        let label = UILabel()
-        label.font = Fonts.ralewayBold21
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private var tableViewHeightConstraint: NSLayoutConstraint?
     
-    private lazy var badgeLabel: UILabel = {
-        let label = UILabel()
-        label.font = Fonts.ralewayBold15
-        label.textAlignment = .center
-        label.textColor = .black
-        label.backgroundColor = UIColor.customLightBlue
-        label.layer.cornerRadius = 11
-        label.layer.masksToBounds = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    
+    // MARK: - Init
     init(presenter: PaymentPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -63,78 +115,103 @@ final class PaymentViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         setupConstraints()
+        presenter.viewDidLoad()
+        updateTableViewHeight()
+    }
+    
+    private func updateTableViewHeight() {
+        tableView.layoutIfNeeded()
+        let contentHeight = tableView.contentSize.height
+        tableViewHeightConstraint?.constant = contentHeight
+        view.layoutIfNeeded()
     }
 }
 
 // MARK: - PaymentViewProtocol
-extension PaymentViewController: PaymentViewProtocol {}
-
-extension PaymentViewController: UITableViewDelegate {
-    
+extension PaymentViewController: PaymentViewProtocol {
+    func reloadData() {
+        tableView.reloadData()
+        updateTableViewHeight()
+    }
 }
 
-extension PaymentViewController: UITableViewDataSource {
+// MARK: - UITableViewDelegate & UITableViewDataSource
+extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        2
+        return presenter.itemsCount()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ItemTableViewCell.reuseIdentifier, for: indexPath
+        ) as? ItemTableViewCell else {
+            fatalError("Unable to dequeue ItemTableViewCell")
+        }
+        
+        let itemViewModel = presenter.item(at: indexPath.row)
+        cell.configure(with: itemViewModel)
+        return cell
     }
-    
-    
 }
-
 
 // MARK: - Private Methods
 private extension PaymentViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(addressView)
-        view.addSubview(shippingView)
-        view.addSubview(shippingOptionsTableView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
+        
+        stackView.addArrangedSubview(addressView)
+        stackView.addArrangedSubview(shippingView)
+        stackView.addArrangedSubview(itemsContainer)
+        stackView.addArrangedSubview(tableView)
+        stackView.addArrangedSubview(shippingOptionsTableView)
+        stackView.addArrangedSubview(paymentMethodView)
+        stackView.addArrangedSubview(totalPaymentView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            
-            addressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-            addressView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            addressView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            addressView.heightAnchor.constraint(equalToConstant: 80),
-            
-            shippingView.topAnchor.constraint(equalTo: addressView.bottomAnchor, constant: 20),
-            shippingView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            shippingView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            shippingView.heightAnchor.constraint(equalToConstant: 80),
-            
-            shippingOptionsTableView.topAnchor.constraint(equalTo: shippingView.bottomAnchor, constant: 20),
-            shippingOptionsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            shippingOptionsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            shippingOptionsTableView.heightAnchor.constraint(equalToConstant: 200),
-            
-            
-        ])
-    }
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+
+            addressView.heightAnchor.constraint(equalToConstant: 80),
+            shippingView.heightAnchor.constraint(equalToConstant: 80),
+            shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
+            paymentMethodView.heightAnchor.constraint(equalToConstant: 100),
+            totalPaymentView.heightAnchor.constraint(equalToConstant: 80)
+        ])
+
+        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
+        tableViewHeightConstraint?.isActive = true
+    }
 }
 
-//MARK: - SwiftUi preview
+// MARK: - SwiftUI Preview
 struct PVC_Previews: PreviewProvider {
     static var previews: some View {
         Container().edgesIgnoringSafeArea(.all)
     }
     
     struct Container: UIViewControllerRepresentable {
-        
         func makeUIViewController(context: Context) -> UIViewController {
-            return UINavigationController(
-                rootViewController: PaymentFactory.makeModule())
-            
+            return UINavigationController(rootViewController: PaymentFactory.makeModule())
         }
         
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-            
-        }
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
     }
 }
