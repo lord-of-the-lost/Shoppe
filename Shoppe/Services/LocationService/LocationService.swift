@@ -18,7 +18,18 @@ final class LocationService: NSObject {
     }
     
     func requestLocation() {
-        locationManager.requestLocation()
+        let status = locationManager.authorizationStatus
+        
+        switch status {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+        case .denied, .restricted:
+            print("Location error")
+        default:
+            break
+        }
     }
 }
 
