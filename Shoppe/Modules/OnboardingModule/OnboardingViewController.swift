@@ -21,13 +21,18 @@ final class OnboardingViewController: UIViewController, UICollectionViewDelegate
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 45
+        layout.minimumInteritemSpacing = 45
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         collectionView.isPagingEnabled = true
+        collectionView.decelerationRate = .fast
         collectionView.backgroundColor = .clear
-        collectionView.layer.cornerRadius = 25
+        collectionView.layer.cornerRadius = 30
         collectionView.clipsToBounds = true
         collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: OnboardingCell.identifier)
         collectionView.dataSource = self
@@ -82,9 +87,9 @@ extension OnboardingViewController: UICollectionViewDataSource {
         cell.configure(with: sliderData[indexPath.item])
         cell.backgroundColor = .white
         cell.layer.shadowColor = UIColor.black.cgColor
-        cell.layer.shadowOpacity = 0.4
-        cell.layer.shadowOffset = CGSize(width: 2, height: 4)
-        cell.layer.shadowRadius = 2
+        cell.layer.shadowOpacity = 0.6
+        cell.layer.shadowOffset = CGSize(width: 4, height: 4)
+        cell.layer.shadowRadius = 6
         cell.clipsToBounds = false
         cell.layer.cornerRadius = 30
         cell.delegate = self
@@ -93,7 +98,10 @@ extension OnboardingViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return collectionView.bounds.size
+        let width = collectionView.bounds.width * 0.9
+        let height = collectionView.bounds.height * 0.9
+               return CGSize(width: width, height: height)
+    
     }
 }
 
@@ -117,12 +125,12 @@ extension OnboardingViewController {
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            collectionView.topAnchor.constraint(equalTo: backgroundImageView.safeAreaLayoutGuide.topAnchor, constant: -20),
-            collectionView.leadingAnchor.constraint(equalTo: backgroundImageView.leadingAnchor, constant: 20),
-            collectionView.trailingAnchor.constraint(equalTo: backgroundImageView.trailingAnchor, constant: -20),
+            collectionView.topAnchor.constraint(equalTo: backgroundImageView.safeAreaLayoutGuide.topAnchor, constant: 20),
+            collectionView.leadingAnchor.constraint(equalTo: backgroundImageView.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: backgroundImageView.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: backgroundImageView.bottomAnchor, constant: -70),
             
-            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -20),
+            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
             pageControl.centerXAnchor.constraint(equalTo: backgroundImageView.centerXAnchor)
         ])
         
