@@ -24,6 +24,8 @@ class ItemTableViewCell: UITableViewCell {
         static let cellPadding: CGFloat = 16
     }
     
+    static let reuseIdentifier: String = ItemTableViewCell.description()
+    
     private lazy var imagesContainerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = Drawings.imageCornerRadius

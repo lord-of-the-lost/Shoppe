@@ -79,7 +79,6 @@ final class PaymentInformationView: UIView {
 }
 
 // MARK: - Private Methods
-
 private extension PaymentInformationView {
     func setupView() {
         translatesAutoresizingMaskIntoConstraints = false
