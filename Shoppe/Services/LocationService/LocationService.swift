@@ -8,7 +8,7 @@
 import CoreLocation
 
 protocol LocationServiceDelegate: AnyObject {
-    func didUpdateLocation()
+    func didUpdateLocation(countryCode: String, currency: String)
     func didFailWithError(_ error: Error)
 }
 
@@ -48,8 +48,19 @@ final class LocationService: NSObject {
                 // send error
                 return
             }
-            let currency = countryCode // !!
-            self.delegate?.didUpdateLocation()
+            let currency = getCurrency(countryCode: countryCode)
+            self.delegate?.didUpdateLocation(countryCode: countryCode, currency: currency)
+        }
+    }
+    
+    private func getCurrency(countryCode: String) -> String {
+        let europeCountries = ["FR", "DE", "IT", "ES", "NL", "BE", "AT", "PT", "FI", "IE", "GR", "LU", "SK", "SI", "LV", "LT", "EE", "CY", "MT"]
+        if countryCode == "RU" {
+            return "₽"
+        } else if europeCountries.contains(countryCode) {
+            return "€"
+        } else {
+            return "$"
         }
     }
 }
@@ -59,8 +70,7 @@ final class LocationService: NSObject {
 extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        
-        // send location
+        fetchCountryAndCurrency(location: location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
