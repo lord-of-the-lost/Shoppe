@@ -7,7 +7,16 @@
 
 import UIKit
 
-final class OnboardingViewController: UIViewController {
+protocol OnboardingViewProtocol: AnyObject {
+    func updatePageControl(currentPage: Int, numberOfPages: Int)
+    func updateSlides(slides: [OnboardingViewModel])
+    func scrollToPage(at index: Int)
+}
+
+final class OnboardingViewController: UIViewController, OnboardingViewProtocol {
+
+    private let presenter: OnboardingPresenterProtocol
+    
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(resource: .backgroundOnboarding))
         imageView.contentMode = .scaleAspectFill
@@ -25,14 +34,6 @@ final class OnboardingViewController: UIViewController {
         return scrollView
     }()
     
-    private lazy var contentStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 0
-        stackView.distribution = .fillEqually
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
     
     private lazy var pageControl: UIPageControl = {
         let control = UIPageControl()
@@ -45,53 +46,80 @@ final class OnboardingViewController: UIViewController {
         return control
     }()
     
-    private let sliderData: [OnboardingViewModel] = [
-        OnboardingViewModel(
-            image: UIImage(resource: .slideOne),
-            header: "Welcome!",
-            description: "Discover a fast and easy way to shop online.",
-            isLastSlide: false
-        ),
-        OnboardingViewModel(
-            image: UIImage(resource: .slideTwo),
-            header: "Smart Search & Favorites",
-            description: "Find products instantly and save favorites for later.",
-            isLastSlide: false
-        ),
-        OnboardingViewModel(
-            image: UIImage(resource: .slideThree),
-            header: "Easy Checkout",
-            description: "Add to cart, choose payment, and order in seconds.",
-            isLastSlide: false
-        ),
-        OnboardingViewModel(
-            image: UIImage(resource: .slideFour),
-            header: "Manage Your Store",
-            description: "Become a manager, add products, and control your catalog!",
-            isLastSlide: true
-        )
-    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupConstraints()
-        setupSlides()
+        presenter.loadView()
     }
+    
+    init(presenter: OnboardingPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable, message: "unavailable")
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - OnboardingViewProtocol
+    
+    func updatePageControl(currentPage: Int, numberOfPages: Int) {
+        pageControl.currentPage = currentPage
+        pageControl.numberOfPages = numberOfPages
+    }
+    
+    func updateSlides(slides: [OnboardingViewModel]) {
+        var previousSlideView: OnboardingSlideView?
+        slides.forEach { viewModel in
+            let slideView = OnboardingSlideView()
+            slideView.delegate = self
+            slideView.configure(with: viewModel)
+            slideView.translatesAutoresizingMaskIntoConstraints = false
+
+            scrollView.addSubview(slideView)
+            
+            NSLayoutConstraint.activate([
+                slideView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+                slideView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
+            ])
+            
+            if let previousSlideView = previousSlideView {
+               
+                slideView.leadingAnchor.constraint(equalTo: previousSlideView.trailingAnchor).isActive = true
+            } else {
+                
+                slideView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+            }
+            
+            previousSlideView = slideView
+        }
+        
+        if let lastSlideView = previousSlideView {
+            lastSlideView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        }
+    }
+    
+    func scrollToPage(at index: Int) {
+        let offsetX = CGFloat(index) * scrollView.bounds.width
+        scrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
+    }
+    
 }
 
 // MARK: - UIScrollViewDelegate
 extension OnboardingViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let page = round(scrollView.contentOffset.x / view.bounds.width)
-        pageControl.currentPage = Int(page)
+        presenter.scrollViewDidScroll(offsetX: scrollView.contentOffset.x)
     }
 }
 
 // MARK: - OnboardingSlideDelegate
 extension OnboardingViewController: OnboardingSlideDelegate {
     func startButtonTapped() {
-        print("Start button tapped")
+        presenter.startButtonTapped()
     }
 }
 
@@ -100,23 +128,7 @@ private extension OnboardingViewController {
     func setupView() {
         view.addSubview(backgroundImageView)
         view.addSubview(scrollView)
-        scrollView.addSubview(contentStackView)
         view.addSubview(pageControl)
-    }
-    
-    func setupSlides() {
-        sliderData.forEach { viewModel in
-            let slideView = OnboardingSlideView()
-            slideView.translatesAutoresizingMaskIntoConstraints = false
-            slideView.delegate = self
-            slideView.configure(with: viewModel)
-            
-            contentStackView.addArrangedSubview(slideView)
-            
-            NSLayoutConstraint.activate([
-                slideView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-            ])
-        }
     }
     
     func setupConstraints() {
@@ -130,12 +142,7 @@ private extension OnboardingViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor, constant: -20),
-            
-            contentStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentStackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+
             
             pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
@@ -143,7 +150,6 @@ private extension OnboardingViewController {
     }
     
     @objc func pageControlValueChanged(_ sender: UIPageControl) {
-        let offsetX = CGFloat(sender.currentPage) * scrollView.bounds.width
-        scrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
+        presenter.pageControlValueChanged(to: sender.currentPage)
     }
 }
