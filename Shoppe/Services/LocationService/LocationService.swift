@@ -7,8 +7,14 @@
 
 import CoreLocation
 
+protocol LocationServiceDelegate: AnyObject {
+    func didUpdateLocation()
+    func didFailWithError(_ error: Error)
+}
+
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
+    weak var delegate: LocationServiceDelegate?
     
     override init() {
         super.init()
@@ -26,13 +32,26 @@ final class LocationService: NSObject {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
         case .denied, .restricted:
-            print("Location error")
+            delegate?.didFailWithError(NSError(
+                domain: "Location error",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Access to location is denied."]))
         default:
             break
         }
     }
 }
 
+// MARK: - CLLocationManagerDelegate
+// Handling location updates and error cases
 extension LocationService: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        
+        // send location
+    }
     
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        delegate?.didFailWithError(error)
+    }
 }
