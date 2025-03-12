@@ -7,134 +7,143 @@
 
 import UIKit
 
-final class OnboardingViewController: UIViewController, UICollectionViewDelegateFlowLayout {
-    
+final class OnboardingViewController: UIViewController {
     private lazy var backgroundImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "backgroundOnboarding"))
+        let imageView = UIImageView(image: UIImage(resource: .backgroundOnboarding))
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .white
-        imageView.isUserInteractionEnabled = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 45
-        layout.minimumInteritemSpacing = 45
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.contentInsetAdjustmentBehavior = .never
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-        collectionView.isPagingEnabled = true
-        collectionView.decelerationRate = .fast
-        collectionView.backgroundColor = .clear
-        collectionView.layer.cornerRadius = 30
-        collectionView.clipsToBounds = true
-        collectionView.register(OnboardingCell.self, forCellWithReuseIdentifier: OnboardingCell.identifier)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.delegate = self
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var contentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 0
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
     }()
     
     private lazy var pageControl: UIPageControl = {
         let control = UIPageControl()
         control.currentPageIndicatorTintColor = .customBlue
         control.pageIndicatorTintColor = .customBlueForOnbording
+        control.currentPage = 0
+        control.numberOfPages = 4
+        control.addTarget(self, action: #selector(pageControlValueChanged), for: .valueChanged)
         control.translatesAutoresizingMaskIntoConstraints = false
         return control
     }()
     
-    private var sliderData: [OnboardingCellViewModel] = [
-        OnboardingCellViewModel(image: UIImage(named: "slideOne"), header: "Welcome!", description: "Discover a fast and easy way to shop online.", button: nil),
-        OnboardingCellViewModel(image: UIImage(named: "slideTwo"), header: "Smart Search & Favorites", description: "Find products instantly and save favorites for later.", button: nil),
-        OnboardingCellViewModel(image: UIImage(named: "slideThree"), header: "Easy Checkout", description: "Add to cart, choose payment, and order in seconds.", button: nil),
-        OnboardingCellViewModel(image: UIImage(named: "slideFour"), header: "Manage Your Store", description: "Become a manager, add products, and control your catalog!", button: {
-            let button = UIButton(type: .system)
-            button.setTitle("Начать", for: .normal)
-            button.backgroundColor = .customBlue
-            return button
-        }()),
+    private let sliderData: [OnboardingViewModel] = [
+        OnboardingViewModel(
+            image: UIImage(resource: .slideOne),
+            header: "Welcome!",
+            description: "Discover a fast and easy way to shop online.",
+            isLastSlide: false
+        ),
+        OnboardingViewModel(
+            image: UIImage(resource: .slideTwo),
+            header: "Smart Search & Favorites",
+            description: "Find products instantly and save favorites for later.",
+            isLastSlide: false
+        ),
+        OnboardingViewModel(
+            image: UIImage(resource: .slideThree),
+            header: "Easy Checkout",
+            description: "Add to cart, choose payment, and order in seconds.",
+            isLastSlide: false
+        ),
+        OnboardingViewModel(
+            image: UIImage(resource: .slideFour),
+            header: "Manage Your Store",
+            description: "Become a manager, add products, and control your catalog!",
+            isLastSlide: true
+        )
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        makeConstraints()
-        
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let pageNumber = Int(scrollView.contentOffset.x / scrollView.frame.width)
-        pageControl.currentPage = pageNumber
+        setupView()
+        setupConstraints()
+        setupSlides()
     }
 }
 
-extension OnboardingViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return sliderData.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: OnboardingCell.identifier, for: indexPath) as? OnboardingCell else {
-            return UICollectionViewCell()
-        }
-        
-        cell.configure(with: sliderData[indexPath.item])
-        cell.backgroundColor = .white
-        cell.layer.shadowColor = UIColor.black.cgColor
-        cell.layer.shadowOpacity = 0.6
-        cell.layer.shadowOffset = CGSize(width: 4, height: 4)
-        cell.layer.shadowRadius = 6
-        cell.clipsToBounds = false
-        cell.layer.cornerRadius = 30
-        cell.delegate = self
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width * 0.9
-        let height = collectionView.bounds.height * 0.9
-               return CGSize(width: width, height: height)
-    
+// MARK: - UIScrollViewDelegate
+extension OnboardingViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let page = round(scrollView.contentOffset.x / view.bounds.width)
+        pageControl.currentPage = Int(page)
     }
 }
 
-extension OnboardingViewController: OnboardingCellDelegate {
+// MARK: - OnboardingSlideDelegate
+extension OnboardingViewController: OnboardingSlideDelegate {
     func startButtonTapped() {
         print("Start button tapped")
     }
 }
 
-extension OnboardingViewController {
-    func setupUI() {
+// MARK: - Private Methods
+private extension OnboardingViewController {
+    func setupView() {
         view.addSubview(backgroundImageView)
-        backgroundImageView.addSubview(collectionView)
-        backgroundImageView.addSubview(pageControl)
-        
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentStackView)
+        view.addSubview(pageControl)
     }
-    func makeConstraints() {
+    
+    func setupSlides() {
+        sliderData.forEach { viewModel in
+            let slideView = OnboardingSlideView()
+            slideView.translatesAutoresizingMaskIntoConstraints = false
+            slideView.delegate = self
+            slideView.configure(with: viewModel)
+            
+            contentStackView.addArrangedSubview(slideView)
+            
+            NSLayoutConstraint.activate([
+                slideView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            ])
+        }
+    }
+    
+    func setupConstraints() {
         NSLayoutConstraint.activate([
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            collectionView.topAnchor.constraint(equalTo: backgroundImageView.safeAreaLayoutGuide.topAnchor, constant: 20),
-            collectionView.leadingAnchor.constraint(equalTo: backgroundImageView.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: backgroundImageView.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: backgroundImageView.bottomAnchor, constant: -70),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor, constant: -20),
             
-            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
-            pageControl.centerXAnchor.constraint(equalTo: backgroundImageView.centerXAnchor)
+            contentStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentStackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+            
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
-        
-        pageControl.numberOfPages = sliderData.count
-        pageControl.currentPage = 0
+    }
+    
+    @objc func pageControlValueChanged(_ sender: UIPageControl) {
+        let offsetX = CGFloat(sender.currentPage) * scrollView.bounds.width
+        scrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
     }
 }
