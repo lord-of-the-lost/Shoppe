@@ -45,7 +45,10 @@ final class LocationService: NSObject {
     private func fetchCountryAndCurrency(location: CLLocation) {
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
             guard let self = self, error == nil, let countryCode = placemarks?.first?.isoCountryCode else {
-                // send error
+                self?.delegate?.didFailWithError(NSError(
+                    domain: "Geocode error",
+                    code: 2,
+                    userInfo: [NSLocalizedDescriptionKey: "Country detection failed"]))
                 return
             }
             let currency = getCurrency(countryCode: countryCode)
