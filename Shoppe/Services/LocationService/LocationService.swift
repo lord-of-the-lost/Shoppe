@@ -14,6 +14,7 @@ protocol LocationServiceDelegate: AnyObject {
 
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
+    private let geocoder = CLGeocoder()
     weak var delegate: LocationServiceDelegate?
     
     override init() {
@@ -38,6 +39,17 @@ final class LocationService: NSObject {
                 userInfo: [NSLocalizedDescriptionKey: "Access to location is denied."]))
         default:
             break
+        }
+    }
+    
+    private func fetchCountryAndCurrency(location: CLLocation) {
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
+            guard let self = self, error == nil, let countryCode = placemarks?.first?.isoCountryCode else {
+                // send error
+                return
+            }
+            let currency = countryCode // !!
+            self.delegate?.didUpdateLocation()
         }
     }
 }
