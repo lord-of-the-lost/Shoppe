@@ -21,7 +21,9 @@ final class LoginRouter: LoginRouterProtocol {
     }
     
     func openMainScreen() {
-        print(#function)
+        let vc = MainTabBarFactory.makeModule()
+        vc.modalPresentationStyle = .fullScreen
+        viewController?.present(vc, animated: true)
     }
     
     func dismissOnStart() {
