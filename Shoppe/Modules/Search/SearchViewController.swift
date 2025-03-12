@@ -35,25 +35,10 @@ final class SearchViewController: UIViewController {
     private var currentState: SearchState = .empty
     
     // MARK: - UI Elements
-    private lazy var searchTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Search"
-        textField.backgroundColor = .customGray
-        textField.layer.cornerRadius = 8
-        textField.delegate = self
-        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 0))
-        textField.leftViewMode = .always
-        textField.returnKeyType = .search
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Shop"
-        label.font = .systemFont(ofSize: 24, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private lazy var searchView: MainHeaderView = {
+        let searchView = MainHeaderView()
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        return searchView
     }()
     
     private lazy var stateLabel: UILabel = {
@@ -63,6 +48,17 @@ final class SearchViewController: UIViewController {
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private lazy var clearSearchButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(resource: .trash)
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 35, weight: .regular, scale: .default)
+        let button = UIButton()
+        button.configuration = config
+        button.addTarget(self, action: #selector(clearSearchTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private lazy var collectionView: UICollectionView = {
@@ -83,7 +79,7 @@ final class SearchViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupView()
         setupConstraints()
         presenter?.viewDidLoad()
     }
@@ -162,10 +158,10 @@ extension SearchViewController: UICollectionViewDataSource, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch currentState {
         case .history:
-            return CGSize(width: 100, height: 30) // Размер для chips
+            return CGSize(width: 100, height: 30)
         case .results:
             let width = (collectionView.bounds.width - 16) / 2
-            return CGSize(width: width, height: width * 1.5) // Размер для продуктов
+            return CGSize(width: width, height: width * 1.5)
         case .empty:
             return .zero
         }
@@ -187,37 +183,37 @@ extension SearchViewController: ProductCellDelegate {
 
 // MARK: - Private Methods
 private extension SearchViewController {
-    @objc func clearSearchTapped() {
-        searchTextField.text = nil
-        presenter?.clearSearchTapped()
-    }
-    
-    func setupUI() {
+    func setupView() {
         view.backgroundColor = .white
-        view.addSubview(titleLabel)
-        view.addSubview(searchTextField)
+        view.addSubview(searchView)
         view.addSubview(stateLabel)
+        view.addSubview(clearSearchButton)
         view.addSubview(collectionView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            searchView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            searchView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            searchView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
             
-            searchTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchTextField.heightAnchor.constraint(equalToConstant: 40),
+            stateLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 32),
+            stateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
-            stateLabel.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 32),
-            stateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            stateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            clearSearchButton.centerYAnchor.constraint(equalTo: stateLabel.centerYAnchor),
+            clearSearchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            clearSearchButton.widthAnchor.constraint(equalToConstant: 35),
+            clearSearchButton.heightAnchor.constraint(equalToConstant: 35),
             
             collectionView.topAnchor.constraint(equalTo: stateLabel.bottomAnchor, constant: 16),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    @objc func clearSearchTapped() {
+        presenter?.clearSearchTapped()
     }
 }
