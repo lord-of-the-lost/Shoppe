@@ -17,8 +17,31 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         let navigationController = UINavigationController()
         window = UIWindow(frame: UIScreen.main.bounds)
+
         let appRouter = AppRouter(navigation: navigationController, window: window)
         appRouter.start()
+
         return true
     }
+
+    private func configureAddressEditingObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showAddressEditingAlert),
+            name: .showEditAddressAlert,
+            object: nil
+        )
+    }
+
+    @objc private func showAddressEditingAlert() {
+        let alert = UIAlertController(
+            title: "Раздел в разработке",
+            message: "Редактирование адреса будет доступно в следующей версии",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        window?.rootViewController?.present(alert, animated: true)
+    }
+
 }

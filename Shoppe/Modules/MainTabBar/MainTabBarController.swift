@@ -17,6 +17,9 @@ protocol MainTabBarViewProtocol: AnyObject {
 final class MainTabBarController: UITabBarController {
     private let presenter: MainTabBarPresenterProtocol
     private let basketTabIndex = 3
+
+    // MARK: - Setup
+
     private var tabItems: [TabItemModel] = []
     
     // MARK: Lifecycle
