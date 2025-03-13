@@ -9,11 +9,9 @@
 import UIKit
 
 enum StartFactory {
-    static func makeModule() -> UIViewController {
-        let router = StartRouter()
+    static func makeModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = StartPresenter(router: router)
         let viewController = StartViewController(presenter: presenter)
-        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

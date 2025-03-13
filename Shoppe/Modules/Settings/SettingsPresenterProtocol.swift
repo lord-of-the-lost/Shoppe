@@ -22,10 +22,10 @@ protocol SettingsPresenterProtocol: AnyObject {
 final class SettingsPresenter: SettingsPresenterProtocol {
     private weak var view: SettingsViewProtocol?
     private weak var viewController: UIViewController?
-    private let router: SettingsRouterProtocol
+    private let router: AppRouterProtocol
     var user = UserSettings(username: "username", email: "email", password: "password", avatarData: Data())
     
-    init(router: SettingsRouterProtocol) {
+    init(router: AppRouterProtocol) {
         self.router = router
     }
     

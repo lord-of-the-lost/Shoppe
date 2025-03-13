@@ -17,9 +17,9 @@ protocol StartPresenterProtocol: AnyObject {
 // MARK: - Presenter
 final class StartPresenter: StartPresenterProtocol {
     private weak var view: StartViewProtocol?
-    private let router: StartRouterProtocol
+    private let router: AppRouterProtocol
     
-    init(router: StartRouterProtocol) {
+    init(router: AppRouterProtocol) {
         self.router = router
     }
     
@@ -27,7 +27,7 @@ final class StartPresenter: StartPresenterProtocol {
         self.view = view
     }
     
-    func startButtonTapped() { router.openRegistrationScreen() }
+    func startButtonTapped() { router.showRegistrationScreen() }
     
-    func alreadyButtonTapped() { router.openLoginScreen() }
+    func alreadyButtonTapped() { router.showLoginScreen() }
 }

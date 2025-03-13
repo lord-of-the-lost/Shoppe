@@ -19,12 +19,12 @@ protocol LoginPresenterProtocol: AnyObject {
 // MARK: - Presenter
 final class LoginPresenter: LoginPresenterProtocol {
     private weak var view: LoginViewProtocol?
-    private let router: LoginRouterProtocol
+    private let router: AppRouterProtocol
     private var isEmailEntered = false
     private var emailUser: String = ""
     private var isKeyboardVisible = false
     
-    init(router: LoginRouterProtocol) {
+    init(router: AppRouterProtocol) {
         self.router = router
     }
     
@@ -50,7 +50,7 @@ final class LoginPresenter: LoginPresenterProtocol {
             view?.switchToPasswordField(is: false)
             isEmailEntered = false
         } else {
-            router.dismissOnStart()
+            router.dismiss(animated: true)
         }
     }
     
@@ -81,7 +81,7 @@ private extension LoginPresenter {
         guard let password = view?.getPassword() else { return }
         if checkIfUserExists(email: emailUser, password: password) {
             userIsLogin()
-            router.openMainScreen()
+            router.showMainTabBar()
             
         } else {
             if validatePassword() {
