@@ -6,11 +6,15 @@
 //
 
 import CoreLocation
+import UIKit
 
 protocol LocationServiceDelegate: AnyObject {
     func didUpdateLocation(countryCode: String, currency: String)
     func didFailWithError(_ error: Error)
 }
+
+/// LocationService отвечает за получение текущей геолокация и определяет валюту по стране.
+/// Использует CLLocationManager для получения координат и CLGeocoder для обратного геокодинга.
 
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
@@ -22,7 +26,6 @@ final class LocationService: NSObject {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
-        
     }
     
     func requestLocation() {
@@ -34,6 +37,7 @@ final class LocationService: NSObject {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
         case .denied, .restricted:
+            showLocationDeniedAlert()
             delegate?.didFailWithError(NSError(
                 domain: "Location error",
                 code: 1,
@@ -79,5 +83,35 @@ extension LocationService: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         delegate?.didFailWithError(error)
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if locationManager.authorizationStatus == .authorizedWhenInUse {
+            locationManager.requestLocation()
+        }
+    }
+}
+
+// MARK: - Create LocationAlert
+extension LocationService {
+    private func showLocationDeniedAlert() {
+        guard let topVC = UIApplication.shared.delegate?.window??.rootViewController else { return }
+        
+        let alert = UIAlertController(
+            title: "Location Access Denied",
+            message: "Please enable location access in Settings.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        }))
+        
+        DispatchQueue.main.async {
+            topVC.present(alert, animated: true)
+        }
     }
 }
