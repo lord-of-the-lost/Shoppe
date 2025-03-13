@@ -19,11 +19,11 @@ final class MainHeaderView: UIView {
     }
     
     // MARK: - UI Elements
-    private let addressView = AddressView()
-    private let shopTitleView = HomeTitleView(title: Drawings.shopTitle)
-    private let searchBarView = SearchBarView()
+    private lazy var addressView = HeaderAddressView()
+    private lazy var shopTitleView = HomeTitleView(title: Drawings.shopTitle)
+    private lazy var searchBarView = SearchBarView()
     
-    private let shopStackView: UIStackView = {
+    private lazy var shopStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -31,7 +31,7 @@ final class MainHeaderView: UIView {
         return stackView
     }()
     
-    private let mainStackView: UIStackView = {
+    private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = Drawings.mainStackSpacing

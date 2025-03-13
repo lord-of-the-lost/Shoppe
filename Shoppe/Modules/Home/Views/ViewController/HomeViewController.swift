@@ -146,8 +146,7 @@ struct ContentView_Previews: PreviewProvider {
         
         func makeUIViewController(context: Context) -> UIViewController {
             return UINavigationController(
-                rootViewController: HomeViewController(
-                    presenter: HomePresenter()))
+                rootViewController: HomeFactory.makeModule())
             
         }
         

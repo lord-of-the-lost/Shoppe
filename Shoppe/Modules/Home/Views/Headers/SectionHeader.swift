@@ -22,7 +22,7 @@ final class SectionHeader: UICollectionReusableView {
     static let identifier = SectionHeader.description()
     
     // MARK: - UI Elements
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold21
         label.textColor = Drawings.titleTextColor
@@ -30,7 +30,7 @@ final class SectionHeader: UICollectionReusableView {
         return label
     }()
     
-    private let seeAllButton: UIButton = {
+    private lazy var seeAllButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = UIImage.seeAllButton
         config.imagePlacement = .trailing

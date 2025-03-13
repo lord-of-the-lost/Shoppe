@@ -25,7 +25,7 @@ final class JustForYouCell: UICollectionViewCell {
     // MARK: - Properties
     static let identifier = JustForYouCell.description()
     
-    private let priceStackView: UIStackView = {
+    private lazy var priceStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
@@ -34,7 +34,7 @@ final class JustForYouCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let image = UIImageView()
         image.clipsToBounds = true
         image.layer.cornerRadius = Drawings.cornerRadius
@@ -52,7 +52,7 @@ final class JustForYouCell: UICollectionViewCell {
         return label
     }()
     
-    private let priceLabel: UILabel = {
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold17
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -70,7 +70,7 @@ final class JustForYouCell: UICollectionViewCell {
         return button
     }()
     
-    private let wishButton: UIButton = {
+    private lazy var wishButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage.heartFill, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
