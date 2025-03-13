@@ -1,0 +1,101 @@
+//
+//  AppFactory.swift
+//  Shoppe
+//
+//  Created by Николай Игнатов on 13.03.2025.
+//
+
+import UIKit
+
+final class AppFactory {
+    private let networkService: NetworkServiceProtocol = NetworkService()
+    private let locationService: LocationService = LocationService()
+    
+    static func makeStartModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = StartPresenter(router: router)
+        let viewController = StartViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeLoginModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = LoginPresenter(router: router)
+        let viewController = LoginViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeRegistrationModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = RegisterPresenter(router: router)
+        let viewController = RegisterViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeCartModule() -> UIViewController {
+        let addressService = AddressService.shared
+        let presenter = CartPresenter(addressService: addressService)
+        let viewController = CartViewController(presenter: presenter)
+        presenter.view = viewController
+        return viewController
+    }
+    
+    static func makeHomeModule(router: AppRouterProtocol, networkService: NetworkServiceProtocol) -> UIViewController {
+        let presenter = HomePresenter()
+        let viewController = HomeViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeTabBarModule(router: AppRouterProtocol, networkService: NetworkServiceProtocol) -> UIViewController {
+        let presenter = MainTabBarPresenter(
+            router: router,
+            networkService: networkService,
+            basketService: BasketService.shared
+        )
+        let viewController = MainTabBarController(presenter: presenter)
+        return viewController
+    }
+    
+    static func makeOnboardingModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = OnboardingPresenter(router: router)
+        let viewController = OnboardingViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makePaymentModule() -> UIViewController {
+        let presenter = PaymentPresenter()
+        let viewController = PaymentViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeProductDetailModule() -> UIViewController {
+        let presenter = ProductDetailPresenter()
+        let viewController = ProductDetailViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeSearchModule() -> UIViewController {
+        let presenter = SearchPresenter()
+        let viewController = SearchViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeSettingsModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = SettingsPresenter(router: router)
+        let viewController = SettingsViewController(presenter: presenter)
+        presenter.setupView(viewController, viewController: viewController)
+        return viewController
+    }
+    
+    static func makeWishlistModule() -> UIViewController {
+        let presenter = WishlistPresenter()
+        let viewController = WishlistViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+}

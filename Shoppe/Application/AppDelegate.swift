@@ -17,7 +17,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         let navigationController = UINavigationController()
         window = UIWindow(frame: UIScreen.main.bounds)
-
         let appRouter = AppRouter(navigation: navigationController, window: window)
         appRouter.start()
 

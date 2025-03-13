@@ -13,9 +13,7 @@ final class UserDefaultsService {
     private init() {}
     
     enum Keys: String {
-        case isUserLoggedIn
-        case username
-        case password
+       case userModel
     }
     
     // MARK: - Generic Methods

@@ -14,6 +14,7 @@ protocol AppRouterProtocol {
     func showRegistrationScreen()
     func showLoginScreen()
     func showMainTabBar()
+    func showOnboarding()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -35,24 +36,31 @@ final class AppRouter: AppRouterProtocol {
     }
     
     func showStartScreen() {
-        let startViewController = StartFactory.makeModule(router: self)
+        let startViewController = AppFactory.makeStartModule(router: self)
         navigation.viewControllers = [startViewController]
     }
     
     func showRegistrationScreen() {
-        let registrationViewController = RegistrationFactory.makeModule(router: self)
+        let registrationViewController = AppFactory.makeRegistrationModule(router: self)
         registrationViewController.modalPresentationStyle = .fullScreen
         presentModalViewController(registrationViewController)
     }
     
     func showLoginScreen() {
-        let loginViewController = LoginFactory.makeModule(router: self)
+        let loginViewController = AppFactory.makeLoginModule(router: self)
         loginViewController.modalPresentationStyle = .fullScreen
         presentModalViewController(loginViewController)
     }
     
+    func showOnboarding() {
+        let onboardingViewController = AppFactory.makeOnboardingModule(router: self)
+        onboardingViewController.modalPresentationStyle = .fullScreen
+        navigation.presentedViewController?.dismiss(animated: false)
+        presentModalViewController(onboardingViewController)
+    }
+    
     func showMainTabBar() {
-        let tabBarController = MainTabBarFactory.makeModule(router: self)
+        let tabBarController = AppFactory.makeTabBarModule(router: self)
         
         let completion: () -> Void = { [weak self] in
             self?.navigation.setViewControllers([tabBarController], animated: true)
@@ -76,14 +84,18 @@ private extension AppRouter {
     }
     
     private func configureWindow() {
+        navigation.navigationBar.isHidden = true
         window?.rootViewController = navigation
         window?.makeKeyAndVisible()
     }
     
     private func startInitialViewController() {
-        navigation.navigationBar.isHidden = true
-        if true {
-            showStartScreen()
+        let user: User? = UserDefaultsService.shared.getCustomObject(forKey: .userModel)
+        let isUserAuthorised = user?.isAuthorized ?? false
+      
+        switch isUserAuthorised {
+        case true: showMainTabBar()
+        case false: showStartScreen()
         }
     }
 }

@@ -18,10 +18,12 @@ final class MainTabBarPresenter {
     private weak var view: MainTabBarViewProtocol?
     private let basketService: BasketServiceProtocol
     private let router: AppRouterProtocol
+    private let networkService: NetworkServiceProtocol
     
     // MARK: Lifecycle
-    init(router: AppRouterProtocol, basketService: BasketServiceProtocol) {
+    init(router: AppRouterProtocol, networkService: NetworkServiceProtocol, basketService: BasketServiceProtocol) {
         self.basketService = basketService
+        self.networkService = networkService
         self.router = router
         setupObservers()
     }
@@ -57,12 +59,12 @@ private extension MainTabBarPresenter {
     func getTabItems() -> [TabItemModel] {
         [
             TabItemModel(
-                viewController: HomeFactory.makeModule(),
+                viewController: AppFactory.makeHomeModule(router: router, networkService: networkService),
                 iconName: "Home",
                 selectedIconName: "HomeSelected"
             ),
             TabItemModel(
-                viewController: WishlistFactory.makeModule(),
+                viewController: AppFactory.makeWishlistModule(),
                 iconName: "Heart",
                 selectedIconName: "HeartSelected"
             ),
@@ -72,12 +74,12 @@ private extension MainTabBarPresenter {
                 selectedIconName: "CategoriesSelected"
             ),
             TabItemModel(
-                viewController: UIViewController(),
+                viewController: AppFactory.makeCartModule(),
                 iconName: "Bag",
                 selectedIconName: "BagSelected"
             ),
             TabItemModel(
-                viewController: SettingsFactory.makeModule(router: router),
+                viewController: AppFactory.makeSettingsModule(router: router),
                 iconName: "Person",
                 selectedIconName: "PersonSelected"
             )

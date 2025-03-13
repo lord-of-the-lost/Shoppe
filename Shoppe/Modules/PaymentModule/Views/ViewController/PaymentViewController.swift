@@ -258,18 +258,3 @@ private extension PaymentViewController {
         tableViewHeightConstraint?.isActive = true
     }
 }
-
-// MARK: - SwiftUI Preview
-struct PVC_Previews: PreviewProvider {
-    static var previews: some View {
-        Container().edgesIgnoringSafeArea(.all)
-    }
-    
-    struct Container: UIViewControllerRepresentable {
-        func makeUIViewController(context: Context) -> UIViewController {
-            return UINavigationController(rootViewController: PaymentFactory.makeModule())
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-    }
-}

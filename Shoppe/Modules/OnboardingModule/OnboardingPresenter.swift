@@ -16,11 +16,17 @@ protocol OnboardingPresenterProtocol {
 
 final class OnboardingPresenter: OnboardingPresenterProtocol {
     weak var view: OnboardingViewProtocol?
+    private let router: AppRouterProtocol
     
     func setupView(_ view: OnboardingViewProtocol) {
         self.view = view
         loadView()
     }
+    
+    init(router: AppRouterProtocol) {
+        self.router = router
+    }
+    
     private let sliderData: [OnboardingViewModel] = [
         OnboardingViewModel(
             image: UIImage(resource: .slideOne),
@@ -63,10 +69,6 @@ final class OnboardingPresenter: OnboardingPresenterProtocol {
     }
     
     func startButtonTapped() {
-        let homeVC = HomeFactory.makeModule()
-        if let navigationController = (view as? UIViewController)?.navigationController {
-            navigationController.pushViewController(homeVC, animated: true)
-        }
-        print("Start button tapped")
+        router.showMainTabBar()
     }
 }
