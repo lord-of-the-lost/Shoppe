@@ -1,5 +1,5 @@
 //
-//  RegisterFactory.swift
+//  RegistrationFactory.swift
 //  Shoppe
 //
 //  Created by Кирилл Бахаровский on 3/6/25.
@@ -8,12 +8,10 @@
 
 import UIKit
 
-enum RegisterFactory {
-    static func makeModule() -> UIViewController {
-        let router = RegisterRouter()
+enum RegistrationFactory {
+    static func makeModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = RegisterPresenter(router: router)
         let viewController = RegisterViewController(presenter: presenter)
-        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

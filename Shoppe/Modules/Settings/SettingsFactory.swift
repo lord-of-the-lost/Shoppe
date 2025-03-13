@@ -9,11 +9,9 @@
 import UIKit
 
 enum SettingsFactory {
-    static func makeModule() -> UIViewController {
-        let router = SettingsRouter()
+    static func makeModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = SettingsPresenter(router: router)
         let viewController = SettingsViewController(presenter: presenter)
-        router.setupView(viewController)
         presenter.setupView(viewController, viewController: viewController)
         return viewController
     }

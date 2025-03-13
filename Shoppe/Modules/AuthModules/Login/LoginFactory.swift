@@ -9,11 +9,9 @@
 import UIKit
 
 enum LoginFactory {
-    static func makeModule() -> UIViewController {
-        let router = LoginRouter()
+    static func makeModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = LoginPresenter(router: router)
         let viewController = LoginViewController(presenter: presenter)
-        router.setupView(viewController)
         presenter.setupView(viewController)
         return viewController
     }

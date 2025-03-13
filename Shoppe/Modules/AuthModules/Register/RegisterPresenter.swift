@@ -19,16 +19,15 @@ protocol RegisterPresenterProtocol: AnyObject {
 // MARK: - Presenter
 final class RegisterPresenter: RegisterPresenterProtocol {
     private weak var view: RegisterViewProtocol?
-    private let router: RegisterRouterProtocol
+    private let router: AppRouterProtocol
     
-    init(router: RegisterRouterProtocol) {
+    init(router: AppRouterProtocol) {
         self.router = router
     }
     
     func setupView(_ view: RegisterViewProtocol) {
         self.view = view
     }
-    
     
     func doneButtonTapped(email: String?, password: String?) {
         guard
@@ -40,10 +39,10 @@ final class RegisterPresenter: RegisterPresenterProtocol {
             return
         }
         saveUser(email: email, password: password)
-        router.openLoginScreen()
+        router.showMainTabBar()
     }
     
-    func cancelButtonTapped() { router.dismissOnStart() }
+    func cancelButtonTapped() { router.dismiss(animated: true) }
     
     func keyboardWillShow(height: CGFloat) {
         view?.keyboardWillShow(height: height)

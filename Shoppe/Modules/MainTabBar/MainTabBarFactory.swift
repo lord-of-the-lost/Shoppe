@@ -8,10 +8,9 @@
 import UIKit
 
 enum MainTabBarFactory {
-    static func makeModule() -> UIViewController {
-        let presenter = MainTabBarPresenter(basketService: BasketService.shared)
+    static func makeModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = MainTabBarPresenter(router: router, basketService: BasketService.shared)
         let viewController = MainTabBarController(presenter: presenter)
-        presenter.setupView(viewController)
         return viewController
     }
 }
