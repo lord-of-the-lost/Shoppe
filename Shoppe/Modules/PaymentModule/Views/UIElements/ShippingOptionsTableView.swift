@@ -14,7 +14,6 @@ final class ShippingOptionsTableView: UIView {
     private var selectedIndex: Int = 0
     
     // MARK: - UI Elements
-    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Shipping Options"

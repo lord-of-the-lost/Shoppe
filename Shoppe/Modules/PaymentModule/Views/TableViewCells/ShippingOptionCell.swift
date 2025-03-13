@@ -73,7 +73,7 @@ class ShippingOptionCell: UITableViewCell {
     
     func setSelectedState(_ isSelected: Bool) {
         checkmarkImageView.isHidden = !isSelected
-        containerView.backgroundColor = isSelected ? UIColor.systemBlue.withAlphaComponent(0.1) : UIColor.systemGray6
+        containerView.backgroundColor = isSelected ? UIColor.customLightBlue : UIColor.systemGray6
     }
     
     // MARK: - Setup UI

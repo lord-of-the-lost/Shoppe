@@ -45,11 +45,10 @@ final class PaymentViewController: UIViewController {
     }()
     
     private lazy var itemsContainer: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [itemsTitleLabel, itemsCountLabel, addVoucherButton])
+        let stack = UIStackView(arrangedSubviews: [itemsTitleLabel, itemsCountLabel, UIView(), addVoucherButton])
         stack.axis = .horizontal
-        stack.spacing = 12
         stack.alignment = .center
-        stack.distribution = .equalSpacing
+        stack.spacing = 4
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
@@ -64,13 +63,13 @@ final class PaymentViewController: UIViewController {
     
     private lazy var itemsCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "2"
-        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = Fonts.ralewayBold15
+        label.text = "4"
         label.textAlignment = .center
         label.textColor = .black
-        label.backgroundColor = UIColor.systemGray5
-        label.layer.cornerRadius = 12
-        label.clipsToBounds = true
+        label.backgroundColor = UIColor.customLightBlue
+        label.layer.cornerRadius =  11
+        label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -78,10 +77,11 @@ final class PaymentViewController: UIViewController {
     private lazy var addVoucherButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Add Voucher", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
+        button.titleLabel?.font = Fonts.nunitoRegular
+        button.setTitleColor(UIColor.customBlue, for: .normal)
         button.layer.cornerRadius = 12
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.blue.cgColor
+        button.layer.borderColor = UIColor.customBlue.cgColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -185,15 +185,24 @@ private extension PaymentViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
             stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
 
             addressView.heightAnchor.constraint(equalToConstant: 80),
             shippingView.heightAnchor.constraint(equalToConstant: 80),
             shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
-            paymentMethodView.heightAnchor.constraint(equalToConstant: 100),
-            totalPaymentView.heightAnchor.constraint(equalToConstant: 80)
+            
+            totalPaymentView.heightAnchor.constraint(equalToConstant: 80),
+            totalPaymentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor), paymentMethodView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            
+            paymentMethodView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
+            
+            itemsCountLabel.widthAnchor.constraint(equalToConstant: 22),
+            itemsCountLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            addVoucherButton.heightAnchor.constraint(equalToConstant: 44),
+            addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.35)
         ])
 
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)

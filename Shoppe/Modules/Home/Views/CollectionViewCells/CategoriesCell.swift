@@ -37,14 +37,14 @@ final class CategoriesCell: UICollectionViewCell {
     static let identifier = CategoriesCell.description()
     
     // MARK: - UI
-    private let imagesContainerView: UIView = {
+    private lazy var imagesContainerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = Drawings.imageCornerRadius
         return view
     }()
     
-    private let imageViews: [UIImageView] = (0..<Drawings.imageCount).map { _ in
+    private lazy var imageViews: [UIImageView] = (0..<Drawings.imageCount).map { _ in
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = Drawings.imageCornerRadius
@@ -52,7 +52,7 @@ final class CategoriesCell: UICollectionViewCell {
         return imageView
     }
     
-    private let textStackView: UIStackView = {
+    private lazy var textStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = Drawings.stackSpacing
@@ -61,7 +61,7 @@ final class CategoriesCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold17
         label.textColor = .customBlack
@@ -69,7 +69,7 @@ final class CategoriesCell: UICollectionViewCell {
         return label
     }()
     
-    private let countLabel: UILabel = {
+    private lazy var countLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold12
         label.textColor = .customBlack

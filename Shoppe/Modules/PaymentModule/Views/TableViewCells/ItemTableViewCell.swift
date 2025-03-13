@@ -22,9 +22,25 @@ class ItemTableViewCell: UITableViewCell {
         static let priceMaxWidth: CGFloat = 80
         static let priceTrailing: CGFloat = -16
         static let cellPadding: CGFloat = 16
+        static let shadowOffset: CGSize = CGSize(width: 0, height: 4)
+        static let shadowRadius: CGFloat = 6
+        static let shadowOpacity: Float = 0.2
     }
     
     static let reuseIdentifier: String = ItemTableViewCell.description()
+    
+    private lazy var shadowView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = Drawings.shadowOffset
+        view.layer.shadowOpacity = Drawings.shadowOpacity
+        view.layer.shadowRadius = Drawings.shadowRadius
+        view.layer.cornerRadius = Drawings.imageCornerRadius
+        view.layer.masksToBounds = false
+        return view
+    }()
     
     private lazy var imagesContainerView: UIView = {
         let view = UIView()
@@ -32,15 +48,7 @@ class ItemTableViewCell: UITableViewCell {
         view.layer.borderWidth = 2
         view.layer.borderColor = UIColor.white.cgColor
         view.clipsToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var badgeContainerView: UIView = {
-        let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = Drawings.badgeCornerRadius
-        view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -52,6 +60,15 @@ class ItemTableViewCell: UITableViewCell {
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
+    }()
+    
+    private lazy var badgeContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = Drawings.badgeCornerRadius
+        view.clipsToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     private lazy var badgeLabel: UILabel = {
@@ -86,6 +103,7 @@ class ItemTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.layer.masksToBounds = false
         setupView()
         setupConstraints()
     }
@@ -104,7 +122,8 @@ class ItemTableViewCell: UITableViewCell {
 
 private extension ItemTableViewCell {
     func setupView() {
-        contentView.addSubview(imagesContainerView)
+        contentView.addSubview(shadowView)
+        shadowView.addSubview(imagesContainerView)
         imagesContainerView.addSubview(cellImage)
         contentView.addSubview(badgeContainerView)
         badgeContainerView.addSubview(badgeLabel)
@@ -114,10 +133,16 @@ private extension ItemTableViewCell {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            imagesContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Drawings.cellPadding),
-            imagesContainerView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imagesContainerView.widthAnchor.constraint(equalToConstant: Drawings.imageContainerSize),
-            imagesContainerView.heightAnchor.constraint(equalToConstant: Drawings.imageContainerSize),
+            
+            shadowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Drawings.cellPadding),
+            shadowView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            shadowView.widthAnchor.constraint(equalToConstant: Drawings.imageContainerSize),
+            shadowView.heightAnchor.constraint(equalToConstant: Drawings.imageContainerSize),
+            
+            imagesContainerView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+            imagesContainerView.centerYAnchor.constraint(equalTo: shadowView.centerYAnchor),
+            imagesContainerView.widthAnchor.constraint(equalTo: shadowView.widthAnchor),
+            imagesContainerView.heightAnchor.constraint(equalTo: shadowView.heightAnchor),
             
             cellImage.centerXAnchor.constraint(equalTo: imagesContainerView.centerXAnchor),
             cellImage.centerYAnchor.constraint(equalTo: imagesContainerView.centerYAnchor),

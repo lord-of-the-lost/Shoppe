@@ -11,7 +11,7 @@ import UIKit
 final class PaymentMethodView: UIView {
     
     // MARK: - UI Elements
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Payment Method"
         label.font = Fonts.ralewayBold21
@@ -19,17 +19,18 @@ final class PaymentMethodView: UIView {
         return label
     }()
     
-    private let cardButton: UIButton = {
+    private lazy var cardButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Card", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
-        button.backgroundColor = UIColor.systemGray5
+        button.setTitleColor(UIColor.customBlueText, for: .normal)
+        button.titleLabel?.font = Fonts.ralewayBold15
+        button.backgroundColor = UIColor.customLightGray
         button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    private let editButton: UIButton = {
+    private lazy var editButton: UIButton = {
         let button = UIButton(type: .system)
         let image = UIImage.pen1
         button.setImage(image, for: .normal)
@@ -56,7 +57,7 @@ final class PaymentMethodView: UIView {
         NSLayoutConstraint.activate([
             
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
 
             editButton.trailingAnchor.constraint(equalTo: trailingAnchor),
             editButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
@@ -64,7 +65,7 @@ final class PaymentMethodView: UIView {
             editButton.heightAnchor.constraint(equalToConstant: 30),
 
             cardButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
-            cardButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+            cardButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             cardButton.widthAnchor.constraint(equalToConstant: 80),
             cardButton.heightAnchor.constraint(equalToConstant: 35),
             cardButton.bottomAnchor.constraint(equalTo: bottomAnchor)

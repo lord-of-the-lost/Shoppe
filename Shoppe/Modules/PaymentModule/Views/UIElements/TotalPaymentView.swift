@@ -11,7 +11,7 @@ import UIKit
 final class TotalPaymentView: UIView {
     
     // MARK: - UI Elements
-    private let totalLabel: UILabel = {
+    private lazy var totalLabel: UILabel = {
         let label = UILabel()
         label.text = "Total"
         label.font = Fonts.ralewayExtraBold
@@ -19,7 +19,7 @@ final class TotalPaymentView: UIView {
         return label
     }()
     
-    private let amountLabel: UILabel = {
+    private lazy var amountLabel: UILabel = {
         let label = UILabel()
         label.text = "$34,00"
         label.font = Fonts.ralewayBold18
@@ -27,7 +27,7 @@ final class TotalPaymentView: UIView {
         return label
     }()
     
-    private let payButton: UIButton = {
+    private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Pay", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -38,7 +38,7 @@ final class TotalPaymentView: UIView {
         return button
     }()
     
-    private let containerView: UIView = {
+    private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.systemGray6
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +77,7 @@ final class TotalPaymentView: UIView {
 
             payButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             payButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            payButton.widthAnchor.constraint(equalToConstant: 80),
+            payButton.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.3),
             payButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
