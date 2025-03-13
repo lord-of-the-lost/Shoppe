@@ -10,7 +10,15 @@ import UIKit
 import SwiftUI
 
 protocol PaymentViewProtocol: AnyObject {
-    func reloadData()
+    func updateTotal(_ total: Double)
+}
+
+enum PaymentVCInteraction {
+    case addressEdit
+    case addVoucher
+    case paymentMethodEdit
+    case payButton
+    case itemCell
 }
 
 final class PaymentViewController: UIViewController {
@@ -23,7 +31,6 @@ final class PaymentViewController: UIViewController {
     private let paymentMethodView = PaymentMethodView()
     private let totalPaymentView = TotalPaymentView()
 
-    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +101,7 @@ final class PaymentViewController: UIViewController {
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
         table.isScrollEnabled = false
-        table.rowHeight = 70
+        table.rowHeight = 60
         return table
     }()
     
@@ -111,27 +118,26 @@ final class PaymentViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupConstraints()
+        setupButtonActions()
         presenter.viewDidLoad()
-        updateTableViewHeight()
     }
     
-    private func updateTableViewHeight() {
-        tableView.layoutIfNeeded()
-        let contentHeight = tableView.contentSize.height
-        tableViewHeightConstraint?.constant = contentHeight
-        view.layoutIfNeeded()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateTableViewHeight()
+        tableView.reloadData()
     }
 }
 
 // MARK: - PaymentViewProtocol
 extension PaymentViewController: PaymentViewProtocol {
-    func reloadData() {
-        tableView.reloadData()
-        updateTableViewHeight()
+    func updateTotal(_ total: Double) {
+        totalPaymentView.updateTotal(to: total)
     }
 }
 
@@ -152,10 +158,51 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: itemViewModel)
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        presenter.didTapCell(at: indexPath.row)
+    }
 }
 
 // MARK: - Private Methods
 private extension PaymentViewController {
+    
+    // MARK: - Button Actions
+    func setupButtonActions() {
+        addressView.editButton.addAction(
+            UIAction { /*[weak self]*/ _ in
+                print("addressView tapped")
+            },
+            for: .touchUpInside
+        )
+        
+        addVoucherButton.addAction(
+            UIAction { /*[weak self] _ in*/ _ in 
+                  print("addVoucherButton tapped")
+              },
+              for: .touchUpInside
+          )
+        paymentMethodView.editButton.addAction(
+            UIAction { /*[weak self]*/ _ in
+                  print("paymentMethodView  editButton tapped")
+              },
+              for: .touchUpInside
+          )
+        totalPaymentView.payButton.addAction(UIAction {/*[ weak self]*/  _ in
+            print("payButton tapped")
+        }, for: .touchUpInside)
+        
+    }
+    
+    func updateTableViewHeight() {
+        tableView.layoutIfNeeded()
+        let contentHeight = tableView.contentSize.height
+        tableViewHeightConstraint?.constant = contentHeight
+        view.layoutIfNeeded()
+    }
+    
+    
     func setupView() {
         view.backgroundColor = .white
         view.addSubview(scrollView)
@@ -171,6 +218,7 @@ private extension PaymentViewController {
         stackView.addArrangedSubview(totalPaymentView)
     }
     
+    //MARK: - Setup constraints
     func setupConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -185,7 +233,6 @@ private extension PaymentViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
             stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
 
@@ -193,8 +240,8 @@ private extension PaymentViewController {
             shippingView.heightAnchor.constraint(equalToConstant: 80),
             shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
             
-            totalPaymentView.heightAnchor.constraint(equalToConstant: 80),
-            totalPaymentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor), paymentMethodView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            totalPaymentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
+            totalPaymentView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
             
             paymentMethodView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
             
@@ -202,7 +249,9 @@ private extension PaymentViewController {
             itemsCountLabel.heightAnchor.constraint(equalToConstant: 22),
             
             addVoucherButton.heightAnchor.constraint(equalToConstant: 44),
-            addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.35)
+            addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.35),
+            
+            itemsContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23)
         ])
 
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)

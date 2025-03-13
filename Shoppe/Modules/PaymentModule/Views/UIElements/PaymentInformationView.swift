@@ -45,7 +45,7 @@ final class PaymentInformationView: UIView {
         return label
     }()
     
-    private lazy var editButton: UIButton = {
+    lazy var editButton: UIButton = {
         let button = UIButton()
         button.setImage(.pen1, for: .normal)
         button.tintColor = .systemBlue

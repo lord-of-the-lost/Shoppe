@@ -92,7 +92,6 @@ class ShippingOptionCell: UITableViewCell {
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            containerView.heightAnchor.constraint(equalToConstant: 50),
             
             checkmarkImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
             checkmarkImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),

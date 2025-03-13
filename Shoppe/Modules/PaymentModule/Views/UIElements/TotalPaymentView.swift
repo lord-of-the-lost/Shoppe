@@ -27,7 +27,7 @@ final class TotalPaymentView: UIView {
         return label
     }()
     
-    private lazy var payButton: UIButton = {
+    lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Pay", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -55,6 +55,10 @@ final class TotalPaymentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func updateTotal(to amount: Double) {
+        amountLabel.text = String(format: "$%.2f", amount)
+    }
+    
     private func setupView() {
         addSubview(containerView)
         containerView.addSubview(totalLabel)
@@ -67,7 +71,6 @@ final class TotalPaymentView: UIView {
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            containerView.heightAnchor.constraint(equalToConstant: 70),
 
             totalLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
             totalLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),

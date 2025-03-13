@@ -70,7 +70,6 @@ private extension ShippingOptionsTableView {
             tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            tableView.heightAnchor.constraint(equalToConstant: 120),
 
             deliveryDateLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 10),
             deliveryDateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),

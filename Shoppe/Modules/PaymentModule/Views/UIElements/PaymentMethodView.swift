@@ -30,11 +30,13 @@ final class PaymentMethodView: UIView {
         return button
     }()
     
-    private lazy var editButton: UIButton = {
-        let button = UIButton(type: .system)
-        let image = UIImage.pen1
-        button.setImage(image, for: .normal)
-        button.tintColor = .blue
+    lazy var editButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.pen1, for: .normal)
+        button.tintColor = .systemBlue
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
