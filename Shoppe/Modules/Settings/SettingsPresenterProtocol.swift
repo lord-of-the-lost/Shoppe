@@ -9,10 +9,9 @@
 import UIKit
 import PhotosUI
 
-
 protocol SettingsPresenterProtocol: AnyObject {
     func setupView(_ view: SettingsViewProtocol, viewController: UIViewController)
-    func saveButtonTapped(user: UserSettings)
+    func saveButtonTapped(user: User)
     func viewDidLoad()
     func didTapEditButton()
     func didSelectImage(_ image: UIImage)
@@ -23,7 +22,7 @@ final class SettingsPresenter: SettingsPresenterProtocol {
     private weak var view: SettingsViewProtocol?
     private weak var viewController: UIViewController?
     private let router: AppRouterProtocol
-    var user = UserSettings(username: "username", email: "email", password: "password", avatarData: Data())
+    var user: User? = UserDefaultsService.shared.getCustomObject(forKey: .userModel)
     
     init(router: AppRouterProtocol) {
         self.router = router
@@ -34,12 +33,12 @@ final class SettingsPresenter: SettingsPresenterProtocol {
         self.viewController = viewController
     }
     
-    func saveButtonTapped(user: UserSettings) {
-        updateUser(username: user.username, email: user.email, password: user.password, image: user.avatarData)
+    func saveButtonTapped(user: User) {
+        updateUser(username: user.name, email: user.email, password: user.password, image: user.avatarData)
     }
     
     func viewDidLoad() {
-        getUser()
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
         view?.updateUI(user: user)
     }
     
@@ -59,15 +58,14 @@ final class SettingsPresenter: SettingsPresenterProtocol {
 }
 
 private extension SettingsPresenter {
-    func updateUser(username: String?, email: String, password: String, image: Data?) {
-        let user = UserSettings(username: username ?? "", email: email, password: password, avatarData: image)
-        UserDefaultsService.shared.saveCustomObject(user, forKey: .username)
+    func updateUser(username: String, email: String, password: String, image: Data) {
+        guard var user: User =  UserDefaultsService.shared.get(forKey: .userModel) else { return }
+        user.name = username
+        user.email = email
+        user.password = password
+        user.avatarData = image
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
         view?.showAlert(title: "Profile successfully updated", message: nil)
-    }
-    
-    func getUser(){
-        guard let user: UserSettings = UserDefaultsService.shared.getCustomObject(forKey: .username) else { return }
-        self.user = user
     }
 }
 

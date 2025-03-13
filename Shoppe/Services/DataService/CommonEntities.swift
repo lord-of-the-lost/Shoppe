@@ -7,13 +7,14 @@
 
 import UIKit
 
-struct UserData {
+struct User: Codable {
     var id: String = UUID().uuidString
     var name: String = "Anonimus"
     var email: String = .init()
     var password: String = .init()
+    var avatarData: Data = .init()
     var address: String = "Delivery address"
-    var currentCurrency: Currency = .ruble
+    var currentCurrency: Currency = .dollar
     var cart: [Product] = .init()
     var wishList: [Product] = .init()
     var serachHistory: [String] = .init()
@@ -21,18 +22,23 @@ struct UserData {
     var isAuthorized: Bool = false
 }
 
-struct Product {
+struct Product: Codable {
     let id: Int
     let title: String
     let price: Double
     let description: String
     let category: Category
-    let image: UIImage
+    let imageData: Data
     var count: Int = 1
     var isInCart: Bool = false
     var isInWishlist: Bool = false
     
-    enum Category: String {
+    // Вычисляемое свойство для получения UIImage
+    var image: UIImage? {
+        UIImage(data: imageData)
+    }
+    
+    enum Category: String, Codable {
         case electronics = "electronics"
         case jewelery = "jewelery"
         case mensClothing = "men's clothing"
@@ -41,6 +47,6 @@ struct Product {
     }
 }
 
-enum Currency {
+enum Currency: Codable {
     case ruble, dollar, euro
 }

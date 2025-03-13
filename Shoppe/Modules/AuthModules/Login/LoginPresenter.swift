@@ -71,7 +71,7 @@ final class LoginPresenter: LoginPresenterProtocol {
 
 private extension LoginPresenter {
     func checkIfUserExists(email: String, password: String) -> Bool {
-        guard let savedUser: User = UserDefaultsService.shared.getCustomObject(forKey: .username) else {
+        guard let savedUser: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else {
             return false
         }
         return savedUser.email == email && savedUser.password == password
@@ -80,9 +80,7 @@ private extension LoginPresenter {
     func handlePasswordEntry() {
         guard let password = view?.getPassword() else { return }
         if checkIfUserExists(email: emailUser, password: password) {
-            userIsLogin()
-            router.showMainTabBar()
-            
+            loginUser()
         } else {
             if validatePassword() {
                 view?.hideKeyboard()
@@ -119,7 +117,25 @@ private extension LoginPresenter {
         return true
     }
     
-    func userIsLogin() {
-        UserDefaultsService.shared.set(value: true, forKey: .isUserLoggedIn)
+    func loginUser() {
+        guard var user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        user.isAuthorized = true
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
+    }
+    
+    func showOnboardingIfNeeded() {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        switch user.isOnboardingComplete {
+        case true: goToMainScreen()
+        case false: goToOnboarding()
+        }
+    }
+    
+    func goToMainScreen() {
+        router.showMainTabBar()
+    }
+    
+    func goToOnboarding() {
+        router.showOnboarding()
     }
 }

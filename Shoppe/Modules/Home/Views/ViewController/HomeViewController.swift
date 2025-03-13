@@ -135,25 +135,3 @@ private extension HomeViewController {
         ])
     }
 }
-
-//MARK: - SwiftUi preview
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        Container().edgesIgnoringSafeArea(.all)
-    }
-    
-    struct Container: UIViewControllerRepresentable {
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return UINavigationController(
-                rootViewController: HomeFactory.makeModule())
-            
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-            
-        }
-        
-        typealias UIViewControllerType = UIViewController
-    }
-}

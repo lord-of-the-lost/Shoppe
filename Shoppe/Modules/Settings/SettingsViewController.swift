@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SettingsViewProtocol: AnyObject {
-    func updateUI(user: UserSettings)
+    func updateUI(user: User)
     func updateAvatar(_ image: UIImage)
     func showAlert(title: String, message: String?)
 }
@@ -120,16 +120,11 @@ extension SettingsViewController: SettingsViewProtocol {
         avatarView.image = image
     }
     
-    func updateUI(user: UserSettings) {
-        usernameTF.text = user.username ?? ""
+    func updateUI(user: User) {
+        usernameTF.text = user.name
         emailTF.text = user.email
         passwordTF.text = user.password
-        
-        if let avatarData = user.avatarData {
-            avatarView.image = UIImage(data: avatarData)
-        } else {
-            avatarView.image = UIImage(resource: .avatar)
-        }
+        avatarView.image = UIImage(data: user.avatarData)
     }
 }
 
@@ -226,11 +221,11 @@ private extension SettingsViewController {
             showAlert(title: "Please enter your email and password", message: nil)
             return
         }
-        presenter.saveButtonTapped(user: UserSettings(
-            username: usernameTF.text,
+        presenter.saveButtonTapped(user: User(
+            name: usernameTF.text ?? "",
             email: email,
             password: password,
-            avatarData: avatarView.image?.jpegData(compressionQuality: 0.5)))
+            avatarData: avatarView.image?.jpegData(compressionQuality: 0.5) ?? .init()))
     }
     
     @objc func dismissKeyboard() {

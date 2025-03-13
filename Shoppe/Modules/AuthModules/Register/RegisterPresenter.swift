@@ -39,7 +39,7 @@ final class RegisterPresenter: RegisterPresenterProtocol {
             return
         }
         saveUser(email: email, password: password)
-        router.showMainTabBar()
+        showOnboardingIfNeeded()
     }
     
     func cancelButtonTapped() { router.dismiss(animated: true) }
@@ -57,8 +57,8 @@ final class RegisterPresenter: RegisterPresenterProtocol {
 // MARK: - Private Methods
 private extension RegisterPresenter {
     func saveUser(email: String, password: String) {
-        let user = User(username: "", email: email, password: password)
-        UserDefaultsService.shared.saveCustomObject(user, forKey: .username)
+        let user = User(email: email, password: password, isAuthorized: true)
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
     }
     
     private func validateEmail() -> Bool {
@@ -75,5 +75,21 @@ private extension RegisterPresenter {
             return false
         }
         return true
+    }
+    
+    func showOnboardingIfNeeded() {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        switch user.isOnboardingComplete {
+        case true: goToMainScreen()
+        case false: goToOnboarding()
+        }
+    }
+    
+    func goToMainScreen() {
+        router.showMainTabBar()
+    }
+    
+    func goToOnboarding() {
+        router.showOnboarding()
     }
 }
