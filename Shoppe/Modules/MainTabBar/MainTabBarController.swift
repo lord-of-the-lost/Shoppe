@@ -9,6 +9,7 @@ import UIKit
 
 // MARK: - Protocol
 protocol MainTabBarViewProtocol: AnyObject {
+    func setupTabItems(_ items: [TabItemModel])
     func updateBasketBadge(count: Int)
 }
 
@@ -16,35 +17,7 @@ protocol MainTabBarViewProtocol: AnyObject {
 final class MainTabBarController: UITabBarController {
     private let presenter: MainTabBarPresenterProtocol
     private let basketTabIndex = 3
-    
-    // MARK: - Setup
-    private var tabItems: [TabItemModel] = [
-        TabItemModel(
-            viewController: TestBasketViewController(),
-            iconName: "Home",
-            selectedIconName: "HomeSelected"
-        ),
-        TabItemModel(
-            viewController: UIViewController(),
-            iconName: "Heart",
-            selectedIconName: "HeartSelected"
-        ),
-        TabItemModel(
-            viewController: UIViewController(),
-            iconName: "Categories",
-            selectedIconName: "CategoriesSelected"
-        ),
-        TabItemModel(
-            viewController: UIViewController(),
-            iconName: "Bag",
-            selectedIconName: "BagSelected"
-        ),
-        TabItemModel(
-            viewController: UIViewController(),
-            iconName: "Person",
-            selectedIconName: "PersonSelected"
-        )
-    ]
+    private var tabItems: [TabItemModel] = []
     
     // MARK: Lifecycle
     init(presenter: MainTabBarPresenterProtocol) {
@@ -59,14 +32,19 @@ final class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.setupView(self)
+        presenter.viewDidLoad()
         setupViewControllers()
         configureTabBarAppearance()
-        presenter.viewDidLoad()
     }
 }
 
 // MARK: - MainTabBarViewProtocol
 extension MainTabBarController: MainTabBarViewProtocol {
+    func setupTabItems(_ items: [TabItemModel]) {
+        tabItems = items
+    }
+    
     func updateBasketBadge(count: Int) {
         guard
             let tabItems = tabBar.items,
@@ -79,13 +57,13 @@ extension MainTabBarController: MainTabBarViewProtocol {
 // MARK: - Private Methods
 private extension MainTabBarController {
     func setupViewControllers() {
-        viewControllers = tabItems.map { config in
-            let navController = UINavigationController(rootViewController: config.viewController)
-            navController.tabBarItem = createTabBarItem(
-                iconName: config.iconName,
-                selectedIconName: config.selectedIconName
+        viewControllers = tabItems.map { item in
+            let controller = item.viewController
+            controller.tabBarItem = createTabBarItem(
+                iconName: item.iconName,
+                selectedIconName: item.selectedIconName
             )
-            return navController
+            return controller
         }
     }
     
@@ -98,10 +76,10 @@ private extension MainTabBarController {
     }
     
     func configureTabBarAppearance() {
-         let tabBarAppearance = UITabBarAppearance()
-         tabBarAppearance.configureWithOpaqueBackground()
-         
-         tabBar.scrollEdgeAppearance = tabBarAppearance
-         tabBar.standardAppearance = tabBarAppearance
-     }
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        
+        tabBar.scrollEdgeAppearance = tabBarAppearance
+        tabBar.standardAppearance = tabBarAppearance
+    }
 }
