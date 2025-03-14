@@ -41,7 +41,7 @@ final class AppFactory {
     }
     
     static func makeHomeModule(router: AppRouterProtocol) -> UIViewController {
-        let presenter = HomePresenter(router: router)
+        let presenter = HomePresenter(router: router, networkService: networkService)
         let viewController = HomeViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController

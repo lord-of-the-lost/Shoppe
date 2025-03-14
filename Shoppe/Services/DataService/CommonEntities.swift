@@ -44,6 +44,16 @@ struct Product: Codable {
         case mensClothing = "men's clothing"
         case womensClothing = "women's clothing"
         case other
+        
+        var displayName: String {
+              switch self {
+              case .electronics: "Electronics"
+              case .jewelery: "Jewelry"
+              case .mensClothing: "Men's Clothing"
+              case .womensClothing: "Women's Clothing"
+              case .other: "Other"
+              }
+          }
     }
 }
 

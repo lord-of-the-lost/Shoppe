@@ -11,7 +11,7 @@ import UIKit
 protocol NetworkServiceProtocol {
     func fetchAllProducts(completion: @escaping (Result<[ProductModel], NetworkError>) -> Void)
     func fetchProduct(id: Int, completion: @escaping (Result<ProductModel, NetworkError>) -> Void)
-    func loadImage(from urlString: String, completion: @escaping (Result<UIImage, NetworkError>) -> Void)
+    func loadImage(from urlString: String, completion: @escaping (Result<Data, NetworkError>) -> Void)
 }
 
 // MARK: - NetworkError
@@ -57,15 +57,11 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     /// Загрузка картинки
-    func loadImage(from urlString: String, completion: @escaping (Result<UIImage, NetworkError>) -> Void) {
+    func loadImage(from urlString: String, completion: @escaping (Result<Data, NetworkError>) -> Void) {
         performDataRequest(urlString: urlString) { result in
             switch result {
             case .success(let data):
-                guard let image = UIImage(data: data) else {
-                    completion(.failure(.invalidData))
-                    return
-                }
-                completion(.success(image))
+                completion(.success(data))
             case .failure(let error):
                 completion(.failure(error))
             }
