@@ -13,7 +13,6 @@ enum SearchState {
     case results([ProductCellViewModel])
 }
 
-// MARK: - View Protocol
 protocol SearchViewProtocol: AnyObject {
     func updateState(_ state: SearchState)
     func updateSearchText(_ text: String)

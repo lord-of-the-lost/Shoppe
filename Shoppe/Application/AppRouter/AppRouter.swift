@@ -48,20 +48,17 @@ final class AppRouter: AppRouterProtocol {
     
     func showRegistrationScreen() {
         let registrationViewController = AppFactory.makeRegistrationModule(router: self)
-        registrationViewController.modalPresentationStyle = .fullScreen
-        presentModalViewController(registrationViewController)
+        pushViewController(registrationViewController)
     }
     
     func showLoginScreen() {
         let loginViewController = AppFactory.makeLoginModule(router: self)
-        loginViewController.modalPresentationStyle = .fullScreen
-        presentModalViewController(loginViewController)
+        pushViewController(loginViewController)
     }
     
     func showOnboarding() {
         let onboardingViewController = AppFactory.makeOnboardingModule(router: self)
         onboardingViewController.modalPresentationStyle = .fullScreen
-        navigation.presentedViewController?.dismiss(animated: false)
         presentModalViewController(onboardingViewController)
     }
     
@@ -72,16 +69,8 @@ final class AppRouter: AppRouterProtocol {
     
     func showMainTabBar() {
         let tabBarController = AppFactory.makeTabBarModule(router: self)
-        
-        let completion: () -> Void = { [weak self] in
-            self?.navigation.setViewControllers([tabBarController], animated: true)
-        }
-        
-        if let presentedViewController = navigation.presentedViewController {
-            presentedViewController.dismiss(animated: false, completion: completion)
-        } else {
-            completion()
-        }
+        navigation.setViewControllers([tabBarController], animated: true)
+        navigation.presentedViewController?.dismiss(animated: false)
     }
 }
 
