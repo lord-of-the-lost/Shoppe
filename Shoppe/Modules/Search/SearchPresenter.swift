@@ -8,9 +8,14 @@
 import UIKit
 
 final class SearchPresenter {
+    private let router: AppRouterProtocol
     private weak var view: SearchViewProtocol?
-    private var searchHistory: [String] = []
+    private var searchHistory: [String] = ["dsd", "dsdfsf", "wwdwd", "djfjsfjsfjsfsf", "2832e2edfc"]
     private var currentResults: [ProductCellViewModel] = []
+    
+    init(router: AppRouterProtocol) {
+        self.router = router
+    }
     
     func setupView(_ view: SearchViewProtocol) {
         self.view = view
@@ -19,7 +24,7 @@ final class SearchPresenter {
 
 extension SearchPresenter: SearchPresenterProtocol {
     func viewDidLoad() {
-        view?.updateState(.empty)
+        view?.updateState(.history(searchHistory))
     }
     
     func searchButtonClicked(with text: String) {
@@ -28,17 +33,23 @@ extension SearchPresenter: SearchPresenterProtocol {
             ProductCellViewModel(image: UIImage(named: "product"), description: "Product 2", price: "$17.00")
         ]
         
-        if !searchHistory.contains(text) {
-            searchHistory.append(text)
+        // Обновляем историю поиска
+        if !text.isEmpty {
+            // Удаляем текст из истории, если он там уже есть
+            searchHistory.removeAll { $0 == text }
+            // Добавляем текст в начало массива
+            searchHistory.insert(text, at: 0)
         }
         
         currentResults = mockResults
         view?.updateSearchText(text)
-        view?.updateState(.results(mockResults))
+        view?.updateState(.history(searchHistory))
+      //  view?.updateState(.results(mockResults))
     }
     
-    func clearSearchTapped() {
-        view?.updateState(.history(searchHistory))
+    func clearSearchHistoryTapped() {
+        searchHistory.removeAll()
+        view?.updateState(.empty)
     }
     
     func addToCartTapped(at index: Int) {

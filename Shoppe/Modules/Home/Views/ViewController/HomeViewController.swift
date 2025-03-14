@@ -107,6 +107,12 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
+extension HomeViewController: MainHeaderViewDelegate {
+    func searchTapped() {
+        presenter.searchTapped()
+    }
+}
+
 // MARK: - Private Methods
 private extension HomeViewController {
     
@@ -119,6 +125,7 @@ private extension HomeViewController {
         view.backgroundColor = .white
         view.addSubview(collectionView)
         view.addSubview(header)
+        header.delegate = self
     }
     
     func setupConstraints() {

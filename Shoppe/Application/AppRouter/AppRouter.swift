@@ -15,6 +15,7 @@ protocol AppRouterProtocol {
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
+    func showSearch()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -57,6 +58,11 @@ final class AppRouter: AppRouterProtocol {
         onboardingViewController.modalPresentationStyle = .fullScreen
         navigation.presentedViewController?.dismiss(animated: false)
         presentModalViewController(onboardingViewController)
+    }
+    
+    func showSearch() {
+        let searchViewController = AppFactory.makeSearchModule(router: self)
+        pushViewController(searchViewController)
     }
     
     func showMainTabBar() {

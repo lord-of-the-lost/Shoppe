@@ -41,7 +41,7 @@ final class AppFactory {
     }
     
     static func makeHomeModule(router: AppRouterProtocol) -> UIViewController {
-        let presenter = HomePresenter()
+        let presenter = HomePresenter(router: router)
         let viewController = HomeViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
@@ -78,8 +78,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeSearchModule() -> UIViewController {
-        let presenter = SearchPresenter()
+    static func makeSearchModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = SearchPresenter(router: router)
         let viewController = SearchViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
