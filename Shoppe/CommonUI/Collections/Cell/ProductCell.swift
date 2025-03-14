@@ -53,10 +53,12 @@ final class ProductCell: UICollectionViewCell {
     
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         label.text = "Lorem ipsum dolor sit amet consectetur"
         label.font = Fonts.nunitoRegular
         label.textAlignment = .left
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -64,7 +66,7 @@ final class ProductCell: UICollectionViewCell {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.text = "$17,00"
-        label.font = Fonts.ralewayBold
+        label.font = Fonts.ralewayBold.withSize(17)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -143,7 +145,7 @@ private extension ProductCell {
             shadowView.topAnchor.constraint(equalTo: topAnchor),
             shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-            shadowView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
+            shadowView.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -6),
             
             imageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor, constant: 4),
             imageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor, constant: -4),
@@ -151,14 +153,13 @@ private extension ProductCell {
             imageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: -4),
             
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 30),
-            descriptionLabel.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: 10),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
+            descriptionLabel.bottomAnchor.constraint(equalTo: priceLabel.topAnchor, constant: -8),
             
-            priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 8),
+            priceLabel.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -10),
             priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             priceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 50),
             
-            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 10),
             addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             addButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             addButton.trailingAnchor.constraint(equalTo: wishButton.leadingAnchor, constant: -20),
