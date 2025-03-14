@@ -10,11 +10,13 @@ import UIKit
 protocol AppRouterProtocol {
     func start()
     func dismiss(animated: Bool)
+    func popViewController(animated: Bool)
     func showStartScreen()
     func showRegistrationScreen()
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
+    func showSearch()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -33,6 +35,10 @@ final class AppRouter: AppRouterProtocol {
     
     func dismiss(animated: Bool) {
         navigation.dismiss(animated: animated)
+    }
+    
+    func popViewController(animated: Bool) {
+        navigation.popViewController(animated: animated)
     }
     
     func showStartScreen() {
@@ -57,6 +63,11 @@ final class AppRouter: AppRouterProtocol {
         onboardingViewController.modalPresentationStyle = .fullScreen
         navigation.presentedViewController?.dismiss(animated: false)
         presentModalViewController(onboardingViewController)
+    }
+    
+    func showSearch() {
+        let searchViewController = AppFactory.makeSearchModule(router: self)
+        pushViewController(searchViewController)
     }
     
     func showMainTabBar() {

@@ -13,7 +13,7 @@ struct User: Codable {
     var email: String = .init()
     var password: String = .init()
     var avatarData: Data = .init()
-    var address: String = "Delivery address"
+    var address: String = "Mock american address"
     var currentCurrency: Currency = .dollar
     var cart: [Product] = .init()
     var wishList: [Product] = .init()

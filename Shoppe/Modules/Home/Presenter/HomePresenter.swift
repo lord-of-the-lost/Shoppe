@@ -13,6 +13,7 @@ protocol HomePresenterProtocol: AnyObject {
     func viewDidLoad()
     func didTap(action: MainVCInteraction)
     func showDetailView(with product: ProductModel)
+    func searchTapped()
 }
 
 // MARK: - Presenter
@@ -21,14 +22,15 @@ final class HomePresenter {
     private let popular: [PopularCellViewModel] = PopularMock.all
     private let justForYou: [JustForYourCellViewModel] = JustForYouMock.all
     private weak var view: HomeViewProtocol?
+    private let router: AppRouterProtocol
+    
+    init(router: AppRouterProtocol) {
+        self.router = router
+    }
 }
 
 // MARK: - Private Methods
-private extension HomePresenter {
-    func handleSearch(query: String) {
-        Task {}
-    }
-}
+private extension HomePresenter {}
 
 extension HomePresenter: HomePresenterProtocol {
     func didTap(action: MainVCInteraction) {
@@ -61,4 +63,7 @@ extension HomePresenter: HomePresenterProtocol {
         )
     }
     
+    func searchTapped() {
+        router.showSearch()
+    }
 }

@@ -8,7 +8,12 @@
 import UIKit
 import SwiftUI
 
+protocol MainHeaderViewDelegate: AnyObject {
+    func searchTapped()
+}
+
 final class MainHeaderView: UIView {
+    weak var delegate: MainHeaderViewDelegate?
     
     // MARK: - Drawings
     private enum Drawings {
@@ -21,12 +26,13 @@ final class MainHeaderView: UIView {
     // MARK: - UI Elements
     private lazy var addressView = HeaderAddressView()
     private lazy var shopTitleView = HomeTitleView(title: Drawings.shopTitle)
-    private lazy var searchBarView = SearchBarView()
+    private lazy var searchView = SearchView()
     
     private lazy var shopStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
+        stackView.distribution = .fillEqually
         stackView.spacing = Drawings.shopStackSpacing
         return stackView
     }()
@@ -50,12 +56,20 @@ final class MainHeaderView: UIView {
     }
 }
 
+// MARK: - SearchViewDelegate
+extension MainHeaderView: SearchViewDelegate {
+    func placeholderTapped() {
+        delegate?.searchTapped()
+    }
+}
+
 // MARK: - Private Methods
 private extension MainHeaderView {
     func setupView() {
+        searchView.delegate = self
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)
-        shopStackView.addArrangedSubview(searchBarView)
+        shopStackView.addArrangedSubview(searchView)
         
         mainStackView.addArrangedSubview(addressView)
         mainStackView.addArrangedSubview(shopStackView)
