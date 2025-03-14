@@ -7,7 +7,6 @@
 
 import UIKit
 
-// MARK: - Models
 enum SearchState {
     case empty
     case history([String])
@@ -20,23 +19,9 @@ protocol SearchViewProtocol: AnyObject {
     func updateSearchText(_ text: String)
 }
 
-// MARK: - Presenter Protocol
-protocol SearchPresenterProtocol: AnyObject {
-    func viewDidLoad()
-    func searchButtonClicked(with text: String)
-    func clearSearchHistoryTapped()
-    func addToCartTapped(at index: Int)
-    func likeTapped(at index: Int)
-    func removeHistoryItem(at index: Int)
-    func backButtonTapped()
-}
-
 final class SearchViewController: UIViewController {
-    // MARK: - Properties
-    private var presenter: SearchPresenterProtocol?
+    private let presenter: SearchPresenterProtocol
     private var currentState: SearchState = .empty
-    
-    // MARK: - UI Elements
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -95,6 +80,7 @@ final class SearchViewController: UIViewController {
         collection.backgroundColor = .clear
         collection.delegate = self
         collection.dataSource = self
+        collection.showsVerticalScrollIndicator = false
         collection.register(ProductCell.self, forCellWithReuseIdentifier: ProductCell.identifier)
         collection.register(ChipsCollectionViewCell.self, forCellWithReuseIdentifier: ChipsCollectionViewCell.identifier)
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -102,21 +88,21 @@ final class SearchViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupView()
-        setupConstraints()
-        presenter?.viewDidLoad()
-    }
-    
     init(presenter: SearchPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
-    @available(*, unavailable, message: "unavailable")
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupView()
+        setupConstraints()
+        presenter.viewDidLoad()
     }
 }
 
@@ -155,30 +141,36 @@ extension SearchViewController: SearchViewProtocol {
 extension SearchViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch currentState {
-        case .empty:
-            return 0
-        case .history(let items):
-            return items.count
-        case .results(let items):
-            return items.count
+        case .empty: 0
+        case .history(let items): items.count
+        case .results(let items): items.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch currentState {
         case .history(let items):
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChipsCollectionViewCell.identifier, for: indexPath) as! ChipsCollectionViewCell
-            cell.configure(with: items[indexPath.item])
+            guard
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChipsCollectionViewCell.identifier, for: indexPath) as? ChipsCollectionViewCell,
+                  let model = items[safe: indexPath.item] else {
+                return UICollectionViewCell()
+            }
+            
+            cell.configure(with: model)
             cell.delegate = self
             return cell
             
         case .results(let items):
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as! ProductCell
-            cell.configure(with: items[indexPath.item])
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as? ProductCell,
+                  let model = items[safe: indexPath.item] else {
+                return UICollectionViewCell()
+            }
+            cell.configure(with: model)
+            cell.delegate = self
             return cell
             
         case .empty:
-            fatalError("Should not request cells in empty state")
+            return UICollectionViewCell()
         }
     }
 }
@@ -188,17 +180,15 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch currentState {
         case .history(let items):
-            let text = items[indexPath.item]
+            guard let text = items[safe: indexPath.item] else { return .zero }
             let font = Fonts.ralewayRegular.withSize(14)
             let textWidth = (text as NSString).size(withAttributes: [.font: font]).width
-            
             let maxWidth = collectionView.bounds.width
             let width = min(textWidth + 44, maxWidth)
-            
             return CGSize(width: width, height: 28)
             
         case .results:
-            return CGSize(width: (collectionView.bounds.width - 16) / 2, height: 280)
+            return CGSize(width: (collectionView.bounds.width / 2) - 4, height: 280)
             
         case .empty:
             return .zero
@@ -209,9 +199,9 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if case .history(let items) = currentState {
-            let selectedText = items[indexPath.item]
-            presenter?.searchButtonClicked(with: selectedText)
+        if case .history(let items) = currentState,
+           let selectedText = items[safe: indexPath.item] {
+            presenter.searchButtonClicked(with: selectedText)
         }
     }
 }
@@ -219,11 +209,11 @@ extension SearchViewController: UICollectionViewDelegate {
 // MARK: - SearchViewDelegate
 extension SearchViewController: SearchViewDelegate {
     func clearSearchTapped() {
-        searchView.setSearchState(.active)
+        presenter.clearSearchTapped()
     }
     
     func showProducts(_ query: String) {
-        presenter?.searchButtonClicked(with: query)
+        presenter.searchButtonClicked(with: query)
     }
 }
 
@@ -231,20 +221,20 @@ extension SearchViewController: SearchViewDelegate {
 extension SearchViewController: ProductCellDelegate {
     func addToCartTapped(_ cell: ProductCell) {
         guard let index = collectionView.indexPath(for: cell)?.item else { return }
-        presenter?.addToCartTapped(at: index)
+        presenter.addToCartTapped(at: index)
     }
     
     func likeTapped(_ cell: ProductCell) {
         guard let index = collectionView.indexPath(for: cell)?.item else { return }
-        presenter?.likeTapped(at: index)
+        presenter.likeTapped(at: index)
     }
 }
 
-// MARK: - ProductCellDelegate
+// MARK: - ChipsCollectionViewCellDelegate
 extension SearchViewController: ChipsCollectionViewCellDelegate {
     func deleteButtonTapped(in cell: ChipsCollectionViewCell) {
         guard let index = collectionView.indexPath(for: cell)?.item else { return }
-        presenter?.removeHistoryItem(at: index)
+        presenter.removeHistoryItem(at: index)
     }
 }
 
@@ -293,10 +283,10 @@ private extension SearchViewController {
     }
     
     @objc func clearSearchHistoryTapped() {
-        presenter?.clearSearchHistoryTapped()
+        presenter.clearSearchHistoryTapped()
     }
     
     @objc func backButtonTapped() {
-        presenter?.backButtonTapped()
+        presenter.backButtonTapped()
     }
 }
