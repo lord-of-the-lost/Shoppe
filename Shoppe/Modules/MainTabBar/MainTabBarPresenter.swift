@@ -59,7 +59,7 @@ private extension MainTabBarPresenter {
     func getTabItems() -> [TabItemModel] {
         [
             TabItemModel(
-                viewController: AppFactory.makeHomeModule(router: router, networkService: networkService),
+                viewController: AppFactory.makeHomeModule(router: router),
                 iconName: "Home",
                 selectedIconName: "HomeSelected"
             ),

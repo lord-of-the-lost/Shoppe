@@ -8,8 +8,8 @@
 import UIKit
 
 final class AppFactory {
-    private let networkService: NetworkServiceProtocol = NetworkService()
-    private let locationService: LocationService = LocationService()
+    private static let networkService: NetworkServiceProtocol = NetworkService()
+    private static let locationService: LocationService = LocationService()
     
     static func makeStartModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = StartPresenter(router: router)
@@ -40,14 +40,14 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeHomeModule(router: AppRouterProtocol, networkService: NetworkServiceProtocol) -> UIViewController {
+    static func makeHomeModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = HomePresenter()
         let viewController = HomeViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }
     
-    static func makeTabBarModule(router: AppRouterProtocol, networkService: NetworkServiceProtocol) -> UIViewController {
+    static func makeTabBarModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = MainTabBarPresenter(
             router: router,
             networkService: networkService,

@@ -13,7 +13,7 @@ protocol AllCategoriesScreenViewProtocol: AnyObject {
 
 final class AllCategoriesScreenViewController: UIViewController {
 
-    var presenter: AllCategoriesScreenPresenterProtocol!
+   // var presenter: AllCategoriesScreenPresenterProtocol!
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -47,7 +47,7 @@ final class AllCategoriesScreenViewController: UIViewController {
     }
     
     func cellPressed() {
-        presenter.cellPressed()
+       // presenter.cellPressed()
     }
     
     private func setupLayout() {
