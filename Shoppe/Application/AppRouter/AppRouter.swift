@@ -10,6 +10,7 @@ import UIKit
 protocol AppRouterProtocol {
     func start()
     func dismiss(animated: Bool)
+    func popViewController(animated: Bool)
     func showStartScreen()
     func showRegistrationScreen()
     func showLoginScreen()
@@ -34,6 +35,10 @@ final class AppRouter: AppRouterProtocol {
     
     func dismiss(animated: Bool) {
         navigation.dismiss(animated: animated)
+    }
+    
+    func popViewController(animated: Bool) {
+        navigation.popViewController(animated: animated)
     }
     
     func showStartScreen() {

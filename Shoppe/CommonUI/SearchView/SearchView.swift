@@ -131,7 +131,7 @@ private extension SearchView {
             searchField.backgroundColor = .white
             searchField.placeholder = ""
             searchField.layer.borderColor = UIColor.customLightGray.cgColor
-            searchField.layer.borderWidth = 1
+            searchField.layer.borderWidth = 2
             searchResultView.isHidden = true
             
         case .searchResult(let text):

@@ -17,7 +17,7 @@ enum SearchState {
 // MARK: - View Protocol
 protocol SearchViewProtocol: AnyObject {
     func updateState(_ state: SearchState)
-    func updateSearchText(_ text: String?)
+    func updateSearchText(_ text: String)
 }
 
 // MARK: - Presenter Protocol
@@ -27,6 +27,8 @@ protocol SearchPresenterProtocol: AnyObject {
     func clearSearchHistoryTapped()
     func addToCartTapped(at index: Int)
     func likeTapped(at index: Int)
+    func removeHistoryItem(at index: Int)
+    func backButtonTapped()
 }
 
 final class SearchViewController: UIViewController {
@@ -35,6 +37,18 @@ final class SearchViewController: UIViewController {
     private var currentState: SearchState = .empty
     
     // MARK: - UI Elements
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Shop"
+        label.textColor = .black
+        label.font = Fonts.ralewayBold
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private lazy var searchView: SearchView = {
         let searchView = SearchView()
         searchView.delegate = self
@@ -45,11 +59,21 @@ final class SearchViewController: UIViewController {
     
     private lazy var stateLabel: UILabel = {
         let label = UILabel()
-        label.text = "Search history is Empty"
         label.font = .systemFont(ofSize: 16)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private lazy var backButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "arrow.backward")
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 20, weight: .regular, scale: .default)
+        let button = UIButton()
+        button.configuration = config
+        button.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private lazy var clearSearchHistoryButton: UIButton = {
@@ -103,11 +127,14 @@ extension SearchViewController: SearchViewProtocol {
         
         switch state {
         case .empty:
+            stateLabel.text = "Search history is Empty"
             stateLabel.isHidden = false
+            searchView.setSearchState(.active)
             clearSearchHistoryButton.isHidden = true
             collectionView.isHidden = true
         case .history(let items):
-            stateLabel.isHidden = !items.isEmpty
+            stateLabel.text = "Search history"
+            stateLabel.isHidden = false
             clearSearchHistoryButton.isHidden = items.isEmpty
             collectionView.isHidden = items.isEmpty
             collectionView.reloadData()
@@ -119,8 +146,8 @@ extension SearchViewController: SearchViewProtocol {
         }
     }
     
-    func updateSearchText(_ text: String?) {
-        
+    func updateSearchText(_ text: String) {
+        searchView.setSearchState(.searchResult(text))
     }
 }
 
@@ -142,6 +169,7 @@ extension SearchViewController: UICollectionViewDataSource {
         case .history(let items):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChipsCollectionViewCell.identifier, for: indexPath) as! ChipsCollectionViewCell
             cell.configure(with: items[indexPath.item])
+            cell.delegate = self
             return cell
             
         case .results(let items):
@@ -165,7 +193,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
             let textWidth = (text as NSString).size(withAttributes: [.font: font]).width
             
             let maxWidth = collectionView.bounds.width
-            let width = min(textWidth + 26, maxWidth)
+            let width = min(textWidth + 44, maxWidth)
             
             return CGSize(width: width, height: 28)
             
@@ -212,24 +240,44 @@ extension SearchViewController: ProductCellDelegate {
     }
 }
 
+// MARK: - ProductCellDelegate
+extension SearchViewController: ChipsCollectionViewCellDelegate {
+    func deleteButtonTapped(in cell: ChipsCollectionViewCell) {
+        guard let index = collectionView.indexPath(for: cell)?.item else { return }
+        presenter?.removeHistoryItem(at: index)
+    }
+}
+
 // MARK: - Private Methods
 private extension SearchViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(searchView)
-        view.addSubview(stateLabel)
-        view.addSubview(clearSearchHistoryButton)
-        view.addSubview(collectionView)
+        view.addSubviews(
+            titleLabel,
+            backButton,
+            searchView,
+            stateLabel,
+            clearSearchHistoryButton,
+            collectionView
+        )
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            searchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            searchView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            
+            backButton.centerYAnchor.constraint(equalTo: searchView.centerYAnchor),
+            backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            backButton.widthAnchor.constraint(equalToConstant: 20),
+            backButton.heightAnchor.constraint(equalToConstant: 20),
+            
+            searchView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            searchView.leadingAnchor.constraint(equalTo: backButton.trailingAnchor, constant: 16),
             searchView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             searchView.heightAnchor.constraint(lessThanOrEqualToConstant: 60),
             
-            stateLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 32),
+            stateLabel.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 11),
             stateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             clearSearchHistoryButton.centerYAnchor.constraint(equalTo: stateLabel.centerYAnchor),
@@ -246,5 +294,9 @@ private extension SearchViewController {
     
     @objc func clearSearchHistoryTapped() {
         presenter?.clearSearchHistoryTapped()
+    }
+    
+    @objc func backButtonTapped() {
+        presenter?.backButtonTapped()
     }
 }

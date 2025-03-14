@@ -10,7 +10,7 @@ import UIKit
 final class SearchPresenter {
     private let router: AppRouterProtocol
     private weak var view: SearchViewProtocol?
-    private var searchHistory: [String] = ["dsd", "dsdfsf", "wwdwd", "djfjsfjsfjsfsf", "2832e2edfc"]
+    private var searchHistory: [String] = ["product", "pr", "abobus", "aglomeracia", "android-studio kakashka"]
     private var currentResults: [ProductCellViewModel] = []
     
     init(router: AppRouterProtocol) {
@@ -58,5 +58,18 @@ extension SearchPresenter: SearchPresenterProtocol {
     
     func likeTapped(at index: Int) {
         // Обработка добавления в избранное
+    }
+    
+    func backButtonTapped() {
+        router.popViewController(animated: true)
+    }
+    
+    func removeHistoryItem(at index: Int) {
+        searchHistory.remove(at: index)
+        if searchHistory.isEmpty {
+            view?.updateState(.empty)
+        } else {
+            view?.updateState(.history(searchHistory))
+        }
     }
 }
