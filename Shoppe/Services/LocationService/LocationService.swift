@@ -36,6 +36,7 @@ final class LocationService: NSObject {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
         case .denied, .restricted:
+            showLocationDeniedAlert()
             delegate?.didFailWithError(NSError(
                 domain: "Location error",
                 code: 1,
@@ -57,13 +58,13 @@ final class LocationService: NSObject {
                 )
                 return
             }
-
+            
             let countryCode = placemark.isoCountryCode ?? "Unknown"
             let currency = self.getCurrency(countryCode: countryCode)
             let address = [placemark.country, placemark.administrativeArea, placemark.locality]
                 .compactMap { $0 }
                 .joined(separator: ", ")
-
+            
             completion(address, currency)
         }
     }

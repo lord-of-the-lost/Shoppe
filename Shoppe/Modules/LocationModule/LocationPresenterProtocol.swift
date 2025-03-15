@@ -28,7 +28,9 @@ final class LocationPresenter: LocationPresenterProtocol {
     private var selectedLocation: CLLocation?
     private var selectedAddress: String?
     private var selectedCurrency: Currency?
-
+    
+    private var hasRequestedPermission = false
+    
     init(router: AppRouterProtocol) {
         self.router = router
     }
@@ -46,7 +48,7 @@ final class LocationPresenter: LocationPresenterProtocol {
     func saveButtonTapped() {
         guard let address = selectedAddress, let currency = selectedCurrency else { return }
         saveAddressAndCurrency(address: address, currency: currency)
-        print(address, currency)
+        sendNotification()
         router.popViewController(animated: true)
     }
     
@@ -57,7 +59,7 @@ final class LocationPresenter: LocationPresenterProtocol {
     func didSelectLocation(_ coordinate: CLLocationCoordinate2D) {
         selectedLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         locationService.getAddressAndCurrency(from: selectedLocation!) { [weak self] address, currency in
-            guard let self = self else { return }
+            guard let self = self else {return }
             self.selectedAddress = address
             self.selectedCurrency = currency
             self.view?.updateMap(with: coordinate, address: self.selectedAddress ?? "Custom Location")
@@ -65,6 +67,7 @@ final class LocationPresenter: LocationPresenterProtocol {
     }
     
     func myLocationButtonTapped() {
+        locationService.requestLocation()
         guard let location = locationService.lastLocation else { return }
         selectedLocation = location
         locationService.getAddressAndCurrency(from: location) { [weak self] address, currency in
@@ -76,11 +79,14 @@ final class LocationPresenter: LocationPresenterProtocol {
     }
 }
 
-// MARK: - Сохранение в UserDefaults
 private extension LocationPresenter {
     func saveAddressAndCurrency(address: String, currency: Currency) {
-        let user = User(address: address, currentCurrency: .dollar)
+        let user = User(address: address, currentCurrency: currency)
         UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
+    }
+    
+    func sendNotification() {
+        NotificationCenter.default.post(name: .LocationAndCurrencyDidUpdate, object: nil)
     }
 }
 
