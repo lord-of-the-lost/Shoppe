@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 // MARK: - Protocols
 protocol HomeViewProtocol: AnyObject {
@@ -38,6 +37,31 @@ final class HomeViewController: UIViewController {
     private let presenter: HomePresenterProtocol
     private lazy var dataSource: HomeViewDataSource = HomeViewDataSource(collectionView)
     
+    // MARK: - UI Elements
+    private lazy var addressView = HeaderAddressView()
+    private lazy var shopTitleView = HomeTitleView(title: "Shop")
+    private lazy var searchView: SearchView = {
+        let searchView = SearchView()
+        searchView.delegate = self
+        return searchView
+    }()
+    
+    private lazy var shopStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 10
+        return stackView
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 12.0
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
     private lazy var collectionView: UICollectionView = {
         let collection = UICollectionView(
             frame: .zero,
@@ -53,14 +77,6 @@ final class HomeViewController: UIViewController {
         let loadingIndicator = UIActivityIndicatorView(style: .large)
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         return loadingIndicator
-    }()
-
-    
-    private lazy var header: MainHeaderView = {
-        let header = MainHeaderView()
-        header.delegate = self
-        header.translatesAutoresizingMaskIntoConstraints = false
-        return header
     }()
     
     private lazy var errorLabel: UILabel = {
@@ -108,7 +124,7 @@ extension HomeViewController: HomeViewProtocol {
             justForYou: justForYou
         )
     }
-    
+
     func showLoading() {
         loadingIndicator.startAnimating()
         collectionView.isUserInteractionEnabled = false
@@ -147,31 +163,12 @@ extension HomeViewController: UICollectionViewDelegate {
             assertionFailure("Invalid IndexPath")
         }
     }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        willDisplay cell: UICollectionViewCell,
-        forItemAt indexPath: IndexPath
-    ) {
-        cell.alpha = 0
-        UIView.animate(
-            withDuration: 0.3,
-            delay: 0.05 * Double(indexPath.row),
-            options: [.curveEaseInOut]
-        ) {
-            cell.alpha = 1
-        }
-    }
 }
 
-// MARK: - MainHeaderViewDelegate
-extension HomeViewController: MainHeaderViewDelegate {
-    func searchTapped() {
+// MARK: - SearchViewDelegate
+extension HomeViewController: SearchViewDelegate {
+    func placeholderTapped() {
         presenter.searchTapped()
-    }
-    
-    func searchTextChanged(_ text: String) {
-        presenter.didTap(action: .searchFieldDidChange(text))
     }
 }
 
@@ -179,20 +176,25 @@ extension HomeViewController: MainHeaderViewDelegate {
 private extension HomeViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubviews(collectionView, header, loadingIndicator, errorLabel)
+        view.addSubviews(mainStackView, collectionView, loadingIndicator, errorLabel)
+        
+        shopStackView.addArrangedSubview(shopTitleView)
+        shopStackView.addArrangedSubview(searchView)
+        
+        mainStackView.addArrangedSubview(addressView)
+        mainStackView.addArrangedSubview(shopStackView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            header.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            header.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            header.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
+            mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             
-            collectionView.topAnchor.constraint(equalTo: header.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: mainStackView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),

@@ -7,7 +7,6 @@
 
 
 import UIKit
-import SwiftUI
 
 protocol PaymentViewProtocol: AnyObject {
     func updateTotal(_ total: Double)
@@ -19,6 +18,8 @@ enum PaymentVCInteraction {
     case paymentMethodEdit
     case payButton
     case itemCell
+    case close
+    case trackMyOrder
 }
 
 final class PaymentViewController: UIViewController {
@@ -31,6 +32,22 @@ final class PaymentViewController: UIViewController {
     private let paymentMethodView = PaymentMethodView()
     private let totalPaymentView = TotalPaymentView()
 
+    private lazy var closeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.tintColor = .black
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private lazy var paymentDoneView: PaymentDoneView = {
+        let view = PaymentDoneView()
+        view.delegate = self
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -75,7 +92,7 @@ final class PaymentViewController: UIViewController {
         label.textAlignment = .center
         label.textColor = .black
         label.backgroundColor = UIColor.customLightBlue
-        label.layer.cornerRadius =  11
+        label.layer.cornerRadius = 11
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -106,7 +123,7 @@ final class PaymentViewController: UIViewController {
     }()
     
     private var tableViewHeightConstraint: NSLayoutConstraint?
-    
+
     // MARK: - Init
     init(presenter: PaymentPresenterProtocol) {
         self.presenter = presenter
@@ -125,12 +142,17 @@ final class PaymentViewController: UIViewController {
         setupConstraints()
         setupButtonActions()
         presenter.viewDidLoad()
+        tableView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateTableViewHeight()
         tableView.reloadData()
+    }
+
+    @objc private func closeTapped() {
+        presenter.didTap(action: .close)
     }
 }
 
@@ -165,8 +187,20 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension PaymentViewController: PaymentDoneViewDelegate {
+    func trackMyOrderTapped() {
+        presenter.didTap(action: .trackMyOrder)
+    }
+}
+
 // MARK: - Private Methods
 private extension PaymentViewController {
+    
+    func showPaymentDoneView() {
+        let paymentDoneView = PaymentDoneView()
+        paymentDoneView.delegate = self
+        paymentDoneView.show(in: view)
+    }
     
     // MARK: - Button Actions
     func setupButtonActions() {
@@ -178,7 +212,7 @@ private extension PaymentViewController {
         )
         
         addVoucherButton.addAction(
-            UIAction { /*[weak self] _ in*/ _ in 
+            UIAction { /*[weak self] _ in*/ _ in
                   print("addVoucherButton tapped")
               },
               for: .touchUpInside
@@ -193,22 +227,25 @@ private extension PaymentViewController {
             print("payButton tapped")
         }, for: .touchUpInside)
         
+        closeButton.addAction(
+            UIAction { [weak self] _ in
+                self?.presenter.didTap(action: .close)
+            },
+            for: .touchUpInside
+        )
+        
+        totalPaymentView.payButton.addAction(UIAction { [weak self] _ in
+            self?.showPaymentDoneView()
+        }, for: .touchUpInside)
     }
-    
-    func updateTableViewHeight() {
-        tableView.layoutIfNeeded()
-        let contentHeight = tableView.contentSize.height
-        tableViewHeightConstraint?.constant = contentHeight
-        view.layoutIfNeeded()
-    }
-    
     
     func setupView() {
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(stackView)
-        
+        view.addSubview(closeButton)
+        view.addSubview(paymentDoneView)
         stackView.addArrangedSubview(addressView)
         stackView.addArrangedSubview(shippingView)
         stackView.addArrangedSubview(itemsContainer)
@@ -218,7 +255,6 @@ private extension PaymentViewController {
         stackView.addArrangedSubview(totalPaymentView)
     }
     
-    //MARK: - Setup constraints
     func setupConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -235,6 +271,7 @@ private extension PaymentViewController {
             stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
 
             addressView.heightAnchor.constraint(equalToConstant: 80),
             shippingView.heightAnchor.constraint(equalToConstant: 80),
@@ -250,11 +287,26 @@ private extension PaymentViewController {
             
             addVoucherButton.heightAnchor.constraint(equalToConstant: 44),
             addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.35),
+            itemsContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23),
+            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            closeButton.widthAnchor.constraint(equalToConstant: 30),
+            closeButton.heightAnchor.constraint(equalToConstant: 30),
             
-            itemsContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23)
+            paymentDoneView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            paymentDoneView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            paymentDoneView.widthAnchor.constraint(equalToConstant: 347),
+            paymentDoneView.heightAnchor.constraint(equalToConstant: 194)
         ])
-
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewHeightConstraint?.isActive = true
     }
+
+    func updateTableViewHeight() {
+        tableView.layoutIfNeeded()
+        let contentHeight = tableView.contentSize.height
+        tableViewHeightConstraint?.constant = contentHeight
+        view.layoutIfNeeded()
+    }
+    
 }

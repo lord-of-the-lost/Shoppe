@@ -11,7 +11,7 @@ protocol PaymentPresenterProtocol: AnyObject {
     func setupView(_ view: PaymentViewProtocol)
     func viewDidLoad()
     func itemsCount() -> Int
-    func item(at index: Int) -> ItemCellViewModel
+    func item(at index: Int) -> CartItem
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
     func calculateTotal()
@@ -20,8 +20,15 @@ protocol PaymentPresenterProtocol: AnyObject {
 
 // MARK: - Presenter
 final class PaymentPresenter {
+    
     private weak var view: PaymentViewProtocol?
-    var items: [ItemCellViewModel] = []
+    private let router: AppRouterProtocol
+    var items: [CartItem]
+    
+    init(router: AppRouterProtocol, cartItems: [CartItem]) {
+        self.items = cartItems
+        self.router = router
+    }
 }
 
 // MARK: - Private Methods
@@ -46,6 +53,10 @@ extension PaymentPresenter: PaymentPresenterProtocol {
             break
         case .itemCell:
             break
+        case .close:
+            router.popViewController(animated: true)
+        case .trackMyOrder:
+            router.popViewController(animated: true)
         }
     }
     
@@ -54,7 +65,7 @@ extension PaymentPresenter: PaymentPresenterProtocol {
         print("did tap cell at index: \(index), article: \(article)")
     }
     
-    func item(at index: Int) -> ItemCellViewModel {
+    func item(at index: Int) -> CartItem {
         return items[index]
     }
     
@@ -63,11 +74,12 @@ extension PaymentPresenter: PaymentPresenterProtocol {
     }
     
     func viewDidLoad() {
-        items = ItemsMock.all
         calculateTotal()
     }
     
     func setupView(_ view: PaymentViewProtocol) {
         self.view = view
     }
+    
+    
 }

@@ -89,8 +89,8 @@ private extension CartViewController {
         tableView.reloadData()
     }
     
-    @objc  func checkoutTapped() {
-        // Обработка оформления заказа
+    @objc func checkoutTapped() {
+        presenter.showPaymentView()
     }
 }
 // MARK: - CartViewProtocol

@@ -11,6 +11,7 @@ protocol AppRouterProtocol {
     func start()
     func dismiss(animated: Bool)
     func popViewController(animated: Bool)
+    func popToRoot()
     func showStartScreen()
     func showRegistrationScreen()
     func showLoginScreen()
@@ -18,9 +19,11 @@ protocol AppRouterProtocol {
     func showOnboarding()
     func showSearch(products: [Product])
     func showProductDetail(_ product: Product)
+    func showPaymentView(with cartItems: [CartItem])
 }
 
 final class AppRouter: AppRouterProtocol {
+    
     var navigation: UINavigationController
     var window: UIWindow?
     
@@ -40,6 +43,10 @@ final class AppRouter: AppRouterProtocol {
     
     func popViewController(animated: Bool) {
         navigation.popViewController(animated: animated)
+    }
+    
+    func popToRoot() {
+        navigation.popToRootViewController(animated: true)
     }
     
     func showStartScreen() {
@@ -77,6 +84,11 @@ final class AppRouter: AppRouterProtocol {
         let tabBarController = AppFactory.makeTabBarModule(router: self)
         navigation.setViewControllers([tabBarController], animated: true)
         navigation.presentedViewController?.dismiss(animated: false)
+    }
+    
+    func showPaymentView(with cartItems: [CartItem]) {
+        let paymentViewController = AppFactory.makePaymentModule(router: self, cartItems: cartItems)
+        pushViewController(paymentViewController)
     }
 }
 

@@ -32,9 +32,9 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeCartModule() -> UIViewController {
+    static func makeCartModule(router: AppRouterProtocol) -> UIViewController {
         let addressService = AddressService.shared
-        let presenter = CartPresenter(addressService: addressService)
+        let presenter = CartPresenter(addressService: addressService, router: router)
         let viewController = CartViewController(presenter: presenter)
         presenter.view = viewController
         return viewController
@@ -64,8 +64,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makePaymentModule() -> UIViewController {
-        let presenter = PaymentPresenter()
+    static func makePaymentModule(router: AppRouterProtocol, cartItems: [CartItem]) -> UIViewController {
+        let presenter = PaymentPresenter(router: router, cartItems: cartItems)
         let viewController = PaymentViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
