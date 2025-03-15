@@ -13,7 +13,6 @@ import MapKit
 protocol LocationPresenterProtocol: AnyObject {
     func setupView(_ view: LocationViewProtocol)
     func backButtonTapped()
-    func getCurrentLocation() -> CLLocation?
     func requestLocation()
     func saveButtonTapped()
     func didSelectLocation(_ coordinate: CLLocationCoordinate2D)
@@ -26,14 +25,16 @@ final class LocationPresenter: LocationPresenterProtocol {
     private let router: AppRouterProtocol
     private let locationService = LocationService()
     
+    private var selectedLocation: CLLocation?
+    private var selectedAddress: String?
+    private var selectedCurrency: Currency?
+
     init(router: AppRouterProtocol) {
         self.router = router
     }
     
     func setupView(_ view: LocationViewProtocol) {
         self.view = view
-        
-        print("View set: \(view)")
         locationService.delegate = self
         locationService.requestLocation()
     }
@@ -43,12 +44,10 @@ final class LocationPresenter: LocationPresenterProtocol {
     }
     
     func saveButtonTapped() {
-        
+        guard let address = selectedAddress, let currency = selectedCurrency else { return }
+        saveAddressAndCurrency(address: address, currency: currency)
+        print(address, currency)
         router.popViewController(animated: true)
-    }
-    
-    func getCurrentLocation() -> CLLocation? {
-        locationService.getCurrentLocation()
     }
     
     func requestLocation() {
@@ -56,30 +55,46 @@ final class LocationPresenter: LocationPresenterProtocol {
     }
     
     func didSelectLocation(_ coordinate: CLLocationCoordinate2D) {
-        let address = "Custom Location"
-        view?.updateMap(with: coordinate, address: address)
+        selectedLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        locationService.getAddressAndCurrency(from: selectedLocation!) { [weak self] address, currency in
+            guard let self = self else { return }
+            self.selectedAddress = address
+            self.selectedCurrency = currency
+            self.view?.updateMap(with: coordinate, address: self.selectedAddress ?? "Custom Location")
+        }
     }
     
     func myLocationButtonTapped() {
-        guard let location = getCurrentLocation() else { return }
-        let coordinate = location.coordinate
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        annotation.title = "Your Location"
-        view?.updateMap(with: coordinate, address: "Your Location")
+        guard let location = locationService.lastLocation else { return }
+        selectedLocation = location
+        locationService.getAddressAndCurrency(from: location) { [weak self] address, currency in
+            guard let self = self, let address = address, let currency = currency else { return }
+            self.selectedAddress = address
+            self.selectedCurrency = currency
+            self.view?.updateMap(with: location.coordinate, address: address)
+        }
     }
 }
 
+// MARK: - Сохранение в UserDefaults
+private extension LocationPresenter {
+    func saveAddressAndCurrency(address: String, currency: Currency) {
+        let user = User(address: address, currentCurrency: .dollar)
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
+    }
+}
+
+// MARK: - LocationServiceDelegate
 extension LocationPresenter: LocationServiceDelegate {
-    func didUpdateLocation(fullAddress: String, currency: String) {
-        guard let location = getCurrentLocation() else { return }
+    func didUpdateLocation(fullAddress: String, currency: Currency) {
+        guard let location = locationService.lastLocation else { return }
+        selectedLocation = location
+        selectedAddress = fullAddress
+        selectedCurrency = currency
         view?.updateMap(with: location.coordinate, address: fullAddress)
     }
     
     func didFailWithError(_ error: any Error) {
-        print(error.localizedDescription)
+        print("Location error: \(error.localizedDescription)")
     }
 }
-
-
-
