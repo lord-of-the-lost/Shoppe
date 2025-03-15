@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 class ItemTableViewCell: UITableViewCell {
     
@@ -112,11 +111,11 @@ class ItemTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with model: ItemCellViewModel) {
-        cellImage.image = model.image
-        titleLabel.text = model.description
+    func configure(with model: CartItem) {
+        cellImage.image = UIImage(named: model.imageName)
+        titleLabel.text = model.name
         priceLabel.text = String(format: "$%.2f", model.price)
-        badgeLabel.text = model.quantity
+        badgeLabel.text = String(model.quantity)
     }
 }
 
@@ -167,30 +166,5 @@ private extension ItemTableViewCell {
             priceLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             priceLabel.widthAnchor.constraint(lessThanOrEqualToConstant: Drawings.priceMaxWidth)
         ])
-    }
-}
-
-struct ItemCell_Preview: PreviewProvider {
-    static var previews: some View {
-        ZStack {
-            Color.gray.edgesIgnoringSafeArea(.all)
-            ItemCellViewWrapper(category: ItemCellViewModel(id: 1, image: UIImage.itemCell1, price: 17, description: "Lorem ipsum dolor sit amet consectetur.", quantity: "2"))
-                .previewLayout(.sizeThatFits)
-                .padding()
-                .frame(width: 336, height: 61)
-        }
-    }
-}
-
-struct ItemCellViewWrapper: UIViewRepresentable {
-    let category: ItemCellViewModel
-    
-    func makeUIView(context: Context) -> ItemTableViewCell {
-        let cell = ItemTableViewCell()
-        cell.configure(with: category)
-        return cell
-    }
-    
-    func updateUIView(_ uiView: ItemTableViewCell, context: Context) {
     }
 }

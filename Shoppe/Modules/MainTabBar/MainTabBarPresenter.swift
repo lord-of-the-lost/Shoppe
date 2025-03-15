@@ -74,7 +74,7 @@ private extension MainTabBarPresenter {
                 selectedIconName: "CategoriesSelected"
             ),
             TabItemModel(
-                viewController: AppFactory.makeCartModule(),
+                viewController: AppFactory.makeCartModule(router: router),
                 iconName: "Bag",
                 selectedIconName: "BagSelected"
             ),

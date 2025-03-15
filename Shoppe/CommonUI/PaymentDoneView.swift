@@ -63,6 +63,14 @@ final class PaymentDoneView: UIView {
         return button
     }()
     
+    private lazy var backgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        view.alpha = 0
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -83,20 +91,48 @@ final class PaymentDoneView: UIView {
             roundedRect: logoImageView.bounds,
             cornerRadius: logoImageView.layer.cornerRadius).cgPath
     }
+    
+    func show(in view: UIView) {
+        view.addSubview(self)
+        
+        translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topAnchor.constraint(equalTo: view.topAnchor),
+            bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        alpha = 0
+        backgroundView.alpha = 0
+        isHidden = false
+
+        UIView.animate(withDuration: 0.3) {
+            self.alpha = 1
+            self.backgroundView.alpha = 1
+        }
+    }
+
 }
 
 private extension PaymentDoneView {
     func setupViews() {
         backgroundColor = .clear
-        
+        addSubview(backgroundView)
         addSubviews(contentView, logoImageView)
         contentView.addSubviews(titleLabel, descriptionLabel, trackMyOrderButton)
     }
     
+    
     func setConstraints() {
         NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
             logoImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             logoImageView.heightAnchor.constraint(equalToConstant: 80),
             logoImageView.widthAnchor.constraint(equalToConstant: 80),
             
