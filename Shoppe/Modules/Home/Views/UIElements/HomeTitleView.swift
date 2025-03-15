@@ -12,6 +12,8 @@ final class HomeTitleView: UIView {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

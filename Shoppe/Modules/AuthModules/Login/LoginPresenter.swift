@@ -50,7 +50,7 @@ final class LoginPresenter: LoginPresenterProtocol {
             view?.switchToPasswordField(is: false)
             isEmailEntered = false
         } else {
-            router.dismiss(animated: true)
+            router.popViewController(animated: true)
         }
     }
     
@@ -81,6 +81,7 @@ private extension LoginPresenter {
         guard let password = view?.getPassword() else { return }
         if checkIfUserExists(email: emailUser, password: password) {
             loginUser()
+            showOnboardingIfNeeded()
         } else {
             if validatePassword() {
                 view?.hideKeyboard()
