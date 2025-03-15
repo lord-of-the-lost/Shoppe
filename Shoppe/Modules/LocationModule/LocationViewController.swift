@@ -43,11 +43,20 @@ final class LocationMapViewController: UIViewController {
         return map
     }()
     
+    private lazy var myLocationButton: CustomButton = {
+        let button = CustomButton(type: .system)
+        button.setImage(UIImage(systemName: "location"), for: .normal)
+        button.addTarget(self, action: #selector(myLocationButtonTapped), for: .touchUpInside)
+        button.tintColor = .white
+        button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     private lazy var saveButton: CustomButton = {
         let button = CustomButton(type: .system)
         button.setTitle("Save Location", for: .normal)
         button.titleLabel?.font = Fonts.nunitoLight16
-        button.layer.cornerRadius = 9
         button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -68,6 +77,8 @@ final class LocationMapViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setConstraints()
+        setupTapGesture()
+        
         presenter.setupView(self)
         presenter.requestLocation()
     }
@@ -77,8 +88,8 @@ extension LocationMapViewController: LocationViewProtocol {
     func updateMap(with location: CLLocationCoordinate2D, address: String) {
         let annotation = MKPointAnnotation()
         annotation.coordinate = location
-        annotation.title = "You're here"
         annotation.subtitle = address
+        annotation.title = "You're here!"
         
         DispatchQueue.main.async {
             self.mapView.removeAnnotations(self.mapView.annotations)
@@ -93,6 +104,7 @@ private extension LocationMapViewController {
     func setupViews() {
         view.backgroundColor = .white
         view.addSubviews(titleLabel, backButton, mapView, saveButton)
+        mapView.addSubview(myLocationButton)
     }
     
     func setConstraints() {
@@ -110,6 +122,11 @@ private extension LocationMapViewController {
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mapView.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -10),
             
+            myLocationButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -10),
+            myLocationButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -10),
+            myLocationButton.heightAnchor.constraint(equalToConstant: 40),
+            myLocationButton.widthAnchor.constraint(equalToConstant: 40),
+            
             saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             saveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
@@ -123,6 +140,22 @@ private extension LocationMapViewController {
     
     @objc func backButtonTapped() {
         presenter.backButtonTapped()
+    }
+    
+    func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
+        mapView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc func handleMapTap(_ gesture: UITapGestureRecognizer) {
+        let locationInView = gesture.location(in: mapView)
+        let coordinate = mapView.convert(locationInView, toCoordinateFrom: mapView)
+
+        presenter.didSelectLocation(coordinate)
+    }
+    
+    @objc func myLocationButtonTapped() {
+        presenter.myLocationButtonTapped()
     }
 }
 
