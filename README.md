@@ -3,9 +3,9 @@
 <div>
 <img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image1.imageset/image1.jpeg" width="160" />
 <img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image2.imageset/image2.jpeg" width="160" /> 
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image3.imageset/image1.jpeg" width="160" />
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="160" />  
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="160" />  
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image3.imageset/image3.jpeg" width="160" />
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image4.jpeg" width="160" />  
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image5.imageset/image5.jpeg" width="160" />  
 </div>
 
 Welcome to **Shoppe** – your ultimate destination for seamless online shopping! 🛍️  
