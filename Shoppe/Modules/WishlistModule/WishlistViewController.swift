@@ -44,7 +44,6 @@ final class WishlistViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: (view.bounds.width - 30) / 2, height: 300)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -106,12 +105,6 @@ extension WishlistViewController: UICollectionViewDataSource {
         )
         
         cell.configure(with: viewModel)
-        cell.onLikeTapped = { [weak self] in
-            self?.presenter.toggleProductLike(at: indexPath.item)
-        }
-        cell.onAddToCartTapped = { [weak self] in
-            self?.presenter.addToCartProduct(at: indexPath.item)
-        }
         cell.delegate = self
         return cell
     }
@@ -124,8 +117,14 @@ extension WishlistViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: UICollectionViewDelegateFlowLayout
+extension WishlistViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: (view.bounds.width - 30) / 2, height: 300)
+    }
+}
+
 // MARK: ProductCellDelegate
-// TODO: Сейчас не работает, переделать через замыкания
 extension WishlistViewController: ProductCellDelegate {
     func addToCartTapped(_ cell: ProductCell) {
         guard let index = collectionView.indexPath(for: cell)?.item else { return }
@@ -161,7 +160,7 @@ private extension WishlistViewController {
             
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 10)
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         ])
     }
 }

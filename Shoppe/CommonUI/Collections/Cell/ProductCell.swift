@@ -25,9 +25,6 @@ final class ProductCell: UICollectionViewCell {
     static let identifier = ProductCell.description()
     weak var delegate: ProductCellDelegate?
     
-    var onLikeTapped: (() -> Void)?
-    var onAddToCartTapped: (() -> Void)?
-    
     private var isOnCart: Bool = false
     private var isOnWishlist: Bool = false
     
@@ -178,14 +175,12 @@ private extension ProductCell {
     @objc func addButtonTapped() {
         isOnCart.toggle()
         configureAddButton()
-        onAddToCartTapped?()
         delegate?.addToCartTapped(self)
     }
     
     @objc func likeTapped() {
         isOnWishlist.toggle()
         configureLikeButton()
-        onLikeTapped?()
         delegate?.likeTapped(self)
     }
 }
