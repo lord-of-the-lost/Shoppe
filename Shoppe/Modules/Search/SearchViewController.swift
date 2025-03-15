@@ -113,18 +113,16 @@ extension SearchViewController: SearchViewProtocol {
         switch state {
         case .empty:
             stateLabel.text = "Search history is Empty"
-            stateLabel.isHidden = false
             searchView.setSearchState(.active)
             clearSearchHistoryButton.isHidden = true
             collectionView.isHidden = true
         case .history(let items):
             stateLabel.text = "Search history"
-            stateLabel.isHidden = false
             clearSearchHistoryButton.isHidden = items.isEmpty
             collectionView.isHidden = items.isEmpty
             collectionView.reloadData()
-        case .results:
-            stateLabel.isHidden = true
+        case .results(let items):
+            stateLabel.text = "Found \(items.count) items"
             clearSearchHistoryButton.isHidden = true
             collectionView.isHidden = false
             collectionView.reloadData()
