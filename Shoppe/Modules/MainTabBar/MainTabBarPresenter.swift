@@ -40,7 +40,7 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     }
     
     func viewDidLoad() {
-        view?.updateBasketBadge(count: basketService.itemsCount)
+        view?.updateBasketBadge(count: basketService.totalItemsCount)
         view?.setupTabItems(getTabItems())
     }
 }
@@ -87,6 +87,6 @@ private extension MainTabBarPresenter {
     }
     
     @objc func handleBasketUpdate() {
-        view?.updateBasketBadge(count: basketService.itemsCount)
+        view?.updateBasketBadge(count: basketService.totalItemsCount)
     }
 }

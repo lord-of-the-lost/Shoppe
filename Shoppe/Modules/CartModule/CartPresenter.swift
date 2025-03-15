@@ -4,6 +4,7 @@
 //
 //  Created by Надежда Капацина on 09.03.2025.
 //
+import Foundation
 
 protocol CartPresenterProtocol: AnyObject {
     
@@ -19,12 +20,17 @@ protocol CartPresenterProtocol: AnyObject {
 final class CartPresenter: CartPresenterProtocol {
     weak var view: CartViewProtocol?
     private let addressService: AddressServiceProtocol
+    private let basketService: BasketServiceProtocol
     
-    private(set) var cartItems: [CartItem] = []
+    var cartItems: [CartItem] {
+        basketService.items
+    }
     
-    init(addressService: AddressServiceProtocol) {
+    init(addressService: AddressServiceProtocol,
+         basketService: BasketServiceProtocol = BasketService.shared) {
         self.addressService = addressService
-        loadMockData()
+        self.basketService = basketService
+        setupObservers()
     }
     
     func viewDidLoad() {
@@ -37,51 +43,42 @@ final class CartPresenter: CartPresenterProtocol {
     }
     
     func deleteItem(at index: Int) {
-        cartItems.remove(at: index)
+        let item = cartItems[index]
+        basketService.removeItem(withId: item.id)
         calculateTotal()
-        view?.reloadCartItems()
     }
     
     func increaseQuantity(at index: Int) {
-        cartItems[index].quantity += 1
+        let item = cartItems[index]
+        basketService.updateQuantity(for: item.id, newQuantity: item.quantity + 1)
         calculateTotal()
-        view?.reloadCartItems()
     }
     
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleBasketUpdate),
+            name: .basketDidUpdate,
+            object: nil
+        )
+    }
     func decreaseQuantity(at index: Int) {
-        guard cartItems[index].quantity > 1 else { return }
-        cartItems[index].quantity -= 1
+        let item = cartItems[index]
+        let newQuantity = max(item.quantity - 1, 1)
+        basketService.updateQuantity(for: item.id, newQuantity: newQuantity)
         calculateTotal()
-        view?.reloadCartItems()
     }
 }
 
 private extension CartPresenter {
-    func loadMockData() {
-        cartItems = [
-            CartItem(
-                id: "1",
-                imageName: "product",
-                name: "Lorem ipsum dolor sit amet consectetur.",
-                price: 24.99,
-                quantity: 1,
-                color: "Pink",
-                size: "Size M"
-            ),
-            CartItem(
-                id: "2",
-                imageName: "product",
-                name: "Lorem ipsum dolor sit amet consectetur.",
-                price: 24.99,
-                quantity: 2,
-                color: "Pink",
-                size: "Size M"
-            )
-        ]
+
+    @objc func handleBasketUpdate() {
+        calculateTotal()
+        view?.reloadCartItems()
     }
     
     func calculateTotal() {
-        let total = cartItems.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
+        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
         view?.updateTotalPrice(total.formattedAsPrice())
     }
 }
