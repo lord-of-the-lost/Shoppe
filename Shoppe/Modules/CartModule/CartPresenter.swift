@@ -5,8 +5,9 @@
 //  Created by Надежда Капацина on 09.03.2025.
 //
 
+import UIKit
+
 protocol CartPresenterProtocol: AnyObject {
-    
     var cartItems: [CartItem] { get }
     
     func viewDidLoad()
@@ -18,18 +19,35 @@ protocol CartPresenterProtocol: AnyObject {
 }
 
 final class CartPresenter: CartPresenterProtocol {
+    // MARK: - Properties
     weak var view: CartViewProtocol?
     private let addressService: AddressServiceProtocol
     private let router: AppRouterProtocol
+    private let basketService: BasketServiceProtocol
+    
     private(set) var cartItems: [CartItem] = []
     
-    init(addressService: AddressServiceProtocol, router: AppRouterProtocol) {
+    // MARK: - Initialization
+    init(
+        addressService: AddressServiceProtocol,
+        router: AppRouterProtocol,
+        basketService: BasketServiceProtocol = BasketService.shared
+    ) {
         self.addressService = addressService
         self.router = router
-        loadMockData()
+        self.basketService = basketService
+        setupNotifications()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - Protocol Methods
+extension CartPresenter {
     func viewDidLoad() {
+        updateCartItems()
         view?.updateAddress(addressService.currentAddress)
         calculateTotal()
     }
@@ -39,50 +57,59 @@ final class CartPresenter: CartPresenterProtocol {
     }
     
     func deleteItem(at index: Int) {
-        cartItems.remove(at: index)
-        calculateTotal()
-        view?.reloadCartItems()
+        guard let product = basketService.items[safe: index] else { return }
+        basketService.removeItem(product)
+        updateCartItems()
     }
     
     func increaseQuantity(at index: Int) {
-        cartItems[index].quantity += 1
-        calculateTotal()
-        view?.reloadCartItems()
+        guard let product = basketService.items[safe: index] else { return }
+        basketService.updateQuantity(for: product.id, newQuantity: product.count + 1)
+        updateCartItems()
     }
     
     func decreaseQuantity(at index: Int) {
-        guard cartItems[index].quantity > 1 else { return }
-        cartItems[index].quantity -= 1
-        calculateTotal()
-        view?.reloadCartItems()
+        guard
+            let product = basketService.items[safe: index],
+            product.count > 1
+        else { return }
+        
+        basketService.updateQuantity(for: product.id, newQuantity: product.count - 1)
+        updateCartItems()
     }
+    
     func showPaymentView() {
         router.showPaymentView()
     }
 }
 
+// MARK: - Private Methods
 private extension CartPresenter {
-    func loadMockData() {
-        cartItems = [
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleBasketUpdate),
+            name: .basketDidUpdate,
+            object: nil
+        )
+    }
+    
+    @objc func handleBasketUpdate() {
+        updateCartItems()
+    }
+    
+    func updateCartItems() {
+        cartItems = basketService.items.map { product in
             CartItem(
-                id: "1",
-                imageName: "product",
-                name: "Lorem ipsum dolor sit amet consectetur.",
-                price: 24.99,
-                quantity: 1,
-                color: "Pink",
-                size: "Size M"
-            ),
-            CartItem(
-                id: "2",
-                imageName: "product",
-                name: "Lorem ipsum dolor sit amet consectetur.",
-                price: 24.99,
-                quantity: 2,
-                color: "Pink",
-                size: "Size M"
+                image: product.image ?? UIImage(),
+                name: product.title,
+                category: product.category.displayName,
+                price: product.price,
+                quantity: product.count
             )
-        ]
+        }
+        calculateTotal()
+        view?.reloadCartItems()
     }
     
     func calculateTotal() {
