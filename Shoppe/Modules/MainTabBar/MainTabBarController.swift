@@ -37,7 +37,6 @@ final class MainTabBarController: UITabBarController {
         super.viewDidLoad()
         presenter.setupView(self)
         presenter.viewDidLoad()
-        setupViewControllers()
         configureTabBarAppearance()
     }
 }
@@ -46,6 +45,7 @@ final class MainTabBarController: UITabBarController {
 extension MainTabBarController: MainTabBarViewProtocol {
     func setupTabItems(_ items: [TabItemModel]) {
         tabItems = items
+        setupViewControllers()
     }
     
     func updateBasketBadge(count: Int) {

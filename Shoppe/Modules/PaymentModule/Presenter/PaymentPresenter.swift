@@ -54,9 +54,9 @@ extension PaymentPresenter: PaymentPresenterProtocol {
         case .itemCell:
             break
         case .close:
-            router.popViewController(animated: true)
+            router.dismiss(animated: true)
         case .trackMyOrder:
-            router.popViewController(animated: true)
+            router.dismiss(animated: true)
         }
     }
     

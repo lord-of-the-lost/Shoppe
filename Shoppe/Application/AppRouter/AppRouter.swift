@@ -17,7 +17,8 @@ protocol AppRouterProtocol {
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
-    func showSearch()
+    func showSearch(products: [Product])
+    func showProductDetail(_ product: Product)
     func showPaymentView(with cartItems: [CartItem])
 }
 
@@ -69,9 +70,14 @@ final class AppRouter: AppRouterProtocol {
         presentModalViewController(onboardingViewController)
     }
     
-    func showSearch() {
-        let searchViewController = AppFactory.makeSearchModule(router: self)
+    func showSearch(products: [Product]) {
+        let searchViewController = AppFactory.makeSearchModule(router: self, products: products)
         pushViewController(searchViewController)
+    }
+    
+    func showProductDetail(_ product: Product) {
+        let productDetailViewController = AppFactory.makeProductDetailModule(router: self, product: product)
+        pushViewController(productDetailViewController)
     }
     
     func showMainTabBar() {
@@ -82,7 +88,8 @@ final class AppRouter: AppRouterProtocol {
     
     func showPaymentView(with cartItems: [CartItem]) {
         let paymentViewController = AppFactory.makePaymentModule(router: self, cartItems: cartItems)
-        pushViewController(paymentViewController)
+        paymentViewController.modalPresentationStyle = .fullScreen
+        presentModalViewController(paymentViewController)
     }
 }
 

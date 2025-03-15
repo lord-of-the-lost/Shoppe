@@ -71,15 +71,19 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeProductDetailModule() -> UIViewController {
-        let presenter = ProductDetailPresenter()
+    static func makeProductDetailModule(router: AppRouterProtocol, product: Product) -> UIViewController {
+        let presenter = ProductDetailPresenter(router: router, product: product)
         let viewController = ProductDetailViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }
     
-    static func makeSearchModule(router: AppRouterProtocol) -> UIViewController {
-        let presenter = SearchPresenter(router: router)
+    static func makeSearchModule(router: AppRouterProtocol, products: [Product]) -> UIViewController {
+        let presenter = SearchPresenter(
+            products: products,
+            router: router,
+            userDefaultsService: UserDefaultsService.shared
+        )
         let viewController = SearchViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController

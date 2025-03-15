@@ -103,6 +103,11 @@ final class SearchViewController: UIViewController {
         setupConstraints()
         presenter.viewDidLoad()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
 }
 
 // MARK: - SearchViewProtocol
@@ -113,18 +118,16 @@ extension SearchViewController: SearchViewProtocol {
         switch state {
         case .empty:
             stateLabel.text = "Search history is Empty"
-            stateLabel.isHidden = false
             searchView.setSearchState(.active)
             clearSearchHistoryButton.isHidden = true
             collectionView.isHidden = true
         case .history(let items):
             stateLabel.text = "Search history"
-            stateLabel.isHidden = false
             clearSearchHistoryButton.isHidden = items.isEmpty
             collectionView.isHidden = items.isEmpty
             collectionView.reloadData()
-        case .results:
-            stateLabel.isHidden = true
+        case .results(let items):
+            stateLabel.text = "Found \(items.count) items"
             clearSearchHistoryButton.isHidden = true
             collectionView.isHidden = false
             collectionView.reloadData()
@@ -174,6 +177,20 @@ extension SearchViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegate
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch currentState {
+        case .history(let items):
+            items[safe: indexPath.item].map { presenter.searchButtonClicked(with: $0) }
+        case .results:
+            presenter.showProductDetail(at: indexPath.item)
+        case .empty:
+            break
+        }
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout
 extension SearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -191,16 +208,6 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout {
             
         case .empty:
             return .zero
-        }
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-extension SearchViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if case .history(let items) = currentState,
-           let selectedText = items[safe: indexPath.item] {
-            presenter.searchButtonClicked(with: selectedText)
         }
     }
 }
