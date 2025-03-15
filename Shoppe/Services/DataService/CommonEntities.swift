@@ -17,7 +17,7 @@ struct User: Codable {
     var currentCurrency: Currency = .dollar
     var cart: [Product] = .init()
     var wishList: [Product] = .init()
-    var serachHistory: [String] = .init()
+    var searchHistory: [String] = .init()
     var isOnboardingComplete: Bool = false
     var isAuthorized: Bool = false
 }

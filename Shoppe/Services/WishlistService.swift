@@ -1,31 +1,31 @@
 //
-//  BasketService.swift
+//  WishlistServiceProtocol.swift
 //  Shoppe
 //
-//  Created by Надежда Капацина on 07.03.2025.
+//  Created by Николай Игнатов on 15.03.2025.
 //
 
 import Foundation
 
-// MARK: - Basket Service
-protocol BasketServiceProtocol {
+// MARK: - Wishlist Service
+protocol WishlistServiceProtocol {
     var items: [Product] { get }
     var itemsCount: Int { get }
     func addItem(_ product: Product)
     func removeItem(_ product: Product)
     func contains(_ product: Product) -> Bool
-    func clearBasket()
+    func clearWishlist()
 }
 
-final class BasketService: BasketServiceProtocol {
-    static let shared = BasketService()
+final class WishlistService: WishlistServiceProtocol {
+    static let shared = WishlistService()
     private let userDefaultsService = UserDefaultsService.shared
     
     private init() {}
     
     var items: [Product] {
         guard let user: User = userDefaultsService.getCustomObject(forKey: .userModel) else { return [] }
-        return user.cart
+        return user.wishList
     }
     
     var itemsCount: Int { items.count }
@@ -37,29 +37,29 @@ final class BasketService: BasketServiceProtocol {
         else { return }
         
         var updatedProduct = product
-        updatedProduct.isInCart = true
-        user.cart.append(updatedProduct)
+        updatedProduct.isInWishlist = true
+        user.wishList.append(updatedProduct)
         userDefaultsService.saveCustomObject(user, forKey: .userModel)
-        NotificationCenter.default.post(name: .basketDidUpdate, object: nil)
+        NotificationCenter.default.post(name: .wishlistDidUpdate, object: nil)
     }
     
     func removeItem(_ product: Product) {
         guard var user: User = userDefaultsService.getCustomObject(forKey: .userModel) else { return }
         
-        user.cart.removeAll { $0.id == product.id }
+        user.wishList.removeAll { $0.id == product.id }
         userDefaultsService.saveCustomObject(user, forKey: .userModel)
-        NotificationCenter.default.post(name: .basketDidUpdate, object: nil)
+        NotificationCenter.default.post(name: .wishlistDidUpdate, object: nil)
     }
     
     func contains(_ product: Product) -> Bool {
         items.contains { $0.id == product.id }
     }
     
-    func clearBasket() {
+    func clearWishlist() {
         guard var user: User = userDefaultsService.getCustomObject(forKey: .userModel) else { return }
         
-        user.cart.removeAll()
+        user.wishList.removeAll()
         userDefaultsService.saveCustomObject(user, forKey: .userModel)
-        NotificationCenter.default.post(name: .basketDidUpdate, object: nil)
+        NotificationCenter.default.post(name: .wishlistDidUpdate, object: nil)
     }
 }
