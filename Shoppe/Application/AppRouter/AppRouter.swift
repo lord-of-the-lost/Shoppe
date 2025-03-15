@@ -17,6 +17,7 @@ protocol AppRouterProtocol {
     func showMainTabBar()
     func showOnboarding()
     func showSearch(products: [Product])
+    func showProductDetail(_ product: Product)
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -65,6 +66,11 @@ final class AppRouter: AppRouterProtocol {
     func showSearch(products: [Product]) {
         let searchViewController = AppFactory.makeSearchModule(router: self, products: products)
         pushViewController(searchViewController)
+    }
+    
+    func showProductDetail(_ product: Product) {
+        let productDetailViewController = AppFactory.makeProductDetailModule(router: self, product: product)
+        pushViewController(productDetailViewController)
     }
     
     func showMainTabBar() {

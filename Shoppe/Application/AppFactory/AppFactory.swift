@@ -71,8 +71,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeProductDetailModule() -> UIViewController {
-        let presenter = ProductDetailPresenter()
+    static func makeProductDetailModule(router: AppRouterProtocol, product: Product) -> UIViewController {
+        let presenter = ProductDetailPresenter(router: router, product: product)
         let viewController = ProductDetailViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController

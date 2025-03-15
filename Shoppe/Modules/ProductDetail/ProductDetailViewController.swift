@@ -32,6 +32,17 @@ final class ProductDetailViewController: UIViewController {
         return scrollView
     }()
     
+    private lazy var backButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "arrow.backward")
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 20, weight: .regular, scale: .default)
+        let button = UIButton()
+        button.configuration = config
+        button.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     private lazy var contentStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -161,7 +172,7 @@ extension ProductDetailViewController: ProductDetailViewProtocol {
 private extension ProductDetailViewController {
     func setupViews() {
         view.backgroundColor = .white
-        view.addSubviews(scrollView, buttonStack)
+        view.addSubviews(scrollView, backButton, buttonStack)
         
         scrollView.addSubviews(imagePagingView, contentStack)
         
@@ -172,7 +183,12 @@ private extension ProductDetailViewController {
 
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            backButton.widthAnchor.constraint(equalToConstant: 20),
+            backButton.heightAnchor.constraint(equalToConstant: 20),
+            
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: buttonStack.topAnchor, constant: -16),
@@ -211,5 +227,9 @@ private extension ProductDetailViewController {
     
     @objc private func buyNowTapped() {
         presenter.buyNowTapped()
+    }
+    
+    @objc func backButtonTapped() {
+        presenter.backButtonTapped()
     }
 }

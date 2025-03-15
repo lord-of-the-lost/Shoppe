@@ -10,6 +10,7 @@ import UIKit
 // MARK: - Protocols
 protocol SearchPresenterProtocol: AnyObject {
     func viewDidLoad()
+    func viewWillAppear()
     func searchButtonClicked(with text: String)
     func clearSearchHistoryTapped()
     func clearSearchTapped()
@@ -17,6 +18,7 @@ protocol SearchPresenterProtocol: AnyObject {
     func likeTapped(at index: Int)
     func removeHistoryItem(at index: Int)
     func backButtonTapped()
+    func showProductDetail(at index: Int)
 }
 
 final class SearchPresenter {
@@ -58,6 +60,12 @@ extension SearchPresenter: SearchPresenterProtocol {
         updateViewState(viewState)
     }
     
+    func viewWillAppear() {
+        guard !currentResults.isEmpty else { return }
+        syncProductsState()
+        updateViewState(.results(mapCurrentResultsToViewModels()))
+    }
+    
     func searchButtonClicked(with text: String) {
         guard !text.isEmpty else { return }
         
@@ -69,13 +77,9 @@ extension SearchPresenter: SearchPresenterProtocol {
             product.title.lowercased().contains(text.lowercased()) ||
             product.description.lowercased().contains(text.lowercased()) ||
             product.category.displayName.lowercased().contains(text.lowercased())
-        }.map { product in
-            var updatedProduct = product
-            updatedProduct.isInCart = basketService.contains(product)
-            updatedProduct.isInWishlist = wishlistService.contains(product)
-            return updatedProduct
         }
         
+        syncProductsState()
         view?.updateSearchText(text)
         updateViewState(.results(mapCurrentResultsToViewModels()))
     }
@@ -89,6 +93,11 @@ extension SearchPresenter: SearchPresenterProtocol {
     func clearSearchTapped() {
         currentResults.removeAll()
         updateViewState(.history(searchHistory))
+    }
+    
+    func showProductDetail(at index: Int) {
+        guard let product = currentResults[safe: index] else { return }
+        router.showProductDetail(product)
     }
     
     func addToCartTapped(at index: Int) {
@@ -144,6 +153,15 @@ private extension SearchPresenter {
     
     func updateViewState(_ state: SearchState) {
         view?.updateState(state)
+    }
+    
+    func syncProductsState() {
+        currentResults = currentResults.map { product in
+            var updatedProduct = product
+            updatedProduct.isInCart = basketService.contains(product)
+            updatedProduct.isInWishlist = wishlistService.contains(product)
+            return updatedProduct
+        }
     }
     
     func loadSearchHistory() {
