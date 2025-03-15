@@ -25,6 +25,7 @@ enum Fonts {
     static let ralewayBold15: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 15) ?? UIFont.systemFont(ofSize: 15)
     static let ralewayBold17: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 17) ?? UIFont.systemFont(ofSize: 17)
     static let ralewayBold18: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 18) ?? UIFont.systemFont(ofSize: 18)
+    static let ralewayBold19: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 19) ?? UIFont.systemFont(ofSize: 19)
     static let ralewayBold21: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 21) ?? UIFont.systemFont(ofSize: 21)
     static let ralewayBold28: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 28) ?? UIFont.systemFont(ofSize: 28)
     static let ralewayBold52: UIFont = UIFont(name: "Raleway-v4020-Bold", size: 52) ?? UIFont.systemFont(ofSize: 52)
