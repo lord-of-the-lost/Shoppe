@@ -47,6 +47,10 @@ final class LocationService: NSObject {
         }
     }
     
+    func getCurrentLocation() -> CLLocation? {
+        return locationManager.location
+    }
+    
     private func fetchCountryAndCurrency(location: CLLocation) {
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
             guard

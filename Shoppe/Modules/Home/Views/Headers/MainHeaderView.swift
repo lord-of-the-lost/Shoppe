@@ -10,7 +10,7 @@ import SwiftUI
 
 protocol MainHeaderViewDelegate: AnyObject {
     func searchTapped()
-    func addressTaped()
+    func addressTapped()
 }
 
 final class MainHeaderView: UIView {
@@ -67,7 +67,7 @@ extension MainHeaderView: SearchViewDelegate {
 // MARK: - HeaderAddressViewDelegate
 extension MainHeaderView: HeaderAddressViewDelegate {
     func addressTapped() {
-        delegate?.addressTaped()
+        delegate?.addressTapped()
     }
 }
 
@@ -75,6 +75,7 @@ extension MainHeaderView: HeaderAddressViewDelegate {
 private extension MainHeaderView {
     func setupView() {
         searchView.delegate = self
+        addressView.delegate = self
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)
         shopStackView.addArrangedSubview(searchView)
