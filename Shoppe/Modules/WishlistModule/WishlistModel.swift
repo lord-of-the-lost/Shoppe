@@ -7,5 +7,5 @@
 
 struct WishlistModel {
     var searchText = ""
-    var products: [ProductDataModel] = []
+    var products: [Product] = []
 }

@@ -7,15 +7,9 @@
 
 import UIKit
 
-struct ProductDataModel {
-    let image: UIImage?
-    let description: String
-    let price: String
-}
-
 protocol WishlistPresenterProtocol {
     func getProductsCount() -> Int
-    func getProduct(at index: Int) -> ProductDataModel?
+    func getProduct(at index: Int) -> Product?
     func didTapProduct(at index: Int)
     func addToCartProduct(at index: Int)
     func toggleProductLike(at index: Int)
@@ -23,8 +17,9 @@ protocol WishlistPresenterProtocol {
 
 final class WishlistPresenter {
     private weak var view: WishlistViewProtocol?
-    private var products: [ProductDataModel] = []
-
+    var product: User? = UserDefaultsService.shared.getCustomObject(forKey: .userModel)
+    var products: [Product] = []
+    
     func setupView(_ view: WishlistViewProtocol) {
         self.view = view
         loadProducts()
@@ -32,15 +27,12 @@ final class WishlistPresenter {
     
     func loadProducts() {
         products = [
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
-            ProductDataModel(image: UIImage(named: "product"), description: "Lorem ipsum dolor sit amet consectetur", price: "$17,00"),
+            Product(id: 1, title: "Blue Shirt", price: 200, description: "A blue shirt", category: .jewelery, imageData: Data(), isInWishlist: false),
+            Product(id: 2, title: "Red Dress", price: 250, description: "A red dress", category: .womensClothing, imageData: Data(), isInWishlist: false),
+            Product(id: 3, title: "Gold Necklace", price: 150, description: "A gold necklace", category: .jewelery, imageData: Data(), isInWishlist: false),
+            Product(id: 4, title: "Men's Watch", price: 300, description: "A men's watch", category: .mensClothing, imageData: Data(), isInWishlist: false),
         ]
-        print("Loaded \(products.count) products")
+        print(products.count)
         view?.reloadData()
     }
 }
@@ -51,7 +43,7 @@ extension WishlistPresenter: WishlistPresenterProtocol {
         products.count
     }
     
-    func getProduct(at index: Int) -> ProductDataModel? {
+    func getProduct(at index: Int) -> Product? {
         products[safe: index]
     }
     
@@ -64,6 +56,13 @@ extension WishlistPresenter: WishlistPresenterProtocol {
     }
     
     func toggleProductLike(at index: Int) {
+        guard var user: User? =  UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        if ((user?.wishList.indices.contains(index)) != nil) {
+            user?.wishList.remove(at: index)
+            print("Product removed from wishlist at index: \(index)")
+        }
+        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
+        view?.reloadData()
         print(index)
     }
 }

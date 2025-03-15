@@ -14,7 +14,7 @@ protocol WishlistViewProtocol: AnyObject {
 final class WishlistViewController: UIViewController {
     //MARK: - Properties
     private let presenter: WishlistPresenterProtocol
-        
+    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Wishlist"
@@ -97,8 +97,21 @@ extension WishlistViewController: UICollectionViewDataSource {
             assertionFailure()
             return UICollectionViewCell()
         }
-        let cellModel = ProductCellViewModel(image: model.image, description: model.description, price: model.price)
-        cell.configure(with: cellModel)
+        let viewModel = ProductCellViewModel(
+            image: model.image,
+            description: model.description,
+            price: String(format: "$%.2f", model.price),
+            isOnCart: model.isInCart,
+            isOnWishlist: model.isInWishlist
+        )
+        
+        cell.configure(with: viewModel)
+        cell.onLikeTapped = { [weak self] in
+            self?.presenter.toggleProductLike(at: indexPath.item)
+        }
+        cell.onAddToCartTapped = { [weak self] in
+            self?.presenter.addToCartProduct(at: indexPath.item)
+        }
         cell.delegate = self
         return cell
     }
@@ -107,7 +120,7 @@ extension WishlistViewController: UICollectionViewDataSource {
 // MARK: UICollectionViewDelegate
 extension WishlistViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presenter.didTapProduct(at: indexPath.row)
+        presenter.didTapProduct(at: indexPath.item)
     }
 }
 
