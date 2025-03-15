@@ -88,7 +88,8 @@ final class AppRouter: AppRouterProtocol {
     
     func showPaymentView(with cartItems: [CartItem]) {
         let paymentViewController = AppFactory.makePaymentModule(router: self, cartItems: cartItems)
-        pushViewController(paymentViewController)
+        paymentViewController.modalPresentationStyle = .fullScreen
+        presentModalViewController(paymentViewController)
     }
 }
 
