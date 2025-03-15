@@ -31,7 +31,7 @@ enum HomeViewCompLayout {
         static let justForYouSpacing: CGFloat = 8.0
         static let justForYouItemWidth: CGFloat = 0.5
         static let justForYouItemHeight: CGFloat = 0.6
-        static let justForYouGroupHeight: CGFloat = 0.59
+        static let justForYouGroupHeight: CGFloat = 0.6
         static let justForYouGroupWidth: CGFloat = 1
 
         // Strings

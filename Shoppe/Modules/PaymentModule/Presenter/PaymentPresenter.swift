@@ -11,7 +11,7 @@ protocol PaymentPresenterProtocol: AnyObject {
     func setupView(_ view: PaymentViewProtocol)
     func viewDidLoad()
     func itemsCount() -> Int
-    func item(at index: Int) -> ItemCellViewModel
+    func item(at index: Int) -> CartItem
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
     func calculateTotal()
@@ -21,7 +21,7 @@ protocol PaymentPresenterProtocol: AnyObject {
 // MARK: - Presenter
 final class PaymentPresenter {
     private weak var view: PaymentViewProtocol?
-    var items: [ItemCellViewModel] = []
+    var items: [CartItem] = []
 }
 
 // MARK: - Private Methods
@@ -54,7 +54,7 @@ extension PaymentPresenter: PaymentPresenterProtocol {
         print("did tap cell at index: \(index), article: \(article)")
     }
     
-    func item(at index: Int) -> ItemCellViewModel {
+    func item(at index: Int) -> CartItem {
         return items[index]
     }
     
@@ -63,7 +63,6 @@ extension PaymentPresenter: PaymentPresenterProtocol {
     }
     
     func viewDidLoad() {
-        items = ItemsMock.all
         calculateTotal()
     }
     

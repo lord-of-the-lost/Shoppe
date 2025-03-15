@@ -17,9 +17,11 @@ protocol AppRouterProtocol {
     func showMainTabBar()
     func showOnboarding()
     func showSearch()
+    func showPaymentView()
 }
 
 final class AppRouter: AppRouterProtocol {
+    
     var navigation: UINavigationController
     var window: UIWindow?
     
@@ -71,6 +73,11 @@ final class AppRouter: AppRouterProtocol {
         let tabBarController = AppFactory.makeTabBarModule(router: self)
         navigation.setViewControllers([tabBarController], animated: true)
         navigation.presentedViewController?.dismiss(animated: false)
+    }
+    
+    func showPaymentView() {
+        let paymentViewController = AppFactory.makePaymentModule(router: self)
+        pushViewController(paymentViewController)
     }
 }
 

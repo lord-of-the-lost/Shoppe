@@ -14,16 +14,18 @@ protocol CartPresenterProtocol: AnyObject {
     func deleteItem(at index: Int)
     func increaseQuantity(at index: Int)
     func decreaseQuantity(at index: Int)
+    func showPaymentView()
 }
 
 final class CartPresenter: CartPresenterProtocol {
     weak var view: CartViewProtocol?
     private let addressService: AddressServiceProtocol
-    
+    private let router: AppRouterProtocol
     private(set) var cartItems: [CartItem] = []
     
-    init(addressService: AddressServiceProtocol) {
+    init(addressService: AddressServiceProtocol, router: AppRouterProtocol) {
         self.addressService = addressService
+        self.router = router
         loadMockData()
     }
     
@@ -53,6 +55,9 @@ final class CartPresenter: CartPresenterProtocol {
         cartItems[index].quantity -= 1
         calculateTotal()
         view?.reloadCartItems()
+    }
+    func showPaymentView() {
+        router.showPaymentView()
     }
 }
 

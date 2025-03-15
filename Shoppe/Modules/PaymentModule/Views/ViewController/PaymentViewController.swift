@@ -154,7 +154,7 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let itemViewModel = presenter.item(at: indexPath.row)
-        cell.configure(with: itemViewModel)
+        cell.configure(with: CartItem)
         return cell
     }
     
