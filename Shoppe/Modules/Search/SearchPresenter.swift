@@ -134,7 +134,7 @@ private extension SearchPresenter {
         currentResults.map { product in
             ProductCellViewModel(
                 image: product.image,
-                description: product.description,
+                title: product.title,
                 price: String(format: "$%.2f", product.price),
                 isOnCart: product.isInCart,
                 isOnWishlist: product.isInWishlist
