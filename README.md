@@ -1,11 +1,11 @@
 # Shoppe App  
 
 <div>
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image1.imageset/image1.jpeg" width="80" />
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image2.imageset/image2.jpeg" width="80" /> 
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image3.imageset/image1.jpeg" width="80" />
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="80" />  
-<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="80" />  
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image1.imageset/image1.jpeg" width="160" />
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image2.imageset/image2.jpeg" width="160" /> 
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image3.imageset/image1.jpeg" width="160" />
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="160" />  
+<img src="https://github.com/lord-of-the-lost/Shoppe/blob/dev-15/Shoppe/Resources/Assets.xcassets/Readme/image4.imageset/image2.jpeg" width="160" />  
 </div>
 
 Welcome to **Shoppe** – your ultimate destination for seamless online shopping! 🛍️  
@@ -35,11 +35,11 @@ Shoppe is a user-friendly e-commerce app designed to make your shopping experien
 
 ## Authors:
 <p align="left"> 
-<a href="https://github.com/lord-of-the-lost>
+<a href="https://github.com/lord-of-the-lost">
 <img src="https://img.shields.io/badge/Nikolay (TeamLead)-lightblue?style=plastic"/></a>
 <a href="https://github.com/DaniilMurzin">
 <img src="https://img.shields.io/badge/Daniil-green?style=plastic"/></a>
-<a href=" https://github.com/katrina-o>
+<a href="https://github.com/katrina-o">
 <img src="https://img.shields.io/badge/Ekaterina-violet?style=plastic"/></a>
 <a href="https://github.com/BakharovskyKS">
 <img src="https://img.shields.io/badge/Kirill-blue?style=plastic"/></a>
@@ -59,7 +59,7 @@ Shoppe is a user-friendly e-commerce app designed to make your shopping experien
 <img src="https://img.shields.io/badge/UserDefaults-red"/></a>
 </p>
 
-# Design Patterns:  
+## Design Patterns:  
 <p align="left"> 
 <img src="https://img.shields.io/badge/Observer-lime"/></a>
 <img src="https://img.shields.io/badge/Delegate-blue" /></a>
