@@ -15,9 +15,9 @@ protocol CartViewProtocol: AnyObject {
 
 final class CartViewController: UIViewController {
     private let presenter: CartPresenterProtocol
+    private let titleView = CartTitleView()
     private let addressView = AddressView()
     private let tableView = UITableView()
-    
     private let footerView = CheckoutFooterView()
     
     init(presenter: CartPresenterProtocol) {
@@ -29,15 +29,19 @@ final class CartViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateCartCount()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         presenter.viewDidLoad()
         setupConstraints()
         setupTableView()
+        setupObservers()
     }
-    
-    
 }
 
 // MARK: - Private Methods
@@ -45,8 +49,6 @@ final class CartViewController: UIViewController {
 private extension CartViewController {
     func setupView() {
         view.backgroundColor = .systemBackground
-        navigationItem.title = "Cart"
-        
         addressView.delegate = self
         addressView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addressView)
@@ -57,11 +59,14 @@ private extension CartViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 140
         
+        titleView.updateHandler = { [weak self] count in
+            self?.updateCartCount()
+        }
         footerView.checkoutHandler = { [weak self] in
             self?.checkoutTapped()
         }
         
-        [addressView, tableView, footerView].forEach {
+        [titleView, addressView, tableView, footerView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -69,7 +74,12 @@ private extension CartViewController {
     
      func setupConstraints() {
         NSLayoutConstraint.activate([
-            addressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            titleView.heightAnchor.constraint(equalToConstant: 40),
+            
+            addressView.topAnchor.constraint(equalTo: titleView.bottomAnchor, constant: 16),
             addressView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             addressView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
@@ -91,6 +101,19 @@ private extension CartViewController {
     
     @objc  func checkoutTapped() {
         // Обработка оформления заказа
+    }
+    
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateCartCount),
+            name: .basketDidUpdate,
+            object: nil
+        )
+    }
+    @objc private func updateCartCount() {
+        let count = BasketService.shared.totalItemsCount
+        titleView.updateCount(count)
     }
 }
 // MARK: - CartViewProtocol
