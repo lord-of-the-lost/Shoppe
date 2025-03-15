@@ -112,7 +112,7 @@ class ItemTableViewCell: UITableViewCell {
     }
     
     func configure(with model: CartItem) {
-        cellImage.image = UIImage(named: "")
+        cellImage.image = UIImage(named: model.imageName)
         titleLabel.text = model.name
         priceLabel.text = String(format: "$%.2f", model.price)
         badgeLabel.text = String(model.quantity)

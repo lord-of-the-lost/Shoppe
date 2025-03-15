@@ -64,8 +64,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makePaymentModule(router: AppRouterProtocol) -> UIViewController {
-        let presenter = PaymentPresenter()
+    static func makePaymentModule(router: AppRouterProtocol, cartItems: [CartItem]) -> UIViewController {
+        let presenter = PaymentPresenter(router: router, cartItems: cartItems)
         let viewController = PaymentViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController

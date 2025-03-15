@@ -20,8 +20,15 @@ protocol PaymentPresenterProtocol: AnyObject {
 
 // MARK: - Presenter
 final class PaymentPresenter {
+    
     private weak var view: PaymentViewProtocol?
-    var items: [CartItem] = []
+    private let router: AppRouterProtocol
+    var items: [CartItem]
+    
+    init(router: AppRouterProtocol, cartItems: [CartItem]) {
+        self.items = cartItems
+        self.router = router
+    }
 }
 
 // MARK: - Private Methods
@@ -46,6 +53,10 @@ extension PaymentPresenter: PaymentPresenterProtocol {
             break
         case .itemCell:
             break
+        case .close:
+            router.popViewController(animated: true)
+        case .trackMyOrder:
+            router.popViewController(animated: true)
         }
     }
     
@@ -69,4 +80,6 @@ extension PaymentPresenter: PaymentPresenterProtocol {
     func setupView(_ view: PaymentViewProtocol) {
         self.view = view
     }
+    
+    
 }

@@ -57,7 +57,7 @@ final class CartPresenter: CartPresenterProtocol {
         view?.reloadCartItems()
     }
     func showPaymentView() {
-        router.showPaymentView()
+        router.showPaymentView(with: cartItems)
     }
 }
 
