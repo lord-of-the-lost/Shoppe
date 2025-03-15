@@ -7,7 +7,6 @@
 
 
 import UIKit
-import SwiftUI
 
 protocol PaymentViewProtocol: AnyObject {
     func updateTotal(_ total: Double)

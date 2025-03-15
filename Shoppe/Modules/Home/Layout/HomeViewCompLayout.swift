@@ -30,8 +30,8 @@ enum HomeViewCompLayout {
         // JustForYou Section
         static let justForYouSpacing: CGFloat = 8.0
         static let justForYouItemWidth: CGFloat = 0.5
-        static let justForYouItemHeight: CGFloat = 0.5
-        static let justForYouGroupHeight: CGFloat = 0.42
+        static let justForYouItemHeight: CGFloat = 0.6
+        static let justForYouGroupHeight: CGFloat = 0.59
         static let justForYouGroupWidth: CGFloat = 1
 
         // Strings
@@ -108,7 +108,7 @@ enum HomeViewCompLayout {
                 
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(Drawings.justForYouItemWidth),
-                    heightDimension: .fractionalHeight(Drawings.justForYouItemHeight)
+                    heightDimension: .absolute(290)
                 )
                 
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -121,7 +121,7 @@ enum HomeViewCompLayout {
                 
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(Drawings.justForYouGroupWidth),
-                    heightDimension: .fractionalHeight(Drawings.justForYouGroupHeight)
+                    heightDimension: .absolute(310)
                 )
                 
                 let group = NSCollectionLayoutGroup.horizontal(
@@ -133,7 +133,7 @@ enum HomeViewCompLayout {
                 section.contentInsets = NSDirectionalEdgeInsets(
                     top: Drawings.zeroSpacing,
                     leading: spacing,
-                    bottom: Drawings.zeroSpacing,
+                    bottom: 10,
                     trailing: spacing
                 )
                 section.boundarySupplementaryItems = [createHeader()]

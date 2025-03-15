@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 protocol MainHeaderViewDelegate: AnyObject {
     func searchTapped()
@@ -66,6 +65,7 @@ extension MainHeaderView: SearchViewDelegate {
 // MARK: - Private Methods
 private extension MainHeaderView {
     func setupView() {
+        backgroundColor = .white
         searchView.delegate = self
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)
@@ -81,22 +81,4 @@ private extension MainHeaderView {
             mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Drawings.sidePadding),
         ])
     }
-}
-
-// MARK: - SwiftUI Preview
-struct MainHeaderViewPreview: PreviewProvider {
-    static var previews: some View {
-        MainHeaderViewPreviewWrapper()
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .frame(height: 120)
-    }
-}
-
-struct MainHeaderViewPreviewWrapper: UIViewRepresentable {
-    func makeUIView(context: Context) -> MainHeaderView {
-        return MainHeaderView()
-    }
-    
-    func updateUIView(_ uiView: MainHeaderView, context: Context) {}
 }
