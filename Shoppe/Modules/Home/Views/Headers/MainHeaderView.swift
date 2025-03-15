@@ -10,6 +10,7 @@ import SwiftUI
 
 protocol MainHeaderViewDelegate: AnyObject {
     func searchTapped()
+    func addressTaped()
 }
 
 final class MainHeaderView: UIView {
@@ -60,6 +61,13 @@ final class MainHeaderView: UIView {
 extension MainHeaderView: SearchViewDelegate {
     func placeholderTapped() {
         delegate?.searchTapped()
+    }
+}
+
+// MARK: - HeaderAddressViewDelegate
+extension MainHeaderView: HeaderAddressViewDelegate {
+    func addressTapped() {
+        delegate?.addressTaped()
     }
 }
 

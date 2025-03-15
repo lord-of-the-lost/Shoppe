@@ -9,7 +9,7 @@ import CoreLocation
 import UIKit
 
 protocol LocationServiceDelegate: AnyObject {
-    func didUpdateLocation(countryCode: String, currency: String)
+    func didUpdateLocation(fullAddress: String, currency: String)
     func didFailWithError(_ error: Error)
 }
 
@@ -49,7 +49,13 @@ final class LocationService: NSObject {
     
     private func fetchCountryAndCurrency(location: CLLocation) {
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
-            guard let self = self, error == nil, let countryCode = placemarks?.first?.isoCountryCode else {
+            guard
+                let self = self, error == nil,
+                let countryCode = placemarks?.first?.isoCountryCode,
+                let country = placemarks?.first?.country,
+                let region = placemarks?.first?.administrativeArea,
+                let city = placemarks?.first?.locality
+            else {
                 self?.delegate?.didFailWithError(NSError(
                     domain: "Geocode error",
                     code: 2,
@@ -57,7 +63,7 @@ final class LocationService: NSObject {
                 return
             }
             let currency = getCurrency(countryCode: countryCode)
-            self.delegate?.didUpdateLocation(countryCode: countryCode, currency: currency)
+            self.delegate?.didUpdateLocation(fullAddress: "\(country), \(region), \(city)", currency: currency)
         }
     }
     

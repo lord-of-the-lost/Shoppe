@@ -166,6 +166,10 @@ extension HomeViewController: UICollectionViewDelegate {
 
 // MARK: - MainHeaderViewDelegate
 extension HomeViewController: MainHeaderViewDelegate {
+    func addressTaped() {
+        presenter.addressTapped()
+    }
+    
     func searchTapped() {
         presenter.searchTapped()
     }

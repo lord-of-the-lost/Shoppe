@@ -17,6 +17,7 @@ protocol AppRouterProtocol {
     func showMainTabBar()
     func showOnboarding()
     func showSearch()
+    func showLocationMap()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -65,6 +66,11 @@ final class AppRouter: AppRouterProtocol {
     func showSearch() {
         let searchViewController = AppFactory.makeSearchModule(router: self)
         pushViewController(searchViewController)
+    }
+    
+    func showLocationMap() {
+        let locationMapViewController = AppFactory.makeLocationMapModule(router: self)
+        pushViewController(locationMapViewController)
     }
     
     func showMainTabBar() {
