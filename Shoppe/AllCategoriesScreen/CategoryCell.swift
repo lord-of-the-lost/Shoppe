@@ -74,9 +74,3 @@ class CategoryCell: UITableViewCell {
     }
 }
 
-// Структура для данных категории
-struct Category {
-    let name: String
-    let imageName: String
-    var isExpanded: Bool
-}

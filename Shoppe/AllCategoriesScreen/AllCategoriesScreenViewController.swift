@@ -9,6 +9,7 @@ import UIKit
 
 protocol AllCategoriesScreenViewProtocol: AnyObject {
     func setTableView()
+    func reloadTableView()
 }
 
 final class AllCategoriesScreenViewController: UIViewController {
@@ -28,7 +29,7 @@ final class AllCategoriesScreenViewController: UIViewController {
         let image = UIImage(systemName: "xmark")?.withRenderingMode(.alwaysTemplate)
         button.setImage(image, for: .normal)
         button.tintColor = .black
-        button.addTarget(AllCategoriesScreenViewController.self, action: #selector(closeTapped), for: .touchUpInside)
+//        button.addTarget(AllCategoriesScreenViewController(), action: #selector(closeTapped), for: .touchUpInside)
         return button
     }()
     
@@ -48,6 +49,10 @@ final class AllCategoriesScreenViewController: UIViewController {
     
     func cellPressed() {
         presenter.cellPressed()
+    }
+    
+    func reloadTableView() {
+        tableView.reloadData()
     }
     
     private func setupLayout() {
@@ -77,7 +82,7 @@ final class AllCategoriesScreenViewController: UIViewController {
         }
 
     @objc private func closeTapped() {
-            dismiss(animated: true, completion: nil)
+        print("Close Button Tapped")
     }
     
 }
@@ -92,20 +97,22 @@ extension AllCategoriesScreenViewController: AllCategoriesScreenViewProtocol {
 
 extension AllCategoriesScreenViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath.row)
+        presenter.didSelectRowAt(indexPath: indexPath)
     }
     
 }
 
 extension AllCategoriesScreenViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        presenter.getCountsOfCells()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = CategoryCell()
-        
-        return cell
+        presenter.getCellForRowAtIndexPath(indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        presenter.getheightForRowAt(indexPath: indexPath)
     }
     
     
