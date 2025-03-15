@@ -39,10 +39,10 @@ final class RegisterPresenter: RegisterPresenterProtocol {
             return
         }
         saveUser(email: email, password: password)
-        showOnboardingIfNeeded()
+        showLoginScreen()
     }
     
-    func cancelButtonTapped() { router.dismiss(animated: true) }
+    func cancelButtonTapped() { router.popViewController(animated: true) }
     
     func keyboardWillShow(height: CGFloat) {
         view?.keyboardWillShow(height: height)
@@ -51,13 +51,12 @@ final class RegisterPresenter: RegisterPresenterProtocol {
     func keyboardWillHide() {
         view?.keyboardWillHide()
     }
-    
 }
 
 // MARK: - Private Methods
 private extension RegisterPresenter {
     func saveUser(email: String, password: String) {
-        let user = User(email: email, password: password, isAuthorized: true)
+        let user = User(email: email, password: password)
         UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
     }
     
@@ -77,19 +76,7 @@ private extension RegisterPresenter {
         return true
     }
     
-    func showOnboardingIfNeeded() {
-        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
-        switch user.isOnboardingComplete {
-        case true: goToMainScreen()
-        case false: goToOnboarding()
-        }
-    }
-    
-    func goToMainScreen() {
-        router.showMainTabBar()
-    }
-    
-    func goToOnboarding() {
-        router.showOnboarding()
+    func showLoginScreen() {
+        router.showLoginScreen()
     }
 }

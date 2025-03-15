@@ -13,7 +13,7 @@ struct User: Codable {
     var email: String = .init()
     var password: String = .init()
     var avatarData: Data = .init()
-    var address: String = "Delivery address"
+    var address: String = "Mock american address"
     var currentCurrency: Currency = .dollar
     var cart: [Product] = .init()
     var wishList: [Product] = .init()
@@ -44,6 +44,16 @@ struct Product: Codable {
         case mensClothing = "men's clothing"
         case womensClothing = "women's clothing"
         case other
+        
+        var displayName: String {
+              switch self {
+              case .electronics: "Electronics"
+              case .jewelery: "Jewelry"
+              case .mensClothing: "Men's Clothing"
+              case .womensClothing: "Women's Clothing"
+              case .other: "Other"
+              }
+          }
     }
 }
 

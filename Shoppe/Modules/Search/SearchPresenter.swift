@@ -7,45 +7,89 @@
 
 import UIKit
 
+// MARK: - Protocols
+protocol SearchPresenterProtocol: AnyObject {
+    func viewDidLoad()
+    func searchButtonClicked(with text: String)
+    func clearSearchHistoryTapped()
+    func clearSearchTapped()
+    func addToCartTapped(at index: Int)
+    func likeTapped(at index: Int)
+    func removeHistoryItem(at index: Int)
+    func backButtonTapped()
+}
+
 final class SearchPresenter {
+    private let router: AppRouterProtocol
     private weak var view: SearchViewProtocol?
-    private var searchHistory: [String] = []
+    private var searchHistory = ["product", "pr", "abobus", "aglomeracia", "android-studio kakashka"]
     private var currentResults: [ProductCellViewModel] = []
+    
+    private let mockResults: [ProductCellViewModel] = Array(repeating:
+        ProductCellViewModel(
+            image: UIImage(named: "product"),
+            description: "Lorem ipsum dolor sit amet consectetur",
+            price: "$17.00"
+        ), count: 8)
+    
+    init(router: AppRouterProtocol) {
+        self.router = router
+    }
     
     func setupView(_ view: SearchViewProtocol) {
         self.view = view
     }
 }
 
+// MARK: - SearchPresenterProtocol
 extension SearchPresenter: SearchPresenterProtocol {
     func viewDidLoad() {
-        view?.updateState(.empty)
+        updateViewState(.history(searchHistory))
     }
     
     func searchButtonClicked(with text: String) {
-        let mockResults = [
-            ProductCellViewModel(image: UIImage(named: "product"), description: "Product 1", price: "$17.00"),
-            ProductCellViewModel(image: UIImage(named: "product"), description: "Product 2", price: "$17.00")
-        ]
+        guard !text.isEmpty else { return }
         
-        if !searchHistory.contains(text) {
-            searchHistory.append(text)
-        }
-        
+        searchHistory.removeAll { $0 == text }
+        searchHistory.insert(text, at: 0)
         currentResults = mockResults
+        
         view?.updateSearchText(text)
-        view?.updateState(.results(mockResults))
+        updateViewState(.results(mockResults))
+    }
+    
+    func clearSearchHistoryTapped() {
+        searchHistory.removeAll()
+        updateViewState(.empty)
     }
     
     func clearSearchTapped() {
-        view?.updateState(.history(searchHistory))
+        updateViewState(.history(searchHistory))
     }
     
     func addToCartTapped(at index: Int) {
-        // Обработка добавления в корзину
+        print(#function)
     }
     
     func likeTapped(at index: Int) {
-        // Обработка добавления в избранное
+        print(#function)
+    }
+    
+    func backButtonTapped() {
+        router.popViewController(animated: true)
+    }
+    
+    func removeHistoryItem(at index: Int) {
+        guard searchHistory.indices.contains(index) else { return }
+        
+        searchHistory.remove(at: index)
+        updateViewState(searchHistory.isEmpty ? .empty : .history(searchHistory))
+    }
+}
+
+// MARK: - Private Methods
+private extension SearchPresenter {
+    func updateViewState(_ state: SearchState) {
+        view?.updateState(state)
     }
 }

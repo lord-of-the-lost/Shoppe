@@ -12,6 +12,7 @@ final class ChipsView: UIView {
         let label = UILabel()
         label.textAlignment = .center
         label.font = Fonts.ralewayRegular.withSize(14)
+        label.lineBreakMode = .byTruncatingTail
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
