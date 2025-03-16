@@ -14,6 +14,7 @@ protocol HomePresenterProtocol: AnyObject {
     func didTap(action: MainVCInteraction)
     func showDetailView(with product: ProductModel)
     func searchTapped()
+    func addressTapped()
 }
 
 // MARK: - Presenter
@@ -67,6 +68,10 @@ extension HomePresenter: HomePresenterProtocol {
     
     func searchTapped() {
         router.showSearch(context: .shop(products))
+    }
+    
+    func addressTapped() {
+        router.showLocationMap()
     }
 }
 

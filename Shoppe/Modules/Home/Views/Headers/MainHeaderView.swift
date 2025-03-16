@@ -9,6 +9,7 @@ import UIKit
 
 protocol MainHeaderViewDelegate: AnyObject {
     func searchTapped()
+    func addressTapped()
 }
 
 final class MainHeaderView: UIView {
@@ -62,11 +63,19 @@ extension MainHeaderView: SearchViewDelegate {
     }
 }
 
+// MARK: - HeaderAddressViewDelegate
+extension MainHeaderView: HeaderAddressViewDelegate {
+    func addressTapped() {
+        delegate?.addressTapped()
+    }
+}
+
 // MARK: - Private Methods
 private extension MainHeaderView {
     func setupView() {
         backgroundColor = .white
         searchView.delegate = self
+        addressView.delegate = self
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)
         shopStackView.addArrangedSubview(searchView)

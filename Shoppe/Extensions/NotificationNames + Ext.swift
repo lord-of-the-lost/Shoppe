@@ -11,4 +11,5 @@ extension Notification.Name {
     static let wishlistDidUpdate = Notification.Name("WishlistDidUpdateNotification")
     static let basketDidUpdate = Notification.Name("BasketDidUpdateNotification")
     static let showEditAddressAlert = Notification.Name("ShowEditAddressAlertNotification")
+    static let LocationAndCurrencyDidUpdate = Notification.Name("LocationAndCurrencyDidUpdate")
 }

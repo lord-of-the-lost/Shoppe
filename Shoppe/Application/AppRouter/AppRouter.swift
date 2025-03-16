@@ -19,7 +19,8 @@ protocol AppRouterProtocol {
     func showOnboarding()
     func showSearch(context: SearchContext)
     func showProductDetail(_ product: Product)
-    func showPaymentView(with cartItems: [CartItem])
+    func showPaymentView()
+    func showLocationMap()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -78,6 +79,10 @@ final class AppRouter: AppRouterProtocol {
     func showProductDetail(_ product: Product) {
         let productDetailViewController = AppFactory.makeProductDetailModule(router: self, product: product)
         pushViewController(productDetailViewController)
+  }
+    func showLocationMap() {
+        let locationMapViewController = AppFactory.makeLocationMapModule(router: self)
+        pushViewController(locationMapViewController)
     }
     
     func showMainTabBar() {
@@ -86,8 +91,8 @@ final class AppRouter: AppRouterProtocol {
         navigation.presentedViewController?.dismiss(animated: false)
     }
     
-    func showPaymentView(with cartItems: [CartItem]) {
-        let paymentViewController = AppFactory.makePaymentModule(router: self, cartItems: cartItems)
+    func showPaymentView() {
+        let paymentViewController = AppFactory.makePaymentModule(router: self)
         paymentViewController.modalPresentationStyle = .fullScreen
         presentModalViewController(paymentViewController)
     }

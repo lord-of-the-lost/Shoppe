@@ -64,8 +64,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makePaymentModule(router: AppRouterProtocol, cartItems: [CartItem]) -> UIViewController {
-        let presenter = PaymentPresenter(router: router, cartItems: cartItems)
+    static func makePaymentModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = PaymentPresenter(router: router)
         let viewController = PaymentViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
@@ -99,6 +99,13 @@ final class AppFactory {
     static func makeWishlistModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = WishlistPresenter(router: router)
         let viewController = WishlistViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeLocationMapModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = LocationPresenter(router: router)
+        let viewController = LocationMapViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }

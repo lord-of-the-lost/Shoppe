@@ -111,11 +111,11 @@ class ItemTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with model: CartItem) {
-        cellImage.image = UIImage(named: model.imageName)
-        titleLabel.text = model.name
+    func configure(with model: Product) {
+        cellImage.image = model.image
+        titleLabel.text = model.title
         priceLabel.text = String(format: "$%.2f", model.price)
-        badgeLabel.text = String(model.quantity)
+        badgeLabel.text = model.count.description
     }
 }
 
