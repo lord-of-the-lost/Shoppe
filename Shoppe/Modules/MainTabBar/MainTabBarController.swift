@@ -15,6 +15,7 @@ protocol MainTabBarViewProtocol: AnyObject {
 
 // MARK: - MainTabBarController
 final class MainTabBarController: UITabBarController {
+    private let basketService = BasketService.shared
     private let presenter: MainTabBarPresenterProtocol
     private let basketTabIndex = 3
 
@@ -38,6 +39,7 @@ final class MainTabBarController: UITabBarController {
         presenter.setupView(self)
         presenter.viewDidLoad()
         configureTabBarAppearance()
+        updateBasketBadge()
     }
 }
 
@@ -84,5 +86,18 @@ private extension MainTabBarController {
         
         tabBar.scrollEdgeAppearance = tabBarAppearance
         tabBar.standardAppearance = tabBarAppearance
+    }
+    
+    @objc func handleBasketUpdate() {
+        updateBasketBadge()
+    }
+    func updateBasketBadge() {
+        guard let tabItems = tabBar.items,
+              let basketTabItem = tabItems[safe: basketTabIndex]
+        else { return }
+        
+        let count = basketService.totalItemsCount
+        basketTabItem.badgeValue = count > 0 ? "\(count)" : nil
+        basketTabItem.badgeColor = .systemRed
     }
 }
