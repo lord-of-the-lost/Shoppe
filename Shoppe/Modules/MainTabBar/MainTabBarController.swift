@@ -39,7 +39,6 @@ final class MainTabBarController: UITabBarController {
         presenter.setupView(self)
         presenter.viewDidLoad()
         configureTabBarAppearance()
-        setupObservers()
         updateBasketBadge()
     }
 }
@@ -88,15 +87,6 @@ private extension MainTabBarController {
         tabBar.scrollEdgeAppearance = tabBarAppearance
         tabBar.standardAppearance = tabBarAppearance
     }
-    
-     func setupObservers() {
-           NotificationCenter.default.addObserver(
-               self,
-               selector: #selector(handleBasketUpdate),
-               name: .basketDidUpdate,
-               object: nil
-           )
-       }
     
     @objc func handleBasketUpdate() {
         updateBasketBadge()
