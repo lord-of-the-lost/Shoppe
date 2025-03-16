@@ -111,9 +111,8 @@ private extension CartViewController {
             object: nil
         )
     }
-    @objc private func updateCartCount() {
-        let count = BasketService.shared.totalItemsCount
-        titleView.updateCount(count)
+    @objc func updateCartCount() {
+        titleView.updateCount()
     }
 }
 // MARK: - CartViewProtocol

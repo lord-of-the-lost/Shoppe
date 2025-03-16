@@ -7,6 +7,10 @@
 import UIKit
 
 final class CartTitleView: UIView {
+    
+    private let basketService = BasketService.shared
+    private var observer: NSObjectProtocol?
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Cart"
@@ -40,13 +44,34 @@ final class CartTitleView: UIView {
         super.init(frame: frame)
         setupView()
         setupConstraints()
+        setupObservers()
+        updateCount()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateCount(_ count: Int) {
+    deinit {
+        if let observer = observer {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        
+        func updateCount(_ count: Int) {
+            countLabel.text = "\(count)"
+            countBadge.isHidden = count == 0
+            
+            UIView.animate(withDuration: 0.2) {
+                self.countBadge.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+            } completion: { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.countBadge.transform = .identity
+                }
+            }
+        }
+    }
+    func updateCount() { 
+        let count = BasketService.shared.totalItemsCount
         countLabel.text = "\(count)"
         countBadge.isHidden = count == 0
         
@@ -82,5 +107,14 @@ private extension CartTitleView {
             countLabel.leadingAnchor.constraint(greaterThanOrEqualTo: countBadge.leadingAnchor, constant: 4),
             countLabel.trailingAnchor.constraint(lessThanOrEqualTo: countBadge.trailingAnchor, constant: -4)
         ])
+    }
+     func setupObservers() {
+        observer = NotificationCenter.default.addObserver(
+            forName: .basketDidUpdate,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateCount()
+        }
     }
 }
