@@ -88,6 +88,7 @@ extension WishlistViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         let viewModel = ProductCellViewModel(
+            id: model.id,
             image: model.image,
             title: model.title,
             price: String(format: "$%.2f", model.price),

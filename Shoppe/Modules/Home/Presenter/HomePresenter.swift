@@ -12,7 +12,8 @@ protocol HomePresenterProtocol: AnyObject {
     func setupView(_ view: HomeViewProtocol)
     func viewDidLoad()
     func didTap(action: MainVCInteraction)
-    func showDetailView(with product: ProductModel)
+    func showCategory(_ id: Int)
+    func showProductDetail(_ id: Int)
     func searchTapped()
     func addressTapped()
     func cartTapped()
@@ -22,7 +23,7 @@ protocol HomePresenterProtocol: AnyObject {
 final class HomePresenter {
     private var categories: [CategoryCellViewModel] = []
     private var popular: [PopularCellViewModel] = []
-    private var justForYou: [JustForYourCellViewModel] = []
+    private var justForYou: [ProductCellViewModel] = []
     private weak var view: HomeViewProtocol?
     private let router: AppRouterProtocol
     private let networkService: NetworkServiceProtocol
@@ -51,21 +52,31 @@ extension HomePresenter: HomePresenterProtocol {
     }
     
     func didTap(action: MainVCInteraction) {
-        switch action {
-        case .searchFieldDidChange(let query):
-            handleSearch(query)
-        case .didTapCell(let id):
-            handleCellTap(id)
-        case .didTapSeeAll(let section):
-            handleSeeAll(section)
-        case .didTapAddToCart(let id):
-            handleAddToCart(id)
-        }
+           switch action {
+           case .searchFieldDidChange(let query):
+               handleSearch(query)
+           case .didTapCategory(let id):
+               showCategory(id)
+           case .didTapPopularProduct(let id):
+               showProductDetail(id)
+           case .didTapJustForYouProduct(let id):
+               showProductDetail(id)
+           case .didTapSeeAll(let section):
+               handleSeeAll(section)
+           case .didTapAddToCart(let id):
+               handleAddToCart(id)
+           }
+       }
+      
+    func showCategory(_ id: Int) {
+        router.showCategoriesTabBarItem()
     }
     
-    func showDetailView(with product: ProductModel) {
-        //  router.showProductDetail(product)
+    func showProductDetail(_ id: Int) {
+        guard let product = products.first(where: { $0.id == id }) else { return }
+        router.showProductDetail(product)
     }
+    
     
     func searchTapped() {
         router.showSearch(context: .shop(products))
@@ -166,19 +177,20 @@ private extension HomePresenter {
             }
     }
     
-    func createJustForYouViewModels() -> [JustForYourCellViewModel] {
+    func createJustForYouViewModels() -> [ProductCellViewModel] {
         products
             .filter { !$0.isInCart }
             .shuffled()
             .prefix(10)
             .compactMap { product in
                 guard let image = product.image else { return nil }
-                return JustForYourCellViewModel(
+                return ProductCellViewModel(
                     id: product.id,
                     image: image,
+                    title: product.title,
                     price: String(format: "$%.2f", product.price),
-                    description: product.title,
-                    isFavorite: product.isInWishlist
+                    isOnCart: product.isInCart,
+                    isOnWishlist: product.isInWishlist
                 )
             }
     }
@@ -192,11 +204,6 @@ private extension HomePresenter {
     
     // MARK: - Action Handlers
     func handleSearch(_ query: String) {
-        
-    }
-    
-    func handleCellTap(_ id: Int) {
-        guard let product = products.first(where: { $0.id == id }) else { return }
         
     }
     
