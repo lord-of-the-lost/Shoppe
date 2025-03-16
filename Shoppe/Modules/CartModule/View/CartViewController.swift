@@ -40,7 +40,6 @@ final class CartViewController: UIViewController {
         presenter.viewDidLoad()
         setupConstraints()
         setupTableView()
-        setupObservers()
     }
 }
 
@@ -101,15 +100,6 @@ private extension CartViewController {
     
     @objc func checkoutTapped() {
         presenter.showPaymentView()
-    }
-    
-    private func setupObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateCartCount),
-            name: .basketDidUpdate,
-            object: nil
-        )
     }
     @objc func updateCartCount() {
         titleView.updateCount()
