@@ -10,20 +10,45 @@ import UIKit
 
 final class HomeViewDataSource {
     
-    // MARK: - Item Enum
+    // MARK: - Enums
     enum Item: Hashable {
         case category(CategoryCellViewModel)
         case popular(PopularCellViewModel)
         case justForYou(JustForYourCellViewModel)
     }
     
+    enum Section: Int, Hashable, CaseIterable {
+        case categories, popular, justForYou
+    }
+    
+    enum Header: Hashable {
+        case categories(HeaderViewModel)
+        case popular(HeaderViewModel)
+        case justForYou(HeaderViewModel)
+
+        var model: HeaderViewModel {
+            switch self {
+            case .categories(let model),
+                 .popular(let model),
+                 .justForYou(let model):
+                return model
+            }
+        }
+    }
+    
     // MARK: - Properties
     private let collectionView: UICollectionView
     private lazy var dataSource: DataSource = makeDataSource()
-    
+    private let headerModels: [Section: Header]
+
     // MARK: - Init
-    init(_ collectionView: UICollectionView) {
+    init(_ collectionView: UICollectionView, headerViewModels: [Section: HeaderViewModel]) {
         self.collectionView = collectionView
+        self.headerModels = [
+            .categories: .categories(headerViewModels[.categories] ?? HeaderViewModel(title: "Categories", action: {}, isHidden: false)),
+            .popular: .popular(headerViewModels[.popular] ?? HeaderViewModel(title: "Popular", action: {}, isHidden: false)),
+            .justForYou: .justForYou(headerViewModels[.justForYou] ?? HeaderViewModel(title: "Just For You", action: {}, isHidden: false))
+        ]
         self.collectionView.dataSource = dataSource
         registerElements()
     }
@@ -41,6 +66,11 @@ final class HomeViewDataSource {
     func itemAt(_ indexPath: IndexPath) -> Item? {
         dataSource.itemIdentifier(for: indexPath)
     }
+
+    func headerAt(_ section: Int) -> Header? {
+        guard let sectionEnum = Section(rawValue: section) else { return nil }
+        return headerModels[sectionEnum]
+    }
 }
 
 // MARK: - Private Extension
@@ -49,9 +79,6 @@ private extension HomeViewDataSource {
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
     
-    enum Section: Int, Hashable, CaseIterable {
-        case categories, popular, justForYou
-    }
     
     func makeDataSource() -> DataSource {
         return DataSource(collectionView: collectionView) { collectionView, indexPath, item in
@@ -85,45 +112,20 @@ private extension HomeViewDataSource {
     
     func makeHeader() -> DataSource.SupplementaryViewProvider {
         return { collectionView, kind, indexPath in
-            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
-            
-            guard let header = collectionView.dequeueReusableSupplementaryView(
+            guard kind == UICollectionView.elementKindSectionHeader,
+                  let header = self.headerAt(indexPath.section) else { return nil }
+
+            let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: SectionHeader.identifier,
                 for: indexPath
-            ) as? SectionHeader else {
-                return UICollectionReusableView()
-            }
+            ) as? SectionHeader
             
-            guard let section = Section(rawValue: indexPath.section) else { return nil }
-
-            let headerModel: HeaderViewModel
-            switch section {
-            case .categories:
-                headerModel = HeaderViewModel(
-                    title: "Categories",
-                    action: { print("See All tapped") },
-                    isHidden: false
-                )
-            case .popular:
-                headerModel = HeaderViewModel(
-                    title: "Popular",
-                    action: { print("See All tapped") },
-                    isHidden: false
-                )
-            case .justForYou:
-                headerModel = HeaderViewModel(
-                    title: "Just For You",
-                    action: { print("See All tapped") },
-                    isHidden: false
-                )
-            }
-            
-            header.configure(headerModel)
-            return header
+            headerView?.configure(header.model)
+            return headerView
         }
     }
-
+    
     func registerElements() {
         collectionView.register(CategoriesCell.self, forCellWithReuseIdentifier: CategoriesCell.identifier)
         collectionView.register(PopularCell.self, forCellWithReuseIdentifier: PopularCell.identifier)
@@ -142,3 +144,4 @@ private extension HomeViewDataSource.Snapshot {
         appendItems(justForYou.map { HomeViewDataSource.Item.justForYou($0) }, toSection: .justForYou)
     }
 }
+

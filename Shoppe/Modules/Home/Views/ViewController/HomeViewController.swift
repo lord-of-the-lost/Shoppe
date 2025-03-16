@@ -35,7 +35,7 @@ enum HomeSection {
 final class HomeViewController: UIViewController {
     // MARK: - Properties
     private let presenter: HomePresenterProtocol
-    private lazy var dataSource: HomeViewDataSource = HomeViewDataSource(collectionView)
+    private lazy var dataSource  = HomeViewDataSource(collectionView, headerViewModels: makeHeaderViewModels())
     
     // MARK: - UI Elements
     private lazy var shopTitleView = HomeTitleView(title: "Shop")
@@ -191,6 +191,15 @@ extension HomeViewController: HeaderAddressViewDelegate {
 
 // MARK: - Private Methods
 private extension HomeViewController {
+    
+    func makeHeaderViewModels() -> [HomeViewDataSource.Section: HeaderViewModel] {
+        return [
+            .categories: HeaderViewModel(title: "Categories", action: { [weak self] in self?.handleSeeAll(.categories) }, isHidden: false),
+            .popular: HeaderViewModel(title: "Popular", action: { [weak self] in self?.handleSeeAll(.popular) }, isHidden: false),
+            .justForYou: HeaderViewModel(title: "Just For You", action: { [weak self] in self?.handleSeeAll(.justForYou) }, isHidden: false)
+        ]
+    }
+    
     func setupView() {
         view.backgroundColor = .white
         view.addSubviews(mainStackView, collectionView, loadingIndicator, errorLabel)
