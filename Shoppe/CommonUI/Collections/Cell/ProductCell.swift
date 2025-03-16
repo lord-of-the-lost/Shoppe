@@ -7,7 +7,8 @@
 
 import UIKit
 
-struct ProductCellViewModel {
+struct ProductCellViewModel: Hashable {
+    let id: Int
     let image: UIImage?
     let title: String
     let price: String

@@ -14,7 +14,7 @@ final class HomeViewDataSource {
     enum Item: Hashable {
         case category(CategoryCellViewModel)
         case popular(PopularCellViewModel)
-        case justForYou(JustForYourCellViewModel)
+        case justForYou(ProductCellViewModel)
     }
     
     enum Section: Int, Hashable, CaseIterable {
@@ -57,7 +57,7 @@ final class HomeViewDataSource {
     func updateSnapshot(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
-        justForYou: [JustForYourCellViewModel]
+        justForYou: [ProductCellViewModel]
     ) {
         dataSource.supplementaryViewProvider = makeHeader()
         dataSource.apply(Snapshot(categories: categories, popular: popular, justForYou: justForYou), animatingDifferences: true)
@@ -101,9 +101,9 @@ private extension HomeViewDataSource {
                 
             case .justForYou(let justForYou):
                 guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: JustForYouCell.identifier,
+                    withReuseIdentifier: ProductCell.identifier,
                     for: indexPath
-                ) as? JustForYouCell else { return nil }
+                ) as? ProductCell else { return nil }
                 cell.configure(with: justForYou)
                 return cell
             }
@@ -129,14 +129,14 @@ private extension HomeViewDataSource {
     func registerElements() {
         collectionView.register(CategoriesCell.self, forCellWithReuseIdentifier: CategoriesCell.identifier)
         collectionView.register(PopularCell.self, forCellWithReuseIdentifier: PopularCell.identifier)
-        collectionView.register(JustForYouCell.self, forCellWithReuseIdentifier: JustForYouCell.identifier)
+        collectionView.register(ProductCell.self, forCellWithReuseIdentifier: ProductCell.identifier)
         collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.identifier)
     }
 }
 
 // MARK: - Snapshot Custom Init
 private extension HomeViewDataSource.Snapshot {
-    init(categories: [CategoryCellViewModel], popular: [PopularCellViewModel], justForYou: [JustForYourCellViewModel]) {
+    init(categories: [CategoryCellViewModel], popular: [PopularCellViewModel], justForYou: [ProductCellViewModel]) {
         self.init()
         appendSections(HomeViewDataSource.Section.allCases)
         appendItems(categories.map { HomeViewDataSource.Item.category($0) }, toSection: .categories)

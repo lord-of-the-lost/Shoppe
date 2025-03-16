@@ -157,6 +157,7 @@ private extension SearchPresenter {
     func mapCurrentResultsToViewModels() -> [ProductCellViewModel] {
         currentResults.map { product in
             ProductCellViewModel(
+                id: product.id,
                 image: product.image,
                 title: product.title,
                 price: String(format: "$%.2f", product.price),

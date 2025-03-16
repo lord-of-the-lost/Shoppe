@@ -12,7 +12,7 @@ protocol HomeViewProtocol: AnyObject {
     func updateUI(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
-        justForYou: [JustForYourCellViewModel]
+        justForYou: [ProductCellViewModel]
     )
     func showLoading()
     func hideLoading()
@@ -21,7 +21,9 @@ protocol HomeViewProtocol: AnyObject {
 
 enum MainVCInteraction {
     case searchFieldDidChange(String)
-    case didTapCell(Int)
+    case didTapCategory(Int)
+    case didTapPopularProduct(Int)
+    case didTapJustForYouProduct(Int)
     case didTapSeeAll(HomeSection)
     case didTapAddToCart(Int)
 }
@@ -120,7 +122,7 @@ extension HomeViewController: HomeViewProtocol {
     func updateUI(
         categories: [CategoryCellViewModel],
         popular: [PopularCellViewModel],
-        justForYou: [JustForYourCellViewModel]
+        justForYou: [ProductCellViewModel]
     ) {
         errorLabel.isHidden = true
         dataSource.updateSnapshot(
@@ -148,27 +150,27 @@ extension HomeViewController: HomeViewProtocol {
 
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        didSelectItemAt indexPath: IndexPath
-    ) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
         switch dataSource.itemAt(indexPath) {
         case .category(let category):
-            presenter.didTap(action: .didTapCell(category.id))
-            
-        case .justForYou(let product):
-            presenter.didTap(action: .didTapCell(product.id))
+            presenter.didTap(action: .didTapCategory(category.id))
             
         case .popular(let product):
-            presenter.didTap(action: .didTapCell(product.id))
+            presenter.didTap(action: .didTapPopularProduct(product.id))
+            
+        case .justForYou(let product):
+            presenter.didTap(action: .didTapJustForYouProduct(product.id))
             
         case .none:
             assertionFailure("Invalid IndexPath")
         }
     }
 }
+
+
+
 
 // MARK: - SearchViewDelegate
 extension HomeViewController: SearchViewDelegate {
