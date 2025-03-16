@@ -13,27 +13,38 @@ protocol WishlistPresenterProtocol {
     func didTapProduct(at index: Int)
     func addToCartProduct(at index: Int)
     func toggleProductLike(at index: Int)
+    func showSearch()
 }
 
 final class WishlistPresenter {
+    // MARK: - Properties
     private weak var view: WishlistViewProtocol?
-    var product: User? = UserDefaultsService.shared.getCustomObject(forKey: .userModel)
-    var products: [Product] = []
+    private let router: AppRouterProtocol
+    private let basketService: BasketServiceProtocol
+    private let wishlistService: WishlistServiceProtocol
+    
+    private var products: [Product] {
+        wishlistService.items
+    }
+    
+    // MARK: - Initialization
+    init(
+        router: AppRouterProtocol,
+        basketService: BasketServiceProtocol = BasketService.shared,
+        wishlistService: WishlistServiceProtocol = WishlistService.shared
+    ) {
+        self.router = router
+        self.basketService = basketService
+        self.wishlistService = wishlistService
+        setupNotifications()
+    }
     
     func setupView(_ view: WishlistViewProtocol) {
         self.view = view
-        loadProducts()
     }
     
-    func loadProducts() {
-        products = [
-            Product(id: 1, title: "Blue Shirt", price: 200, description: "A blue shirt", category: .jewelery, imageData: Data(), isInWishlist: false),
-            Product(id: 2, title: "Red Dress", price: 250, description: "A red dress", category: .womensClothing, imageData: Data(), isInWishlist: false),
-            Product(id: 3, title: "Gold Necklace", price: 150, description: "A gold necklace", category: .jewelery, imageData: Data(), isInWishlist: false),
-            Product(id: 4, title: "Men's Watch", price: 300, description: "A men's watch", category: .mensClothing, imageData: Data(), isInWishlist: false),
-        ]
-        print(products.count)
-        view?.reloadData()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -44,25 +55,65 @@ extension WishlistPresenter: WishlistPresenterProtocol {
     }
     
     func getProduct(at index: Int) -> Product? {
-        products[safe: index]
+        guard let product = products[safe: index] else { return nil }
+        
+        var updatedProduct = product
+        updatedProduct.isInCart = basketService.contains(product)
+        updatedProduct.isInWishlist = wishlistService.contains(product)
+        return updatedProduct
     }
     
     func didTapProduct(at index: Int) {
-        print(index)
+        guard let product = products[safe: index] else { return }
+        router.showProductDetail(product)
     }
     
     func addToCartProduct(at index: Int) {
-        print(index)
+        guard let product = products[safe: index] else { return }
+        
+        if basketService.contains(product) {
+            basketService.removeItem(product)
+        } else {
+            basketService.addItem(product)
+        }
+        
+        view?.reloadData()
+    }
+    
+    func showSearch() {
+        router.showSearch(context: .wishlist)
     }
     
     func toggleProductLike(at index: Int) {
-        guard var user: User? =  UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
-        if ((user?.wishList.indices.contains(index)) != nil) {
-            user?.wishList.remove(at: index)
-            print("Product removed from wishlist at index: \(index)")
-        }
-        UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
+        guard let product = products[safe: index] else { return }
+        wishlistService.removeItem(product)
         view?.reloadData()
-        print(index)
+    }
+}
+
+// MARK: - Private Methods
+private extension WishlistPresenter {
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleWishlistUpdate),
+            name: .wishlistDidUpdate,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleBasketUpdate),
+            name: .basketDidUpdate,
+            object: nil
+        )
+    }
+    
+    @objc func handleWishlistUpdate() {
+        view?.reloadData()
+    }
+    
+    @objc func handleBasketUpdate() {
+        view?.reloadData()
     }
 }

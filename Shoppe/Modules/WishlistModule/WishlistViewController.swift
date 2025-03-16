@@ -18,28 +18,21 @@ final class WishlistViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Wishlist"
-        label.textColor = .customBlack
-        label.font = Fonts.ralewayExtraBold.withSize(24)
+        label.textColor = .black
+        label.font = Fonts.ralewayBold.withSize(28)
         label.textAlignment = .center
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
-    private lazy var searchButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Search", for: .normal)
-        button.titleLabel?.font = Fonts.ralewayMedium.withSize(16)
-        button.setTitleColor(.lightGray, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var textField: UITextField = {
-        let text = UITextField()
-        text.backgroundColor = .customLightGray
-        text.layer.cornerRadius = 18
-        text.translatesAutoresizingMaskIntoConstraints = false
-        return text
+
+    private lazy var searchView: SearchView = {
+        let searchView = SearchView()
+        searchView.delegate = self
+        searchView.setSearchState(.placeholder)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        return searchView
     }()
     
     private lazy var collectionView: UICollectionView = {
@@ -58,8 +51,6 @@ final class WishlistViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.largeTitleDisplayMode = .always
-        navigationItem.titleView = titleLabel
         setupView()
         setupConstraints()
     }
@@ -75,14 +66,14 @@ final class WishlistViewController: UIViewController {
     }
 }
 
-// MARK: WishlistViewProtocol
+// MARK: - WishlistViewProtocol
 extension WishlistViewController: WishlistViewProtocol {
     func reloadData() {
         collectionView.reloadData()
     }
 }
 
-// MARK: UICollectionViewDataSource
+// MARK: - UICollectionViewDataSource
 extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         presenter.getProductsCount()
@@ -110,21 +101,28 @@ extension WishlistViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: UICollectionViewDelegate
+// MARK: - UICollectionViewDelegate
 extension WishlistViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         presenter.didTapProduct(at: indexPath.item)
     }
 }
 
-// MARK: UICollectionViewDelegateFlowLayout
+// MARK: - UICollectionViewDelegateFlowLayout
 extension WishlistViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         CGSize(width: (view.bounds.width - 30) / 2, height: 300)
     }
 }
 
-// MARK: ProductCellDelegate
+// MARK: - SearchViewDelegate
+extension WishlistViewController: SearchViewDelegate {
+    func placeholderTapped() {
+        presenter.showSearch()
+    }
+}
+
+// MARK: - ProductCellDelegate
 extension WishlistViewController: ProductCellDelegate {
     func addToCartTapped(_ cell: ProductCell) {
         guard let index = collectionView.indexPath(for: cell)?.item else { return }
@@ -141,26 +139,23 @@ extension WishlistViewController: ProductCellDelegate {
 private extension WishlistViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(searchButton)
-        view.addSubview(textField)
-        view.addSubview(collectionView)
+        view.addSubviews(titleLabel, searchView, collectionView)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            searchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            searchButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
-            searchButton.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -20),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             
-            textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 18),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
-            textField.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -20),
-            textField.leadingAnchor.constraint(equalTo: searchButton.trailingAnchor, constant: 20),
-            textField.heightAnchor.constraint(equalToConstant: 36),
+            searchView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 18),
+            searchView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            searchView.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -20),
+            searchView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            searchView.heightAnchor.constraint(equalToConstant: 36),
             
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }

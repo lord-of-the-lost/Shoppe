@@ -15,6 +15,7 @@ protocol HomePresenterProtocol: AnyObject {
     func showDetailView(with product: ProductModel)
     func searchTapped()
     func addressTapped()
+    func cartTapped()
 }
 
 // MARK: - Presenter
@@ -67,11 +68,15 @@ extension HomePresenter: HomePresenterProtocol {
     }
     
     func searchTapped() {
-        router.showSearch(products: products)
+        router.showSearch(context: .shop(products))
     }
     
     func addressTapped() {
         router.showLocationMap()
+    }
+    
+    func cartTapped() {
+        router.showCartTabBarItem()
     }
 }
 
@@ -196,7 +201,7 @@ private extension HomePresenter {
     }
     
     func handleSeeAll(_ section: HomeSection) {
-        
+        router.showCategoriesTabBarItem()
     }
     
     func handleAddToCart(_ id: Int) {
