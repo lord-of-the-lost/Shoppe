@@ -40,8 +40,8 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     }
     
     func viewDidLoad() {
-        view?.updateBasketBadge(count: basketService.totalItemsCount)
         view?.setupTabItems(getTabItems())
+        view?.updateBasketBadge(count: basketService.totalItemsCount)
     }
 }
 
@@ -74,7 +74,7 @@ private extension MainTabBarPresenter {
                 selectedIconName: "CategoriesSelected"
             ),
             TabItemModel(
-                viewController: AppFactory.makeCartModule(),
+                viewController: AppFactory.makeCartModule(router: router),
                 iconName: "Bag",
                 selectedIconName: "BagSelected"
             ),

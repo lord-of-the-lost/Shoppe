@@ -32,9 +32,9 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeCartModule() -> UIViewController {
+    static func makeCartModule(router: AppRouterProtocol) -> UIViewController {
         let addressService = AddressService.shared
-        let presenter = CartPresenter(addressService: addressService)
+        let presenter = CartPresenter(addressService: addressService, router: router)
         let viewController = CartViewController(presenter: presenter)
         presenter.view = viewController
         return viewController
@@ -64,22 +64,26 @@ final class AppFactory {
         return viewController
     }
     
-    static func makePaymentModule() -> UIViewController {
-        let presenter = PaymentPresenter()
+    static func makePaymentModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = PaymentPresenter(router: router)
         let viewController = PaymentViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }
     
-    static func makeProductDetailModule() -> UIViewController {
-        let presenter = ProductDetailPresenter()
+    static func makeProductDetailModule(router: AppRouterProtocol, product: Product) -> UIViewController {
+        let presenter = ProductDetailPresenter(router: router, product: product)
         let viewController = ProductDetailViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }
     
-    static func makeSearchModule(router: AppRouterProtocol) -> UIViewController {
-        let presenter = SearchPresenter(router: router)
+    static func makeSearchModule(router: AppRouterProtocol, products: [Product]) -> UIViewController {
+        let presenter = SearchPresenter(
+            products: products,
+            router: router,
+            userDefaultsService: UserDefaultsService.shared
+        )
         let viewController = SearchViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
@@ -95,6 +99,13 @@ final class AppFactory {
     static func makeWishlistModule() -> UIViewController {
         let presenter = WishlistPresenter()
         let viewController = WishlistViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeLocationMapModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = LocationPresenter(router: router)
+        let viewController = LocationMapViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }

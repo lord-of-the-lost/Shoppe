@@ -6,10 +6,10 @@
 //
 
 import UIKit
-import SwiftUI
 
 protocol MainHeaderViewDelegate: AnyObject {
     func searchTapped()
+    func addressTapped()
 }
 
 final class MainHeaderView: UIView {
@@ -63,10 +63,19 @@ extension MainHeaderView: SearchViewDelegate {
     }
 }
 
+// MARK: - HeaderAddressViewDelegate
+extension MainHeaderView: HeaderAddressViewDelegate {
+    func addressTapped() {
+        delegate?.addressTapped()
+    }
+}
+
 // MARK: - Private Methods
 private extension MainHeaderView {
     func setupView() {
+        backgroundColor = .white
         searchView.delegate = self
+        addressView.delegate = self
         self.translatesAutoresizingMaskIntoConstraints  = false
         shopStackView.addArrangedSubview(shopTitleView)
         shopStackView.addArrangedSubview(searchView)
@@ -81,22 +90,4 @@ private extension MainHeaderView {
             mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Drawings.sidePadding),
         ])
     }
-}
-
-// MARK: - SwiftUI Preview
-struct MainHeaderViewPreview: PreviewProvider {
-    static var previews: some View {
-        MainHeaderViewPreviewWrapper()
-            .previewLayout(.sizeThatFits)
-            .padding()
-            .frame(height: 120)
-    }
-}
-
-struct MainHeaderViewPreviewWrapper: UIViewRepresentable {
-    func makeUIView(context: Context) -> MainHeaderView {
-        return MainHeaderView()
-    }
-    
-    func updateUIView(_ uiView: MainHeaderView, context: Context) {}
 }

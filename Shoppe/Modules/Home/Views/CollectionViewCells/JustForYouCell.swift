@@ -6,17 +6,16 @@
 //
 
 import UIKit
-import SwiftUI
 
 final class JustForYouCell: UICollectionViewCell {
     
     // MARK: - Drawings
     private enum Drawings {
-        static let cornerRadius: CGFloat = 5.0
-        static let addButtonCornerRadius: CGFloat = 4.0
+        static let cornerRadius: CGFloat = 10
+        static let addButtonCornerRadius: CGFloat = 4
         static let addButtonHeightMultiplier: CGFloat = 0.2
-        static let descriptionTopSpacing: CGFloat = 10.0
-        static let addButtonTopSpacing: CGFloat = 8.0
+        static let descriptionTopSpacing: CGFloat = 10
+        static let addButtonTopSpacing: CGFloat = 8
         static let zeroSpacing: CGFloat = 0.0
 
         static let addButtonText = "Add to cart"
@@ -43,7 +42,7 @@ final class JustForYouCell: UICollectionViewCell {
         return image
     }()
     
-    private let descriptionLabel: UILabel = {
+    private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.font = Fonts.nunitoRegular
@@ -59,7 +58,7 @@ final class JustForYouCell: UICollectionViewCell {
         return label
     }()
     
-    private let addButton: UIButton = {
+    private lazy var addButton: UIButton = {
         let button = UIButton()
         button.setTitle(Drawings.addButtonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -113,20 +112,23 @@ private extension JustForYouCell {
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 1),
+            imageView.heightAnchor.constraint(equalToConstant: 150),
             
             descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             descriptionLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: Drawings.descriptionTopSpacing),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 60),
+            
             
             priceStackView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor),
             priceStackView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             priceStackView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
+            priceStackView.heightAnchor.constraint(equalToConstant: 30),
             
             addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: Drawings.addButtonTopSpacing),
             addButton.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             addButton.trailingAnchor.constraint(equalTo: trailingAnchor),
-            addButton.heightAnchor.constraint(equalTo: widthAnchor, multiplier: Drawings.addButtonHeightMultiplier)
+            addButton.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
 }

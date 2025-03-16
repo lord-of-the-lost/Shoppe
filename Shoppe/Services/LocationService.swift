@@ -9,16 +9,17 @@ import CoreLocation
 import UIKit
 
 protocol LocationServiceDelegate: AnyObject {
-    func didUpdateLocation(countryCode: String, currency: String)
+    func didUpdateLocation(fullAddress: String, currency: Currency)
     func didFailWithError(_ error: Error)
 }
 
-/// LocationService отвечает за получение текущей геолокация и определяет валюту по стране.
+/// LocationService отвечает за получение текущей геолокации и определение валюты по стране.
 /// Использует CLLocationManager для получения координат и CLGeocoder для обратного геокодинга.
-
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
     private let geocoder = CLGeocoder()
+    
+    private(set) var lastLocation: CLLocation?
     weak var delegate: LocationServiceDelegate?
     
     override init() {
@@ -29,9 +30,7 @@ final class LocationService: NSObject {
     }
     
     func requestLocation() {
-        let status = locationManager.authorizationStatus
-        
-        switch status {
+        switch locationManager.authorizationStatus {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
@@ -41,47 +40,60 @@ final class LocationService: NSObject {
             delegate?.didFailWithError(NSError(
                 domain: "Location error",
                 code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Access to location is denied."]))
+                userInfo: [NSLocalizedDescriptionKey: "Access to location is denied."]
+            ))
         default:
             break
         }
     }
     
-    private func fetchCountryAndCurrency(location: CLLocation) {
+    func getAddressAndCurrency(from location: CLLocation, completion: @escaping (String?, Currency?) -> Void) {
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
-            guard let self = self, error == nil, let countryCode = placemarks?.first?.isoCountryCode else {
+            guard let self = self, error == nil, let placemark = placemarks?.first else {
+                completion(nil, nil)
                 self?.delegate?.didFailWithError(NSError(
                     domain: "Geocode error",
                     code: 2,
-                    userInfo: [NSLocalizedDescriptionKey: "Country detection failed"]))
+                    userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve address."])
+                )
                 return
             }
-            let currency = getCurrency(countryCode: countryCode)
-            self.delegate?.didUpdateLocation(countryCode: countryCode, currency: currency)
+            
+            let countryCode = placemark.isoCountryCode ?? "Unknown"
+            let currency = self.getCurrency(countryCode: countryCode)
+            let address = [placemark.country, placemark.administrativeArea, placemark.locality]
+                .compactMap { $0 }
+                .joined(separator: ", ")
+            
+            completion(address, currency)
         }
     }
     
-    private func getCurrency(countryCode: String) -> String {
+    private func getCurrency(countryCode: String) -> Currency {
         let europeCountries = ["FR", "DE", "IT", "ES", "NL", "BE", "AT", "PT", "FI", "IE", "GR", "LU", "SK", "SI", "LV", "LT", "EE", "CY", "MT"]
         if countryCode == "RU" {
-            return "₽"
+            return .ruble
         } else if europeCountries.contains(countryCode) {
-            return "€"
+            return .euro
         } else {
-            return "$"
+            return .dollar
         }
     }
 }
 
 // MARK: - CLLocationManagerDelegate
-// Handling location updates and error cases
 extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        fetchCountryAndCurrency(location: location)
+        lastLocation = location
+        
+        getAddressAndCurrency(from: location) { [weak self] address, currency in
+            guard let address = address, let currency = currency else { return }
+            self?.delegate?.didUpdateLocation(fullAddress: address, currency: currency)
+        }
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         delegate?.didFailWithError(error)
     }
     
@@ -92,7 +104,7 @@ extension LocationService: CLLocationManagerDelegate {
     }
 }
 
-// MARK: - Create LocationAlert
+// MARK: - Location Access Alert
 extension LocationService {
     private func showLocationDeniedAlert() {
         guard let topVC = UIApplication.shared.delegate?.window??.rootViewController else { return }

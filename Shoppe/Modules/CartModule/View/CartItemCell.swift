@@ -79,9 +79,9 @@ final class CartItemCell: UITableViewCell {
     }
     
     func configure(with item: CartItem) {
-        productImageView.image = UIImage(named: item.imageName)
+        productImageView.image = item.image
         titleLabel.text = item.name
-        detailsLabel.text = "\(item.color), \(item.size)"
+        detailsLabel.text = item.category
         priceLabel.text = item.price.formattedAsPrice()
         quantityStepper.setQuantity(item.quantity)
     }

@@ -1,6 +1,11 @@
 import UIKit
 
+protocol HeaderAddressViewDelegate: AnyObject {
+    func addressTapped()
+}
+
 final class HeaderAddressView: UIView {
+    weak var delegate: HeaderAddressViewDelegate?
     
     // MARK: - Drawings
     private enum Drawings {
@@ -41,6 +46,7 @@ final class HeaderAddressView: UIView {
             attributes: AttributeContainer([.font: Fonts.baseFontMedium12])
         )
         let button = UIButton(configuration: config)
+        button.addTarget(self, action: #selector(addressButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -108,5 +114,9 @@ private extension HeaderAddressView {
             badgeLabel.widthAnchor.constraint(equalToConstant: Drawings.badgeSize),
             badgeLabel.heightAnchor.constraint(equalToConstant: Drawings.badgeSize)
         ])
+    }
+    
+    @objc func addressButtonTapped() {
+        delegate?.addressTapped()
     }
 }

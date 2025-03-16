@@ -9,7 +9,7 @@ import UIKit
 
 struct ProductCellViewModel {
     let image: UIImage?
-    let description: String
+    let title: String
     let price: String
     var isOnCart: Bool = false
     var isOnWishlist: Bool = false
@@ -67,6 +67,8 @@ final class ProductCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "$17,00"
         label.font = Fonts.ralewayBold.withSize(17)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentHuggingPriority(.required, for: .horizontal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -110,7 +112,7 @@ final class ProductCell: UICollectionViewCell {
 extension ProductCell: ConfigurableViewProtocol {
     func configure(with model: ProductCellViewModel) {
         imageView.image = model.image
-        descriptionLabel.text = model.description
+        descriptionLabel.text = model.title
         priceLabel.text = model.price
         self.isOnCart = model.isOnCart
         self.isOnWishlist = model.isOnWishlist
@@ -155,18 +157,20 @@ private extension ProductCell {
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30),
             descriptionLabel.bottomAnchor.constraint(equalTo: priceLabel.topAnchor, constant: -8),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 36),
             
             priceLabel.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -10),
             priceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             priceLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 50),
+            priceLabel.heightAnchor.constraint(equalToConstant: 21),
             
             addButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             addButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             addButton.trailingAnchor.constraint(equalTo: wishButton.leadingAnchor, constant: -20),
             addButton.heightAnchor.constraint(equalToConstant: 31),
             
-            wishButton.heightAnchor.constraint(equalToConstant: 40),
-            wishButton.widthAnchor.constraint(equalToConstant: 40),
+            wishButton.heightAnchor.constraint(equalToConstant: 30),
+            wishButton.widthAnchor.constraint(equalToConstant: 30),
             wishButton.trailingAnchor.constraint(equalTo: trailingAnchor),
             wishButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor)
         ])

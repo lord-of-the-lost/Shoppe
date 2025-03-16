@@ -11,26 +11,31 @@ protocol PaymentPresenterProtocol: AnyObject {
     func setupView(_ view: PaymentViewProtocol)
     func viewDidLoad()
     func itemsCount() -> Int
-    func item(at index: Int) -> ItemCellViewModel
+    func item(at index: Int) -> Product
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
     func calculateTotal()
-//    func showDetailView(with: Model)
 }
 
 // MARK: - Presenter
 final class PaymentPresenter {
     private weak var view: PaymentViewProtocol?
-    var items: [ItemCellViewModel] = []
+    private let router: AppRouterProtocol
+    private let basketService: BasketServiceProtocol
+    
+    init(
+        router: AppRouterProtocol,
+        basketService: BasketServiceProtocol = BasketService.shared
+    ) {
+        self.router = router
+        self.basketService = basketService
+    }
 }
 
-// MARK: - Private Methods
-private extension PaymentPresenter {}
-
+// MARK: - PaymentPresenterProtocol
 extension PaymentPresenter: PaymentPresenterProtocol {
-    
     func calculateTotal() {
-        let total = items.reduce(0) { $0 + $1.price }
+        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
         view?.updateTotal(total)
     }
     
@@ -46,24 +51,27 @@ extension PaymentPresenter: PaymentPresenterProtocol {
             break
         case .itemCell:
             break
+        case .close:
+            router.dismiss(animated: true)
+        case .trackMyOrder:
+            router.dismiss(animated: true)
         }
     }
     
     func didTapCell(at index: Int) {
-        guard let article = items[safe: index] else { return }
-        print("did tap cell at index: \(index), article: \(article)")
+        guard let product = basketService.items[safe: index] else { return }
+        print("did tap cell at index: \(index), product: \(product)")
     }
     
-    func item(at index: Int) -> ItemCellViewModel {
-        return items[index]
+    func item(at index: Int) -> Product {
+        return basketService.items[index]
     }
     
     func itemsCount() -> Int {
-        items.count
+        basketService.items.count
     }
     
     func viewDidLoad() {
-        items = ItemsMock.all
         calculateTotal()
     }
     

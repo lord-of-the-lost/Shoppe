@@ -11,15 +11,20 @@ protocol AppRouterProtocol {
     func start()
     func dismiss(animated: Bool)
     func popViewController(animated: Bool)
+    func popToRoot()
     func showStartScreen()
     func showRegistrationScreen()
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
-    func showSearch()
+    func showSearch(products: [Product])
+    func showProductDetail(_ product: Product)
+    func showPaymentView()
+    func showLocationMap()
 }
 
 final class AppRouter: AppRouterProtocol {
+    
     var navigation: UINavigationController
     var window: UIWindow?
     
@@ -39,6 +44,10 @@ final class AppRouter: AppRouterProtocol {
     
     func popViewController(animated: Bool) {
         navigation.popViewController(animated: animated)
+    }
+    
+    func popToRoot() {
+        navigation.popToRootViewController(animated: true)
     }
     
     func showStartScreen() {
@@ -62,15 +71,30 @@ final class AppRouter: AppRouterProtocol {
         presentModalViewController(onboardingViewController)
     }
     
-    func showSearch() {
-        let searchViewController = AppFactory.makeSearchModule(router: self)
+    func showSearch(products: [Product]) {
+        let searchViewController = AppFactory.makeSearchModule(router: self, products: products)
         pushViewController(searchViewController)
+    }
+    
+    func showProductDetail(_ product: Product) {
+        let productDetailViewController = AppFactory.makeProductDetailModule(router: self, product: product)
+        pushViewController(productDetailViewController)
+  }
+    func showLocationMap() {
+        let locationMapViewController = AppFactory.makeLocationMapModule(router: self)
+        pushViewController(locationMapViewController)
     }
     
     func showMainTabBar() {
         let tabBarController = AppFactory.makeTabBarModule(router: self)
         navigation.setViewControllers([tabBarController], animated: true)
         navigation.presentedViewController?.dismiss(animated: false)
+    }
+    
+    func showPaymentView() {
+        let paymentViewController = AppFactory.makePaymentModule(router: self)
+        paymentViewController.modalPresentationStyle = .fullScreen
+        presentModalViewController(paymentViewController)
     }
 }
 

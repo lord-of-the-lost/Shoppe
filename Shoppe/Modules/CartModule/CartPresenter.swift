@@ -4,10 +4,10 @@
 //
 //  Created by Надежда Капацина on 09.03.2025.
 //
-import Foundation
+
+import UIKit
 
 protocol CartPresenterProtocol: AnyObject {
-    
     var cartItems: [CartItem] { get }
     
     func viewDidLoad()
@@ -15,25 +15,39 @@ protocol CartPresenterProtocol: AnyObject {
     func deleteItem(at index: Int)
     func increaseQuantity(at index: Int)
     func decreaseQuantity(at index: Int)
+    func showPaymentView()
 }
 
 final class CartPresenter: CartPresenterProtocol {
+    // MARK: - Properties
     weak var view: CartViewProtocol?
     private let addressService: AddressServiceProtocol
+    private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
     
-    var cartItems: [CartItem] {
-        basketService.items
-    }
+    private(set) var cartItems: [CartItem] = []
     
-    init(addressService: AddressServiceProtocol,
-         basketService: BasketServiceProtocol = BasketService.shared) {
+    // MARK: - Initialization
+    init(
+        addressService: AddressServiceProtocol,
+        router: AppRouterProtocol,
+        basketService: BasketServiceProtocol = BasketService.shared
+    ) {
         self.addressService = addressService
+        self.router = router
         self.basketService = basketService
-        setupObservers()
+        setupNotifications()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - Protocol Methods
+extension CartPresenter {
     func viewDidLoad() {
+        updateCartItems()
         view?.updateAddress(addressService.currentAddress)
         calculateTotal()
     }
@@ -43,18 +57,35 @@ final class CartPresenter: CartPresenterProtocol {
     }
     
     func deleteItem(at index: Int) {
-        let item = cartItems[index]
-        basketService.removeItem(withId: item.id)
-        calculateTotal()
+        guard let product = basketService.items[safe: index] else { return }
+        basketService.removeItem(product)
+        updateCartItems()
     }
     
     func increaseQuantity(at index: Int) {
-        let item = cartItems[index]
-        basketService.updateQuantity(for: item.id, newQuantity: item.quantity + 1)
-        calculateTotal()
+        guard let product = basketService.items[safe: index] else { return }
+        basketService.updateQuantity(for: product.id, newQuantity: product.count + 1)
+        updateCartItems()
     }
     
-    private func setupObservers() {
+    func decreaseQuantity(at index: Int) {
+        guard
+            let product = basketService.items[safe: index],
+            product.count > 1
+        else { return }
+        
+        basketService.updateQuantity(for: product.id, newQuantity: product.count - 1)
+        updateCartItems()
+    }
+    
+    func showPaymentView() {
+        router.showPaymentView()
+    }
+}
+
+// MARK: - Private Methods
+private extension CartPresenter {
+    func setupNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleBasketUpdate),
@@ -62,23 +93,27 @@ final class CartPresenter: CartPresenterProtocol {
             object: nil
         )
     }
-    func decreaseQuantity(at index: Int) {
-        let item = cartItems[index]
-        let newQuantity = max(item.quantity - 1, 1)
-        basketService.updateQuantity(for: item.id, newQuantity: newQuantity)
-        calculateTotal()
-    }
-}
-
-private extension CartPresenter {
-
+    
     @objc func handleBasketUpdate() {
+        updateCartItems()
+    }
+    
+    func updateCartItems() {
+        cartItems = basketService.items.map { product in
+            CartItem(
+                image: product.image ?? UIImage(),
+                name: product.title,
+                category: product.category.displayName,
+                price: product.price,
+                quantity: product.count
+            )
+        }
         calculateTotal()
         view?.reloadCartItems()
     }
     
     func calculateTotal() {
-        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
+        let total = cartItems.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
         view?.updateTotalPrice(total.formattedAsPrice())
     }
 }

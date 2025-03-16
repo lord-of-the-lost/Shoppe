@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 final class PopularCell: UICollectionViewCell {
     
@@ -110,31 +109,3 @@ final class PopularCell: UICollectionViewCell {
         ])
     }
 }
-
-// MARK: - SwiftUI Preview
-struct PopularCell_Preview: PreviewProvider {
-    static var previews: some View {
-        ZStack {
-            Color.gray.edgesIgnoringSafeArea(.all)
-            PopularCellViewWrapper(model: PopularMock.all.first!)
-                .previewLayout(.sizeThatFits)
-                .padding()
-                .frame(width: 180, height: 250)
-        }
-    }
-}
-
-struct PopularCellViewWrapper: UIViewRepresentable {
-    let model: PopularCellViewModel
-    
-    func makeUIView(context: Context) -> PopularCell {
-        let cell = PopularCell()
-        cell.configure(with: model)
-        return cell
-    }
-    
-    func updateUIView(_ uiView: PopularCell, context: Context) {
-        uiView.configure(with: model)
-    }
-}
-
