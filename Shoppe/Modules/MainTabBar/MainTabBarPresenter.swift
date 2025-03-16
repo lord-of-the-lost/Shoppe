@@ -69,7 +69,7 @@ private extension MainTabBarPresenter {
                 selectedIconName: "HeartSelected"
             ),
             TabItemModel(
-                viewController: UIViewController(),
+                viewController: AppFactory.makeCategoriesModule(router: router),
                 iconName: "Categories",
                 selectedIconName: "CategoriesSelected"
             ),

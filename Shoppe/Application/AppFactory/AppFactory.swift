@@ -109,4 +109,11 @@ final class AppFactory {
         presenter.setupView(viewController)
         return viewController
     }
+    
+    static func makeCategoriesModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = CategoriesPresenter(router: router, networkService: networkService)
+        let viewController = CategoriesViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
 }

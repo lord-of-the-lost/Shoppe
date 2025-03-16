@@ -21,6 +21,8 @@ protocol AppRouterProtocol {
     func showProductDetail(_ product: Product)
     func showPaymentView()
     func showLocationMap()
+    func showCategoriesTabBarItem()
+    func showCartTabBarItem()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -95,6 +97,16 @@ final class AppRouter: AppRouterProtocol {
         let paymentViewController = AppFactory.makePaymentModule(router: self)
         paymentViewController.modalPresentationStyle = .fullScreen
         presentModalViewController(paymentViewController)
+    }
+    
+    func showCategoriesTabBarItem() {
+        guard let tabBarController = navigation.viewControllers.first as? UITabBarController else { return }
+        tabBarController.selectedIndex = 2
+    }
+    
+    func showCartTabBarItem() {
+        guard let tabBarController = navigation.viewControllers.first as? UITabBarController else { return }
+        tabBarController.selectedIndex = 3
     }
 }
 

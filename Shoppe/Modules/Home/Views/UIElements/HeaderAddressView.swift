@@ -2,6 +2,7 @@ import UIKit
 
 protocol HeaderAddressViewDelegate: AnyObject {
     func addressTapped()
+    func cartTapped()
 }
 
 final class HeaderAddressView: UIView {
@@ -56,6 +57,7 @@ final class HeaderAddressView: UIView {
         let image = UIImage(systemName: "cart")
         button.setImage(image, for: .normal)
         button.tintColor = Drawings.addressTextColor
+        button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -118,5 +120,9 @@ private extension HeaderAddressView {
     
     @objc func addressButtonTapped() {
         delegate?.addressTapped()
+    }
+    
+    @objc func cartButtonTapped() {
+        delegate?.cartTapped()
     }
 }
