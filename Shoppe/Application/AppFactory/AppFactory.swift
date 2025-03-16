@@ -102,4 +102,11 @@ final class AppFactory {
         presenter.setupView(viewController)
         return viewController
     }
+    
+    static func makeLocationMapModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = LocationPresenter(router: router)
+        let viewController = LocationMapViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
 }
