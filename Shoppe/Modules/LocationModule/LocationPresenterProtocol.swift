@@ -5,7 +5,6 @@
 //  Created by Кирилл Бахаровский on 3/15/25.
 //
 
-
 import UIKit
 import CoreLocation
 import MapKit
@@ -57,8 +56,8 @@ final class LocationPresenter: LocationPresenterProtocol {
     }
     
     func didSelectLocation(_ coordinate: CLLocationCoordinate2D) {
-        selectedLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        locationService.getAddressAndCurrency(from: selectedLocation!) { [weak self] address, currency in
+        let selectedLocation: CLLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        locationService.getAddressAndCurrency(from: selectedLocation) { [weak self] address, currency in
             guard let self = self else {return }
             self.selectedAddress = address
             self.selectedCurrency = currency
@@ -70,18 +69,25 @@ final class LocationPresenter: LocationPresenterProtocol {
         locationService.requestLocation()
         guard let location = locationService.lastLocation else { return }
         selectedLocation = location
-        locationService.getAddressAndCurrency(from: location) { [weak self] address, currency in
-            guard let self = self, let address = address, let currency = currency else { return }
-            self.selectedAddress = address
-            self.selectedCurrency = currency
-            self.view?.updateMap(with: location.coordinate, address: address)
+        locationService.getAddressAndCurrency(from: location) {
+            [weak self] address,
+            currency in
+            guard let self,
+                  let address,
+                  let currency
+            else { return }
+            selectedAddress = address
+            selectedCurrency = currency
+            view?.updateMap(with: location.coordinate, address: address)
         }
     }
 }
 
 private extension LocationPresenter {
     func saveAddressAndCurrency(address: String, currency: Currency) {
-        let user = User(address: address, currentCurrency: currency)
+        guard var user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        user.address = address
+        user.currentCurrency = currency
         UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
     }
     
