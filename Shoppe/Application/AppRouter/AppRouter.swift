@@ -20,6 +20,7 @@ protocol AppRouterProtocol {
     func showSearch(products: [Product])
     func showProductDetail(_ product: Product)
     func showPaymentView()
+    func showLocationMap()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -78,6 +79,10 @@ final class AppRouter: AppRouterProtocol {
     func showProductDetail(_ product: Product) {
         let productDetailViewController = AppFactory.makeProductDetailModule(router: self, product: product)
         pushViewController(productDetailViewController)
+  }
+    func showLocationMap() {
+        let locationMapViewController = AppFactory.makeLocationMapModule(router: self)
+        pushViewController(locationMapViewController)
     }
     
     func showMainTabBar() {
