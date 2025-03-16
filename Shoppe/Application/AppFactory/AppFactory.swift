@@ -78,9 +78,9 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeSearchModule(router: AppRouterProtocol, products: [Product]) -> UIViewController {
+    static func makeSearchModule(router: AppRouterProtocol, context: SearchContext) -> UIViewController {
         let presenter = SearchPresenter(
-            products: products,
+            searchContext: context,
             router: router,
             userDefaultsService: UserDefaultsService.shared
         )
@@ -96,8 +96,8 @@ final class AppFactory {
         return viewController
     }
     
-    static func makeWishlistModule() -> UIViewController {
-        let presenter = WishlistPresenter()
+    static func makeWishlistModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = WishlistPresenter(router: router)
         let viewController = WishlistViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
@@ -106,6 +106,13 @@ final class AppFactory {
     static func makeLocationMapModule(router: AppRouterProtocol) -> UIViewController {
         let presenter = LocationPresenter(router: router)
         let viewController = LocationMapViewController(presenter: presenter)
+        presenter.setupView(viewController)
+        return viewController
+    }
+    
+    static func makeCategoriesModule(router: AppRouterProtocol) -> UIViewController {
+        let presenter = CategoriesPresenter(router: router, networkService: networkService)
+        let viewController = CategoriesViewController(presenter: presenter)
         presenter.setupView(viewController)
         return viewController
     }

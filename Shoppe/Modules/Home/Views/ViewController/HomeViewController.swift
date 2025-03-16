@@ -38,12 +38,17 @@ final class HomeViewController: UIViewController {
     private lazy var dataSource: HomeViewDataSource = HomeViewDataSource(collectionView)
     
     // MARK: - UI Elements
-    private lazy var addressView = HeaderAddressView()
     private lazy var shopTitleView = HomeTitleView(title: "Shop")
     private lazy var searchView: SearchView = {
         let searchView = SearchView()
         searchView.delegate = self
         return searchView
+    }()
+    
+    private lazy var headerAddressView: HeaderAddressView = {
+        let headerAddressView = HeaderAddressView()
+        headerAddressView.delegate = self
+        return headerAddressView
     }()
     
     private lazy var shopStackView: UIStackView = {
@@ -172,6 +177,18 @@ extension HomeViewController: SearchViewDelegate {
     }
 }
 
+// MARK: - HeaderAddressViewDelegate
+extension HomeViewController: HeaderAddressViewDelegate {
+    func addressTapped() {
+        presenter.addressTapped()
+    }
+    
+    func cartTapped() {
+        presenter.cartTapped()
+    }
+}
+
+
 // MARK: - Private Methods
 private extension HomeViewController {
     func setupView() {
@@ -181,7 +198,7 @@ private extension HomeViewController {
         shopStackView.addArrangedSubview(shopTitleView)
         shopStackView.addArrangedSubview(searchView)
         
-        mainStackView.addArrangedSubview(addressView)
+        mainStackView.addArrangedSubview(headerAddressView)
         mainStackView.addArrangedSubview(shopStackView)
     }
     

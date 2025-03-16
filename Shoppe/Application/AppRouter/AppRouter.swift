@@ -17,10 +17,12 @@ protocol AppRouterProtocol {
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
-    func showSearch(products: [Product])
+    func showSearch(context: SearchContext)
     func showProductDetail(_ product: Product)
     func showPaymentView()
     func showLocationMap()
+    func showCategoriesTabBarItem()
+    func showCartTabBarItem()
 }
 
 final class AppRouter: AppRouterProtocol {
@@ -71,8 +73,8 @@ final class AppRouter: AppRouterProtocol {
         presentModalViewController(onboardingViewController)
     }
     
-    func showSearch(products: [Product]) {
-        let searchViewController = AppFactory.makeSearchModule(router: self, products: products)
+    func showSearch(context: SearchContext) {
+        let searchViewController = AppFactory.makeSearchModule(router: self, context: context)
         pushViewController(searchViewController)
     }
     
@@ -95,6 +97,16 @@ final class AppRouter: AppRouterProtocol {
         let paymentViewController = AppFactory.makePaymentModule(router: self)
         paymentViewController.modalPresentationStyle = .fullScreen
         presentModalViewController(paymentViewController)
+    }
+    
+    func showCategoriesTabBarItem() {
+        guard let tabBarController = navigation.viewControllers.first as? UITabBarController else { return }
+        tabBarController.selectedIndex = 2
+    }
+    
+    func showCartTabBarItem() {
+        guard let tabBarController = navigation.viewControllers.first as? UITabBarController else { return }
+        tabBarController.selectedIndex = 3
     }
 }
 
