@@ -7,6 +7,11 @@
 
 import UIKit
 
+enum SearchContext {
+    case shop([Product])
+    case wishlist
+}
+
 // MARK: - Protocols
 protocol SearchPresenterProtocol: AnyObject {
     func viewDidLoad()
@@ -23,7 +28,7 @@ protocol SearchPresenterProtocol: AnyObject {
 
 final class SearchPresenter {
     // MARK: - Properties
-    private let products: [Product]
+    private let searchContext: SearchContext
     private let router: AppRouterProtocol
     private let userDefaultsService: UserDefaultsService
     private let basketService: BasketServiceProtocol
@@ -32,15 +37,23 @@ final class SearchPresenter {
     private var searchHistory: [String] = []
     private var currentResults: [Product] = []
     
-    // MARK: - Initialization
+    private var sourceProducts: [Product] {
+        switch searchContext {
+        case .shop(let products):
+            return products
+        case .wishlist:
+            return wishlistService.items
+        }
+    }
+    
     init(
-        products: [Product],
+        searchContext: SearchContext,
         router: AppRouterProtocol,
         userDefaultsService: UserDefaultsService,
         basketService: BasketServiceProtocol = BasketService.shared,
         wishlistService: WishlistServiceProtocol = WishlistService.shared
     ) {
-        self.products = products
+        self.searchContext = searchContext
         self.router = router
         self.userDefaultsService = userDefaultsService
         self.basketService = basketService
@@ -57,6 +70,8 @@ final class SearchPresenter {
 extension SearchPresenter: SearchPresenterProtocol {
     func viewDidLoad() {
         let viewState: SearchState = searchHistory.isEmpty ? .empty : .history(searchHistory)
+        let title = getViewTitle()
+        view?.setTitle(title)
         updateViewState(viewState)
     }
     
@@ -73,7 +88,7 @@ extension SearchPresenter: SearchPresenterProtocol {
         searchHistory.insert(text, at: 0)
         saveSearchHistory()
         
-        currentResults = products.filter { product in
+        currentResults = sourceProducts.filter { product in
             product.title.lowercased().contains(text.lowercased()) ||
             product.description.lowercased().contains(text.lowercased()) ||
             product.category.displayName.lowercased().contains(text.lowercased())
@@ -111,7 +126,7 @@ extension SearchPresenter: SearchPresenterProtocol {
             updateViewState(.results(mapCurrentResultsToViewModels()))
         }
     }
-
+    
     func likeTapped(at index: Int) {
         guard let product = currentResults[safe: index] else { return }
         
@@ -153,6 +168,13 @@ private extension SearchPresenter {
     
     func updateViewState(_ state: SearchState) {
         view?.updateState(state)
+    }
+    
+    func getViewTitle() -> String {
+        switch searchContext {
+        case .shop: "Shop"
+        case .wishlist: "Wishlist"
+        }
     }
     
     func syncProductsState() {

@@ -64,7 +64,7 @@ private extension MainTabBarPresenter {
                 selectedIconName: "HomeSelected"
             ),
             TabItemModel(
-                viewController: AppFactory.makeWishlistModule(),
+                viewController: AppFactory.makeWishlistModule(router: router),
                 iconName: "Heart",
                 selectedIconName: "HeartSelected"
             ),

@@ -14,6 +14,7 @@ enum SearchState {
 }
 
 protocol SearchViewProtocol: AnyObject {
+    func setTitle(_ text: String)
     func updateState(_ state: SearchState)
     func updateSearchText(_ text: String)
 }
@@ -112,6 +113,10 @@ final class SearchViewController: UIViewController {
 
 // MARK: - SearchViewProtocol
 extension SearchViewController: SearchViewProtocol {
+    func setTitle(_ text: String) {
+        titleLabel.text = text
+    }
+    
     func updateState(_ state: SearchState) {
         currentState = state
         

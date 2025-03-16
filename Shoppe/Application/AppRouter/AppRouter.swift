@@ -17,7 +17,7 @@ protocol AppRouterProtocol {
     func showLoginScreen()
     func showMainTabBar()
     func showOnboarding()
-    func showSearch(products: [Product])
+    func showSearch(context: SearchContext)
     func showProductDetail(_ product: Product)
     func showPaymentView(with cartItems: [CartItem])
 }
@@ -70,8 +70,8 @@ final class AppRouter: AppRouterProtocol {
         presentModalViewController(onboardingViewController)
     }
     
-    func showSearch(products: [Product]) {
-        let searchViewController = AppFactory.makeSearchModule(router: self, products: products)
+    func showSearch(context: SearchContext) {
+        let searchViewController = AppFactory.makeSearchModule(router: self, context: context)
         pushViewController(searchViewController)
     }
     

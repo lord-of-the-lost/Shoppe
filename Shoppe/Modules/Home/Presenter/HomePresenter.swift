@@ -66,7 +66,7 @@ extension HomePresenter: HomePresenterProtocol {
     }
     
     func searchTapped() {
-        router.showSearch(products: products)
+        router.showSearch(context: .shop(products))
     }
 }
 
