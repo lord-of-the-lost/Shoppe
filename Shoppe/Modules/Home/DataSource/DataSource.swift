@@ -60,7 +60,7 @@ final class HomeViewDataSource {
         justForYou: [ProductCellViewModel]
     ) {
         dataSource.supplementaryViewProvider = makeHeader()
-        dataSource.apply(Snapshot(categories: categories, popular: popular, justForYou: justForYou), animatingDifferences: true)
+        dataSource.apply(Snapshot(categories: categories, popular: popular, justForYou: justForYou), animatingDifferences: false)
     }
     
     func itemAt(_ indexPath: IndexPath) -> Item? {
@@ -105,6 +105,7 @@ private extension HomeViewDataSource {
                     for: indexPath
                 ) as? ProductCell else { return nil }
                 cell.configure(with: justForYou)
+                cell.delegate = collectionView.delegate as? ProductCellDelegate
                 return cell
             }
         }

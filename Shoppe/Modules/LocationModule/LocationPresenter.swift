@@ -58,7 +58,7 @@ final class LocationPresenter: LocationPresenterProtocol {
     func didSelectLocation(_ coordinate: CLLocationCoordinate2D) {
         let selectedLocation: CLLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         locationService.getAddressAndCurrency(from: selectedLocation) { [weak self] address, currency in
-            guard let self = self else {return }
+            guard let self else { return }
             self.selectedAddress = address
             self.selectedCurrency = currency
             self.view?.updateMap(with: coordinate, address: self.selectedAddress ?? "Custom Location")

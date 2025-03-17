@@ -84,6 +84,11 @@ final class HeaderAddressView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func updateBadge(count: Int) {
+        badgeLabel.text = "\(count)"
+        badgeLabel.isHidden = count == 0
+    }
 }
 
 // MARK: - Private Methods

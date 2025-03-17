@@ -17,15 +17,14 @@ protocol HomeViewProtocol: AnyObject {
     func showLoading()
     func hideLoading()
     func showError(_ message: String)
+    func updateCartBadge(count: Int)
 }
 
 enum MainVCInteraction {
-    case searchFieldDidChange(String)
     case didTapCategory(Int)
     case didTapPopularProduct(Int)
     case didTapJustForYouProduct(Int)
     case didTapSeeAll(HomeSection)
-    case didTapAddToCart(Int)
 }
 
 enum HomeSection {
@@ -37,7 +36,7 @@ enum HomeSection {
 final class HomeViewController: UIViewController {
     // MARK: - Properties
     private let presenter: HomePresenterProtocol
-    private lazy var dataSource  = HomeViewDataSource(collectionView, headerViewModels: makeHeaderViewModels())
+    private lazy var dataSource = HomeViewDataSource(collectionView, headerViewModels: makeHeaderViewModels())
     
     // MARK: - UI Elements
     private lazy var shopTitleView = HomeTitleView(title: "Shop")
@@ -115,6 +114,11 @@ final class HomeViewController: UIViewController {
         presenter.setupView(self)
         presenter.viewDidLoad()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
 }
 
 // MARK: - HomeViewProtocol
@@ -131,7 +135,11 @@ extension HomeViewController: HomeViewProtocol {
             justForYou: justForYou
         )
     }
-
+    
+    func updateCartBadge(count: Int) {
+        headerAddressView.updateBadge(count: count)
+    }
+    
     func showLoading() {
         loadingIndicator.startAnimating()
         collectionView.isUserInteractionEnabled = false
@@ -170,8 +178,6 @@ extension HomeViewController: UICollectionViewDelegate {
 }
 
 
-
-
 // MARK: - SearchViewDelegate
 extension HomeViewController: SearchViewDelegate {
     func placeholderTapped() {
@@ -193,7 +199,6 @@ extension HomeViewController: HeaderAddressViewDelegate {
 
 // MARK: - Private Methods
 private extension HomeViewController {
-    
     func makeHeaderViewModels() -> [HomeViewDataSource.Section: HeaderViewModel] {
         return [
             .categories: HeaderViewModel(title: "Categories", action: { [weak self] in self?.handleSeeAll(.categories) }, isHidden: false),
@@ -236,11 +241,20 @@ private extension HomeViewController {
 
 // MARK: - Cell Action Handlers
 extension HomeViewController {
-    func handleAddToCart(_ id: Int) {
-        presenter.didTap(action: .didTapAddToCart(id))
-    }
-    
     func handleSeeAll(_ section: HomeSection) {
         presenter.didTap(action: .didTapSeeAll(section))
+    }
+}
+
+// MARK: - ProductCellDelegate
+extension HomeViewController: ProductCellDelegate {
+    func addToCartTapped(_ cell: ProductCell) {
+        guard let index = collectionView.indexPath(for: cell)?.item else { return }
+        presenter.addToCartTapped(at: index)
+    }
+    
+    func likeTapped(_ cell: ProductCell) {
+        guard let index = collectionView.indexPath(for: cell)?.item else { return }
+        presenter.likeTapped(at: index)
     }
 }

@@ -11,12 +11,15 @@ import Foundation
 protocol HomePresenterProtocol: AnyObject {
     func setupView(_ view: HomeViewProtocol)
     func viewDidLoad()
+    func viewWillAppear()
     func didTap(action: MainVCInteraction)
     func showCategory(_ id: Int)
     func showProductDetail(_ id: Int)
     func searchTapped()
     func addressTapped()
     func cartTapped()
+    func addToCartTapped(at index: Int)
+    func likeTapped(at index: Int)
 }
 
 // MARK: - Presenter
@@ -27,6 +30,8 @@ final class HomePresenter {
     private weak var view: HomeViewProtocol?
     private let router: AppRouterProtocol
     private let networkService: NetworkServiceProtocol
+    private let basketService: BasketServiceProtocol = BasketService.shared
+    private let wishlistService: WishlistServiceProtocol = WishlistService.shared
     private var products: [Product] = [] {
         didSet {
             updateCollections()
@@ -37,6 +42,11 @@ final class HomePresenter {
     init(router: AppRouterProtocol, networkService: NetworkServiceProtocol) {
         self.router = router
         self.networkService = networkService
+        setupNotifications()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -51,23 +61,48 @@ extension HomePresenter: HomePresenterProtocol {
         fetchData()
     }
     
+    func viewWillAppear() {
+        syncProductsState()
+        updateBasket()
+    }
+    
     func didTap(action: MainVCInteraction) {
-           switch action {
-           case .searchFieldDidChange(let query):
-               handleSearch(query)
-           case .didTapCategory(let id):
-               showCategory(id)
-           case .didTapPopularProduct(let id):
-               showProductDetail(id)
-           case .didTapJustForYouProduct(let id):
-               showProductDetail(id)
-           case .didTapSeeAll(let section):
-               handleSeeAll(section)
-           case .didTapAddToCart(let id):
-               handleAddToCart(id)
-           }
-       }
-      
+        switch action {
+        case .didTapCategory(let id):
+            showCategory(id)
+        case .didTapPopularProduct(let id):
+            showProductDetail(id)
+        case .didTapJustForYouProduct(let id):
+            showProductDetail(id)
+        case .didTapSeeAll(let section):
+            handleSeeAll(section)
+        }
+    }
+    
+    func addToCartTapped(at index: Int) {
+        guard let product = products[safe: index] else { return }
+        
+        let isInCart = basketService.contains(product)
+        isInCart ? basketService.removeItem(product) : basketService.addItem(product)
+        
+        if let currentIndex = products.firstIndex(where: { $0.id == product.id }) {
+            products[currentIndex].isInCart = !isInCart
+            updateCollections()
+        }
+    }
+    
+    func likeTapped(at index: Int) {
+        guard let product = products[safe: index] else { return }
+        
+        let isInWishlist = wishlistService.contains(product)
+        isInWishlist ? wishlistService.removeItem(product) : wishlistService.addItem(product)
+        
+        if let currentIndex = products.firstIndex(where: { $0.id == product.id }) {
+            products[currentIndex].isInWishlist = !isInWishlist
+            updateCollections()
+        }
+    }
+    
     func showCategory(_ id: Int) {
         router.showCategoriesTabBarItem()
     }
@@ -179,8 +214,6 @@ private extension HomePresenter {
     
     func createJustForYouViewModels() -> [ProductCellViewModel] {
         products
-            .filter { !$0.isInCart }
-            .shuffled()
             .prefix(10)
             .compactMap { product in
                 guard let image = product.image else { return nil }
@@ -202,32 +235,30 @@ private extension HomePresenter {
         }
     }
     
-    // MARK: - Action Handlers
-    func handleSearch(_ query: String) {
-        
+    func syncProductsState() {
+        products = products.map { product in
+            var updatedProduct = product
+            updatedProduct.isInCart = basketService.contains(product)
+            updatedProduct.isInWishlist = wishlistService.contains(product)
+            return updatedProduct
+        }
     }
     
     func handleSeeAll(_ section: HomeSection) {
         router.showCategoriesTabBarItem()
     }
     
-    func handleAddToCart(_ id: Int) {
-        guard let index = products.firstIndex(where: { $0.id == id }) else { return }
-        products[index].isInCart = true
-    }
-}
-
-// MARK: - HomeViewProtocol Extension
-extension HomeViewProtocol {
-    func showLoading() {
-        
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBasket),
+            name: .basketDidUpdate,
+            object: nil
+        )
     }
     
-    func hideLoading() {
-        
-    }
-    
-    func showError(_ message: String) {
-        
+    @objc func updateBasket() {
+        let count = basketService.totalItemsCount
+        view?.updateCartBadge(count: count)
     }
 }
