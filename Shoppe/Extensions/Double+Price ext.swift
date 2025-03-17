@@ -18,3 +18,9 @@ extension Double {
         return formatter.string(from: NSNumber(value: self)) ?? "$\(self)"
     }
 }
+
+extension Double {
+    func formattedAsPrice(currency: Currency) -> String {
+        currency.formatPrice(self)
+    }
+}

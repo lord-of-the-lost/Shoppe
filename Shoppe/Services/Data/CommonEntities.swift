@@ -13,7 +13,7 @@ struct User: Codable {
     var email: String = .init()
     var password: String = .init()
     var avatarData: Data = .init()
-    var address: String = "Mock american address"
+    var address: String = "Калифорния"
     var currentCurrency: Currency = .dollar
     var cart: [Product] = .init()
     var wishList: [Product] = .init()
@@ -59,4 +59,16 @@ struct Product: Codable {
 
 enum Currency: Codable {
     case ruble, dollar, euro
+    
+    var symbol: String {
+        switch self {
+        case .ruble: "₽"
+        case .dollar: "$"
+        case .euro: "€"
+        }
+    }
+    
+    func formatPrice(_ price: Double) -> String {
+        String(format: "\(symbol)%.2f", price)
+    }
 }

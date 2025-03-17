@@ -76,7 +76,7 @@ final class PopularCell: UICollectionViewCell {
     func configure(with model: PopularCellViewModel) {
         productImageView.image = model.image
         descriptionLabel.text = model.description
-        priceLabel.text = String(format: "$%.2f", model.price)
+        priceLabel.text = model.price
     }
     
     private func setupViews() {

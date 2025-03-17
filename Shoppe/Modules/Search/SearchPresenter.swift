@@ -37,6 +37,13 @@ final class SearchPresenter {
     private var searchHistory: [String] = []
     private var currentResults: [Product] = []
     
+    private var currentCurrency: Currency {
+        guard let user: User = userDefaultsService.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
+    
     private var sourceProducts: [Product] {
         switch searchContext {
         case .shop(let products):
@@ -160,7 +167,7 @@ private extension SearchPresenter {
                 id: product.id,
                 image: product.image,
                 title: product.title,
-                price: String(format: "$%.2f", product.price),
+                price: currentCurrency.formatPrice(product.price),
                 isOnCart: product.isInCart,
                 isOnWishlist: product.isInWishlist
             )

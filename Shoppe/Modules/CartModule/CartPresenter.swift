@@ -24,8 +24,14 @@ final class CartPresenter: CartPresenterProtocol {
     private let addressService: AddressServiceProtocol
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
-    
     private(set) var cartItems: [CartItem] = []
+    
+    private var currentCurrency: Currency {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
     
     // MARK: - Initialization
     init(
@@ -98,7 +104,7 @@ private extension CartPresenter {
         updateCartItems()
     }
     
-    func updateCartItems() {
+    private func updateCartItems() {
         cartItems = basketService.items.map { product in
             CartItem(
                 image: product.image ?? UIImage(),
@@ -112,8 +118,8 @@ private extension CartPresenter {
         view?.reloadCartItems()
     }
     
-    func calculateTotal() {
+    private func calculateTotal() {
         let total = cartItems.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
-        view?.updateTotalPrice(total.formattedAsPrice())
+        view?.updateTotalPrice(total.formattedAsPrice(currency: currentCurrency))
     }
 }

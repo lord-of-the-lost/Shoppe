@@ -89,6 +89,15 @@ final class HeaderAddressView: UIView {
         badgeLabel.text = "\(count)"
         badgeLabel.isHidden = count == 0
     }
+    
+    func updateAddress(_ address: String) {
+        var config = addressButton.configuration
+        config?.attributedTitle = AttributedString(
+            address,
+            attributes: AttributeContainer([.font: Fonts.baseFontMedium12])
+        )
+        addressButton.configuration = config
+    }
 }
 
 // MARK: - Private Methods

@@ -9,7 +9,7 @@ import UIKit
 
 protocol WishlistPresenterProtocol {
     func getProductsCount() -> Int
-    func getProduct(at index: Int) -> Product?
+    func getProductViewModel(at index: Int) -> ProductCellViewModel?
     func didTapProduct(at index: Int)
     func addToCartProduct(at index: Int)
     func toggleProductLike(at index: Int)
@@ -22,6 +22,14 @@ final class WishlistPresenter {
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
     private let wishlistService: WishlistServiceProtocol
+    private let userDefaultsService: UserDefaultsService = UserDefaultsService.shared
+    
+    private var currentCurrency: Currency {
+        guard let user: User = userDefaultsService.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
     
     private var products: [Product] {
         wishlistService.items
@@ -54,13 +62,21 @@ extension WishlistPresenter: WishlistPresenterProtocol {
         products.count
     }
     
-    func getProduct(at index: Int) -> Product? {
+    func getProductViewModel(at index: Int) -> ProductCellViewModel? {
         guard let product = products[safe: index] else { return nil }
-        
         var updatedProduct = product
         updatedProduct.isInCart = basketService.contains(product)
         updatedProduct.isInWishlist = wishlistService.contains(product)
-        return updatedProduct
+        
+        let viewModel = ProductCellViewModel(
+            id: updatedProduct.id,
+            image: updatedProduct.image,
+            title: updatedProduct.title,
+            price: currentCurrency.formatPrice(updatedProduct.price),
+            isOnCart: updatedProduct.isInCart,
+            isOnWishlist: updatedProduct.isInWishlist
+        )
+        return viewModel
     }
     
     func didTapProduct(at index: Int) {

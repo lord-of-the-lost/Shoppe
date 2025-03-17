@@ -18,6 +18,7 @@ protocol HomeViewProtocol: AnyObject {
     func hideLoading()
     func showError(_ message: String)
     func updateCartBadge(count: Int)
+    func updateAddress(_ address: String)
 }
 
 enum MainVCInteraction {
@@ -138,6 +139,10 @@ extension HomeViewController: HomeViewProtocol {
     
     func updateCartBadge(count: Int) {
         headerAddressView.updateBadge(count: count)
+    }
+    
+    func updateAddress(_ address: String) {
+        headerAddressView.updateAddress(address)
     }
     
     func showLoading() {

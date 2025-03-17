@@ -8,6 +8,13 @@ import UIKit
 final class CartItemCell: UITableViewCell {
     static let reuseID = "CartItemCell"
     
+    private var currentCurrency: Currency {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
+    
     private let shadowView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -82,7 +89,7 @@ final class CartItemCell: UITableViewCell {
         productImageView.image = item.image
         titleLabel.text = item.name
         detailsLabel.text = item.category
-        priceLabel.text = item.price.formattedAsPrice()
+        priceLabel.text = item.price.formattedAsPrice(currency: currentCurrency)
         quantityStepper.setQuantity(item.quantity)
     }
 }

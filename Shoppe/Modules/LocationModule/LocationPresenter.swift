@@ -92,7 +92,7 @@ private extension LocationPresenter {
     }
     
     func sendNotification() {
-        NotificationCenter.default.post(name: .LocationAndCurrencyDidUpdate, object: nil)
+        NotificationCenter.default.post(name: .locationAndCurrencyDidUpdate, object: nil)
     }
 }
 

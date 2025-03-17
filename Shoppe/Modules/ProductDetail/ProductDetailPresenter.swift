@@ -21,10 +21,18 @@ final class ProductDetailPresenter {
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol = BasketService.shared
     private let wishlistService: WishlistServiceProtocol = WishlistService.shared
+    private let userDefaultsService: UserDefaultsService = UserDefaultsService.shared
+    
+    private var currentCurrency: Currency {
+        guard let user: User = userDefaultsService.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
     
     private var viewModel: ProductDetailViewModel {
         ProductDetailViewModel(
-            price: String(format: "$%.2f", product.price),
+            price: currentCurrency.formatPrice(product.price),
             description: product.description,
             isLiked: wishlistService.contains(product),
             isInCart: basketService.contains(product),

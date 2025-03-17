@@ -82,20 +82,12 @@ extension WishlistViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identifier, for: indexPath) as? ProductCell,
-            let model = presenter.getProduct(at: indexPath.item)
+            let viewModel = presenter.getProductViewModel(at: indexPath.item)
         else {
             assertionFailure()
             return UICollectionViewCell()
         }
-        let viewModel = ProductCellViewModel(
-            id: model.id,
-            image: model.image,
-            title: model.title,
-            price: String(format: "$%.2f", model.price),
-            isOnCart: model.isInCart,
-            isOnWishlist: model.isInWishlist
-        )
-        
+  
         cell.configure(with: viewModel)
         cell.delegate = self
         return cell

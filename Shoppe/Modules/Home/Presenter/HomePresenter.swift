@@ -39,6 +39,10 @@ final class HomePresenter {
     }
     private let dispatchGroup = DispatchGroup()
     
+    private var user: User? {
+        UserDefaultsService.shared.getCustomObject(forKey: .userModel)
+    }
+    
     init(router: AppRouterProtocol, networkService: NetworkServiceProtocol) {
         self.router = router
         self.networkService = networkService
@@ -64,6 +68,7 @@ extension HomePresenter: HomePresenterProtocol {
     func viewWillAppear() {
         syncProductsState()
         updateBasket()
+        updateLocationAndCurrency()
     }
     
     func didTap(action: MainVCInteraction) {
@@ -111,7 +116,6 @@ extension HomePresenter: HomePresenterProtocol {
         guard let product = products.first(where: { $0.id == id }) else { return }
         router.showProductDetail(product)
     }
-    
     
     func searchTapped() {
         router.showSearch(context: .shop(products))
@@ -202,11 +206,14 @@ private extension HomePresenter {
             .sorted { $0.price > $1.price }
             .prefix(5)
             .compactMap { product in
-                guard let image = product.image else { return nil }
+                guard
+                    let user,
+                    let image = product.image
+                else { return nil }
                 return PopularCellViewModel(
                     id: product.id,
                     image: image,
-                    price: product.price,
+                    price: user.currentCurrency.formatPrice(product.price),
                     description: product.description
                 )
             }
@@ -216,12 +223,15 @@ private extension HomePresenter {
         products
             .prefix(10)
             .compactMap { product in
-                guard let image = product.image else { return nil }
+                guard
+                    let user,
+                    let image = product.image
+                else { return nil }
                 return ProductCellViewModel(
                     id: product.id,
                     image: image,
                     title: product.title,
-                    price: String(format: "$%.2f", product.price),
+                    price: user.currentCurrency.formatPrice(product.price),
                     isOnCart: product.isInCart,
                     isOnWishlist: product.isInWishlist
                 )
@@ -247,7 +257,7 @@ private extension HomePresenter {
     func handleSeeAll(_ section: HomeSection) {
         router.showCategoriesTabBarItem()
     }
-    
+
     func setupNotifications() {
         NotificationCenter.default.addObserver(
             self,
@@ -255,10 +265,24 @@ private extension HomePresenter {
             name: .basketDidUpdate,
             object: nil
         )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateLocationAndCurrency),
+            name: .locationAndCurrencyDidUpdate,
+            object: nil
+        )
     }
     
     @objc func updateBasket() {
         let count = basketService.totalItemsCount
         view?.updateCartBadge(count: count)
+    }
+    
+    @objc private func updateLocationAndCurrency() {
+        if let address = user?.address {
+            view?.updateAddress(address)
+        }
+        updateCollections()
     }
 }

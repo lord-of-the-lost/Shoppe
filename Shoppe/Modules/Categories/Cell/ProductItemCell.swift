@@ -13,9 +13,9 @@ final class ProductItemCell: UICollectionViewCell {
     private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 12
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.customRed.withAlphaComponent(0.5).cgColor
+        view.layer.cornerRadius = 7
+        view.layer.borderWidth = 2
+        view.layer.borderColor = UIColor.customRed.withAlphaComponent(0.2).cgColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
