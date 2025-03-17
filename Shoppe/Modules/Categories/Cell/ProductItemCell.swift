@@ -1,26 +1,26 @@
 //
-//  CategoryProductCell.swift
+//  ProductItemCell.swift
 //  Shoppe
 //
-//  Created by Николай Игнатов on 16.03.2025.
+//  Created by Николай Игнатов on 17.03.2025.
 //
 
 import UIKit
 
-final class CategoryProductCell: UICollectionViewCell {
-    static let identifier = "CategoryProductCell"
+final class ProductItemCell: UICollectionViewCell {
+    static let identifier = "ProductItemCell"
     
-    private let containerView: UIView = {
+    private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 12
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemGray5.cgColor
+        view.layer.borderColor = UIColor.customRed.withAlphaComponent(0.5).cgColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
         label.textAlignment = .center
@@ -32,16 +32,30 @@ final class CategoryProductCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        setupConstraints()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func setupView() {
+}
+
+// MARK: - ConfigurableViewProtocol
+extension ProductItemCell: ConfigurableViewProtocol {
+    func configure(with title: String) {
+        titleLabel.text = title
+    }
+}
+
+// MARK: - Private Methods
+private extension ProductItemCell {
+    func setupView() {
         contentView.addSubview(containerView)
         containerView.addSubview(titleLabel)
-        
+    }
+    
+    func setupConstraints() {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
@@ -53,9 +67,5 @@ final class CategoryProductCell: UICollectionViewCell {
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             titleLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
         ])
-    }
-    
-    func configure(with title: String) {
-        titleLabel.text = title
     }
 }

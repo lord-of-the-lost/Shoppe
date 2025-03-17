@@ -7,7 +7,6 @@
 
 import UIKit
 
-// MARK: - Models
 struct Category {
     let id: Int
     let title: String
@@ -19,7 +18,6 @@ struct Category {
     }
 }
 
-// MARK: - Protocols
 protocol CategoriesViewProtocol: AnyObject {
     func updateCategories(_ categories: [Category])
 }
@@ -28,16 +26,18 @@ final class CategoriesViewController: UIViewController {
     private let presenter: CategoriesPresenterProtocol
     private var categories: [Category] = []
     
-    private lazy var collectionView: UICollectionView = {
-        let layout = createLayout()
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.backgroundColor = .systemGray6
-        collection.delegate = self
-        collection.dataSource = self
-        collection.register(CategoryHeaderCell.self, forCellWithReuseIdentifier: CategoryHeaderCell.identifier)
-        collection.register(CategoryProductCell.self, forCellWithReuseIdentifier: CategoryProductCell.identifier)
-        collection.translatesAutoresizingMaskIntoConstraints = false
-        return collection
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(CategoryHeaderCell.self, forCellReuseIdentifier: CategoryHeaderCell.identifier)
+        tableView.register(CategoryProductCell.self, forCellReuseIdentifier: CategoryProductCell.identifier)
+        tableView.allowsSelection = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
     }()
     
     init(presenter: CategoriesPresenterProtocol) {
@@ -52,170 +52,76 @@ final class CategoriesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupConstraints()
         presenter.viewDidLoad()
     }
-    
-    private func setupView() {
-        view.backgroundColor = .systemGray6
-        
-        view.addSubview(collectionView)
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-    }
-    
-    private func createLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
-            guard let self = self else { return nil }
-            let category = self.categories[sectionIndex]
-            
-            // Header item
-            let headerItem = NSCollectionLayoutItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(60)
-                )
-            )
-            
-            let headerGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(60)
-                ),
-                subitems: [headerItem]
-            )
-            
-            // Products
-            let productItem = NSCollectionLayoutItem(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.5),
-                    heightDimension: .absolute(44)
-                )
-            )
-            
-            let productGroup = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(44)
-                ),
-                subitem: productItem,
-                count: 2
-            )
-            productGroup.interItemSpacing = .fixed(8)
-            
-            // Section
-            let section = NSCollectionLayoutSection(group: headerGroup)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
-            
-            if category.isExpanded {
-                let productsGroup = NSCollectionLayoutGroup.vertical(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1.0),
-                        heightDimension: .estimated(44)
-                    ),
-                    subitems: [productGroup]
-                )
-                productsGroup.interItemSpacing = .fixed(8)
-                
-                section.boundarySupplementaryItems = [
-                    NSCollectionLayoutBoundarySupplementaryItem(
-                        layoutSize: NSCollectionLayoutSize(
-                            widthDimension: .fractionalWidth(1.0),
-                            heightDimension: .estimated(44)
-                        ),
-                        elementKind: UICollectionView.elementKindSectionFooter,
-                        alignment: .bottom
-                    )
-                ]
-            }
-            
-            return section
-        }
-        
-        return layout
-    }
 }
 
-// MARK: - UICollectionViewDataSource
-extension CategoriesViewController: UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        categories.count
+// MARK: - UITableViewDataSource
+extension CategoriesViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return categories.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let category = categories[safe: section] else { return 0 }
-        return category.isExpanded ? category.items.count + 1 : 1
+        return category.isExpanded ? 2 : 1
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let category = categories[safe: indexPath.section] else {
-            return UICollectionViewCell()
+            return UITableViewCell()
         }
         
-        if indexPath.item == 0 {
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: CategoryHeaderCell.identifier,
+        if indexPath.row == 0 {
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: CategoryHeaderCell.identifier,
                 for: indexPath
             ) as? CategoryHeaderCell else {
-                return UICollectionViewCell()
+                return UITableViewCell()
             }
-            cell.configure(with: category)
+            cell.delegate = self
+            cell.configure(with: category, section: indexPath.section)
             return cell
         } else {
-            guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: CategoryProductCell.identifier,
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: CategoryProductCell.identifier,
                 for: indexPath
-            ) as? CategoryProductCell,
-                  let product = category.items[safe: indexPath.item - 1] else {
-                return UICollectionViewCell()
+            ) as? CategoryProductCell else {
+                return UITableViewCell()
             }
-            cell.configure(with: product.title)
+            cell.delegate = self
+            cell.configure(with: category.items)
             return cell
         }
     }
 }
 
-// MARK: - UICollectionViewDelegate
-extension CategoriesViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        
-        guard let category = categories[safe: indexPath.section] else { return }
-        
-        if indexPath.item == 0 {
-            presenter.toggleCategory(at: indexPath.section)
+// MARK: - UITableViewDelegate
+extension CategoriesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 {
+            return 80
         } else {
-            guard let product = category.items[safe: indexPath.item - 1] else { return }
-            presenter.didSelectProduct(product)
+            guard let category = categories[safe: indexPath.section] else { return 0 }
+            let itemCount = category.items.count
+            let rowCount = ceil(Double(itemCount) / 2.0)
+            return rowCount * 60 + (rowCount - 1) * 16
         }
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
-extension CategoriesViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if indexPath.item == 0 {
-            return CGSize(width: collectionView.bounds.width - 32, height: 60)
-        } else {
-            let width = (collectionView.bounds.width - 48) / 2
-            return CGSize(width: width, height: 44)
-        }
+// MARK: - CategoryHeaderCellDelegate
+extension CategoriesViewController: CategoryHeaderCellDelegate {
+    func categoryHeaderCell(_ cell: CategoryHeaderCell, didTapExpandFor section: Int) {
+        presenter.toggleCategory(at: section)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        16
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        16
+}
+
+// MARK: - CategoryProductCellDelegate
+extension CategoriesViewController: CategoryProductCellDelegate {
+    func categoryProductCell(_ cell: CategoryProductCell, didSelectProduct product: Product) {
+        presenter.didSelectProduct(product)
     }
 }
 
@@ -223,6 +129,22 @@ extension CategoriesViewController: UICollectionViewDelegateFlowLayout {
 extension CategoriesViewController: CategoriesViewProtocol {
     func updateCategories(_ categories: [Category]) {
         self.categories = categories
-        collectionView.reloadData()
+        tableView.reloadData()
+    }
+}
+
+// MARK: - Private Methods
+private extension CategoriesViewController {
+    func setupView() {
+        view.addSubview(tableView)
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 }
