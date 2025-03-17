@@ -131,6 +131,7 @@ final class PaymentViewController: UIViewController {
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
         table.isScrollEnabled = false
+        table.allowsSelection = false
         table.rowHeight = 70
         return table
     }()
@@ -278,7 +279,8 @@ private extension PaymentViewController {
         view.addSubviews(
             scrollView,
             closeButton,
-            paymentDoneView
+            paymentDoneView,
+            totalPaymentView
         )
         scrollView.addSubview(contentView)
         contentView.addSubview(stackView)
@@ -289,8 +291,7 @@ private extension PaymentViewController {
             itemsContainer,
             tableView,
             shippingOptionsTableView,
-            paymentMethodView,
-            totalPaymentView
+            paymentMethodView
         )
     }
     
@@ -318,9 +319,6 @@ private extension PaymentViewController {
             
             shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.19),
 
-            totalPaymentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
-            totalPaymentView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
-
             paymentMethodView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
 
             itemsCountLabel.widthAnchor.constraint(equalToConstant: 30),
@@ -338,6 +336,11 @@ private extension PaymentViewController {
             paymentDoneView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             paymentDoneView.widthAnchor.constraint(equalToConstant: 347),
             paymentDoneView.heightAnchor.constraint(equalToConstant: 194),
+            
+            totalPaymentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
+            totalPaymentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            totalPaymentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            totalPaymentView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)

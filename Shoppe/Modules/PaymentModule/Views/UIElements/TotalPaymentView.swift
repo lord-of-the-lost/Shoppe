@@ -21,7 +21,6 @@ final class TotalPaymentView: UIView {
     
     private lazy var amountLabel: UILabel = {
         let label = UILabel()
-        label.text = "$34,00"
         label.font = Fonts.ralewayBold18
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -64,7 +63,8 @@ final class TotalPaymentView: UIView {
         containerView.addSubview(totalLabel)
         containerView.addSubview(amountLabel)
         containerView.addSubview(payButton)
-
+        translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
             
             containerView.topAnchor.constraint(equalTo: topAnchor),
@@ -72,13 +72,13 @@ final class TotalPaymentView: UIView {
             containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            totalLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            totalLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 26),
             totalLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
 
             amountLabel.leadingAnchor.constraint(equalTo: totalLabel.trailingAnchor, constant: 8),
             amountLabel.centerYAnchor.constraint(equalTo: totalLabel.centerYAnchor),
 
-            payButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            payButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -26),
             payButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             payButton.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.3),
             payButton.heightAnchor.constraint(equalToConstant: 40)
