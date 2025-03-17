@@ -14,13 +14,16 @@ protocol PaymentPresenterProtocol: AnyObject {
     func item(at index: Int) -> Product
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
+    var isLoading: Bool { get }
 }
 
 final class PaymentPresenter {
     private weak var view: PaymentViewProtocol?
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
-
+    private var _isLoading = true
+    var isLoading: Bool { return _isLoading }
+    
     // MARK: - Init
     init(
         router: AppRouterProtocol,
@@ -41,11 +44,21 @@ extension PaymentPresenter: PaymentPresenterProtocol {
         updateData()
     }
 
-    private func updateData() {
-        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
-        let itemCount = basketService.items.count
-        view?.updateUI(itemsCount: itemCount, total: total)
-    }
+    func updateData() {
+          _isLoading = true
+          view?.reloadTableView()
+
+          DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+              self._isLoading = false
+              let total = self.basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
+              let itemCount = self.basketService.items.count
+
+              DispatchQueue.main.async {
+                  self.view?.updateUI(itemsCount: itemCount, total: total)
+                  self.view?.reloadTableView()
+              }
+          }
+      }
 
     func didTap(action: PaymentVCInteraction) {
         switch action {

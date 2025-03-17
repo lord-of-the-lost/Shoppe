@@ -10,6 +10,7 @@ import UIKit
 
 protocol PaymentViewProtocol: AnyObject {
     func updateUI(itemsCount: Int, total: Double)
+    func reloadTableView()
 }
 
 enum PaymentVCInteraction {
@@ -161,6 +162,10 @@ extension PaymentViewController: PaymentViewProtocol {
           itemsCountLabel.text = "\(itemsCount)"
           totalPaymentView.updateTotal(to: total)
       }
+    
+    func reloadTableView() {
+        tableView.reloadData()
+    }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
@@ -170,16 +175,28 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if presenter.isLoading {
+            let cell = UITableViewCell()
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.startAnimating()
+            spinner.center = CGPoint(x: tableView.bounds.midX, y: 35)
+            cell.contentView.addSubview(spinner)
+            return cell
+        }
+
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: ItemTableViewCell.reuseIdentifier, for: indexPath
         ) as? ItemTableViewCell else {
             fatalError("Unable to dequeue ItemTableViewCell")
         }
-        
+
         let itemViewModel = presenter.item(at: indexPath.row)
         cell.configure(with: itemViewModel)
         return cell
     }
+
+
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -302,7 +319,7 @@ private extension PaymentViewController {
             paymentDoneView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             paymentDoneView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             paymentDoneView.widthAnchor.constraint(equalToConstant: 347),
-            paymentDoneView.heightAnchor.constraint(equalToConstant: 194)
+            paymentDoneView.heightAnchor.constraint(equalToConstant: 194),
         ])
 
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
