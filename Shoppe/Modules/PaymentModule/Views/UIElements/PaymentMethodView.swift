@@ -24,7 +24,7 @@ final class PaymentMethodView: UIView {
         button.setTitle("Card", for: .normal)
         button.setTitleColor(UIColor.customBlueText, for: .normal)
         button.titleLabel?.font = Fonts.ralewayBold15
-        button.backgroundColor = UIColor.customLightGray
+        button.backgroundColor = UIColor.customLightBlue
         button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

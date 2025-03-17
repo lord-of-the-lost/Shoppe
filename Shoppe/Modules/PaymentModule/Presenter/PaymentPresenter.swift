@@ -14,15 +14,14 @@ protocol PaymentPresenterProtocol: AnyObject {
     func item(at index: Int) -> Product
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
-    func calculateTotal()
 }
 
-// MARK: - Presenter
 final class PaymentPresenter {
     private weak var view: PaymentViewProtocol?
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
-    
+
+    // MARK: - Init
     init(
         router: AppRouterProtocol,
         basketService: BasketServiceProtocol = BasketService.shared
@@ -34,48 +33,50 @@ final class PaymentPresenter {
 
 // MARK: - PaymentPresenterProtocol
 extension PaymentPresenter: PaymentPresenterProtocol {
-    func calculateTotal() {
-        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
-        view?.updateTotal(total)
+    func setupView(_ view: PaymentViewProtocol) {
+        self.view = view
     }
-    
+
+    func viewDidLoad() {
+        updateData()
+    }
+
+    private func updateData() {
+        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
+        let itemCount = basketService.items.count
+        view?.updateUI(itemsCount: itemCount, total: total)
+    }
+
     func didTap(action: PaymentVCInteraction) {
         switch action {
         case .addVoucher:
-            print("addd presenter")
+            print("Добавление ваучера")
         case .addressEdit:
-            break
+            print("Редактирование адреса")
         case .paymentMethodEdit:
-            break
+            print("Редактирование метода оплаты")
         case .payButton:
-            break
+            print("Оплата заказа")
         case .itemCell:
-            break
+            print("Выбран товар")
         case .close:
             router.dismiss(animated: true)
         case .trackMyOrder:
             router.dismiss(animated: true)
         }
     }
-    
+
     func didTapCell(at index: Int) {
         guard let product = basketService.items[safe: index] else { return }
-        print("did tap cell at index: \(index), product: \(product)")
+        print("Выбран товар: \(product)")
     }
-    
+
     func item(at index: Int) -> Product {
         return basketService.items[index]
     }
-    
+
     func itemsCount() -> Int {
         basketService.items.count
     }
-    
-    func viewDidLoad() {
-        calculateTotal()
-    }
-    
-    func setupView(_ view: PaymentViewProtocol) {
-        self.view = view
-    }
 }
+
