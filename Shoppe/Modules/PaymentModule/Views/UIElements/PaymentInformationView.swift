@@ -103,7 +103,7 @@ private extension PaymentInformationView {
             stackView.trailingAnchor.constraint(equalTo: editButton.leadingAnchor, constant: -40),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
             
-            editButton.topAnchor.constraint(equalTo: infoLabel.topAnchor, constant: -2),
+            editButton.centerYAnchor.constraint(equalTo: infoLabel.centerYAnchor),
             editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             editButton.widthAnchor.constraint(equalToConstant: 30),
             editButton.heightAnchor.constraint(equalToConstant: 30)

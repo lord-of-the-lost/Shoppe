@@ -156,7 +156,6 @@ final class PaymentViewController: UIViewController {
         setupConstraints()
         setupButtonActions()
         presenter.viewDidLoad()
-        tableView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -193,15 +192,6 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if presenter.isLoading {
-            let cell = UITableViewCell()
-            let spinner = UIActivityIndicatorView(style: .medium)
-            spinner.startAnimating()
-            spinner.center = CGPoint(x: tableView.bounds.midX, y: 35)
-            cell.contentView.addSubview(spinner)
-            return cell
-        }
-
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: ItemTableViewCell.reuseIdentifier, for: indexPath
         ) as? ItemTableViewCell else {
@@ -213,9 +203,6 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-
-
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         presenter.didTapCell(at: indexPath.row)
@@ -230,7 +217,6 @@ extension PaymentViewController: PaymentDoneViewDelegate {
 
 // MARK: - Private Methods
 private extension PaymentViewController {
-    
     func showPaymentDoneView() {
         let paymentDoneView = PaymentDoneView()
         paymentDoneView.delegate = self
@@ -300,7 +286,7 @@ private extension PaymentViewController {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: totalPaymentView.topAnchor),
 
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
@@ -348,7 +334,6 @@ private extension PaymentViewController {
     }
     
     func updateTableViewHeight() {
-        tableView.layoutIfNeeded()
         let contentHeight = tableView.contentSize.height
         tableViewHeightConstraint?.constant = contentHeight
         view.layoutIfNeeded()

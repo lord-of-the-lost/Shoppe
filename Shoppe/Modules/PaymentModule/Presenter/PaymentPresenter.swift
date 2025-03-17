@@ -14,24 +14,18 @@ protocol PaymentPresenterProtocol: AnyObject {
     func item(at index: Int) -> Product
     func didTap(action: PaymentVCInteraction)
     func didTapCell(at index: Int)
-    var isLoading: Bool { get }
 }
 
 final class PaymentPresenter {
     private weak var view: PaymentViewProtocol?
     private let router: AppRouterProtocol
     private let basketService: BasketServiceProtocol
-    private var _isLoading = true
-    var isLoading: Bool { return _isLoading }
-    private var user: User? {
-        UserDefaultsService.shared.getCustomObject(forKey: .userModel)
-     }
-     
-     func getShippingAddress() -> String {
-         user?.address ?? "No address selected"
-     }
+    private let userDefaultsService: UserDefaultsService = UserDefaultsService.shared
     
-    // MARK: - Init
+    private var user: User? {
+        userDefaultsService.getCustomObject(forKey: .userModel)
+    }
+    
     init(
         router: AppRouterProtocol,
         basketService: BasketServiceProtocol = BasketService.shared
@@ -49,24 +43,15 @@ extension PaymentPresenter: PaymentPresenterProtocol {
 
     func viewDidLoad() {
         updateData()
-        view?.updateShippingAddress(getShippingAddress())
+        view?.updateShippingAddress(user?.address ?? "No address selected")
     }
 
     func updateData() {
-          _isLoading = true
-          view?.reloadTableView()
-
-          DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
-              self._isLoading = false
-              let total = self.basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
-              let itemCount = self.basketService.items.count
-
-              DispatchQueue.main.async {
-                  self.view?.updateUI(itemsCount: itemCount, total: total)
-                  self.view?.reloadTableView()
-              }
-          }
-      }
+        let total = basketService.items.reduce(0) { $0 + ($1.price * Double($1.count)) }
+        let itemCount = basketService.items.count
+        view?.updateUI(itemsCount: itemCount, total: total)
+        view?.reloadTableView()
+    }
 
     func didTap(action: PaymentVCInteraction) {
         switch action {
@@ -83,7 +68,7 @@ extension PaymentPresenter: PaymentPresenterProtocol {
         case .close:
             router.dismiss(animated: true)
         case .trackMyOrder:
-            router.dismiss(animated: true)
+            paymentSuccess()
         }
     }
 
@@ -99,5 +84,9 @@ extension PaymentPresenter: PaymentPresenterProtocol {
     func itemsCount() -> Int {
         basketService.items.count
     }
+    
+    func paymentSuccess() {
+        basketService.clearBasket()
+        router.dismiss(animated: true)
+    }
 }
-

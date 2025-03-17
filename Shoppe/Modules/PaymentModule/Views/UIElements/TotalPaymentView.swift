@@ -55,7 +55,11 @@ final class TotalPaymentView: UIView {
     }
     
     func updateTotal(to amount: Double) {
-        amountLabel.text = String(format: "$%.2f", amount)
+        if let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) {
+            amountLabel.text = user.currentCurrency.formatPrice(amount)
+        } else {
+            amountLabel.text = Currency.dollar.formatPrice(amount)
+        }
     }
     
     private func setupView() {

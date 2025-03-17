@@ -29,6 +29,7 @@ final class ShippingOptionsTableView: UIView {
         table.delegate = self
         table.dataSource = self
         table.isScrollEnabled = false
+        table.allowsSelection = false
         table.translatesAutoresizingMaskIntoConstraints = false
         table.rowHeight = 50
         return table

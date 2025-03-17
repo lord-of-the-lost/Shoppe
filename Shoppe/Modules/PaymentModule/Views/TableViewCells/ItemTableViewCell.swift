@@ -28,6 +28,14 @@ class ItemTableViewCell: UITableViewCell {
     
     static let reuseIdentifier: String = ItemTableViewCell.description()
     
+    private var currentCurrency: Currency {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else {
+            return .dollar
+        }
+        return user.currentCurrency
+    }
+    
+    
     private lazy var shadowView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -114,7 +122,7 @@ class ItemTableViewCell: UITableViewCell {
     func configure(with model: Product) {
         cellImage.image = model.image
         titleLabel.text = model.title
-        priceLabel.text = String(format: "$%.2f", model.price)
+        priceLabel.text = model.price.formattedAsPrice(currency: currentCurrency)
         badgeLabel.text = model.count.description
     }
 }
