@@ -9,7 +9,8 @@
 import UIKit
 
 protocol PaymentViewProtocol: AnyObject {
-    func updateTotal(_ total: Double)
+    func updateUI(itemsCount: Int, total: Double)
+    func reloadTableView()
 }
 
 enum PaymentVCInteraction {
@@ -80,7 +81,7 @@ final class PaymentViewController: UIViewController {
     private lazy var itemsTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Items"
-        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 21)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -88,11 +89,10 @@ final class PaymentViewController: UIViewController {
     private lazy var itemsCountLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.ralewayBold15
-        label.text = "4"
         label.textAlignment = .center
         label.textColor = .black
         label.backgroundColor = UIColor.customLightBlue
-        label.layer.cornerRadius = 11
+        label.layer.cornerRadius = 15
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -118,7 +118,7 @@ final class PaymentViewController: UIViewController {
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
         table.isScrollEnabled = false
-        table.rowHeight = 60
+        table.rowHeight = 70
         return table
     }()
     
@@ -158,8 +158,13 @@ final class PaymentViewController: UIViewController {
 
 // MARK: - PaymentViewProtocol
 extension PaymentViewController: PaymentViewProtocol {
-    func updateTotal(_ total: Double) {
-        totalPaymentView.updateTotal(to: total)
+    func updateUI(itemsCount: Int, total: Double) {
+          itemsCountLabel.text = "\(itemsCount)"
+          totalPaymentView.updateTotal(to: total)
+      }
+    
+    func reloadTableView() {
+        tableView.reloadData()
     }
 }
 
@@ -170,16 +175,28 @@ extension PaymentViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if presenter.isLoading {
+            let cell = UITableViewCell()
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.startAnimating()
+            spinner.center = CGPoint(x: tableView.bounds.midX, y: 35)
+            cell.contentView.addSubview(spinner)
+            return cell
+        }
+
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: ItemTableViewCell.reuseIdentifier, for: indexPath
         ) as? ItemTableViewCell else {
             fatalError("Unable to dequeue ItemTableViewCell")
         }
-        
+
         let itemViewModel = presenter.item(at: indexPath.row)
         cell.configure(with: itemViewModel)
         return cell
     }
+
+
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -213,16 +230,16 @@ private extension PaymentViewController {
         
         addVoucherButton.addAction(
             UIAction { /*[weak self] _ in*/ _ in
-                  print("addVoucherButton tapped")
-              },
-              for: .touchUpInside
-          )
+                print("addVoucherButton tapped")
+            },
+            for: .touchUpInside
+        )
         paymentMethodView.editButton.addAction(
             UIAction { /*[weak self]*/ _ in
-                  print("paymentMethodView  editButton tapped")
-              },
-              for: .touchUpInside
-          )
+                print("paymentMethodView  editButton tapped")
+            },
+            for: .touchUpInside
+        )
         totalPaymentView.payButton.addAction(UIAction {/*[ weak self]*/  _ in
             print("payButton tapped")
         }, for: .touchUpInside)
@@ -241,18 +258,22 @@ private extension PaymentViewController {
     
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(scrollView)
+        view.addSubviews(
+            scrollView,
+            closeButton,
+            paymentDoneView
+        )
         scrollView.addSubview(contentView)
         contentView.addSubview(stackView)
-        view.addSubview(closeButton)
-        view.addSubview(paymentDoneView)
-        stackView.addArrangedSubview(addressView)
-        stackView.addArrangedSubview(shippingView)
-        stackView.addArrangedSubview(itemsContainer)
-        stackView.addArrangedSubview(tableView)
-        stackView.addArrangedSubview(shippingOptionsTableView)
-        stackView.addArrangedSubview(paymentMethodView)
-        stackView.addArrangedSubview(totalPaymentView)
+        stackView.addArrangedSubviews(
+            addressView,
+            shippingView,
+            itemsContainer,
+            tableView,
+            shippingOptionsTableView,
+            paymentMethodView,
+            totalPaymentView
+        )
     }
     
     func setupConstraints() {
@@ -268,45 +289,48 @@ private extension PaymentViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
 
             addressView.heightAnchor.constraint(equalToConstant: 80),
+        
             shippingView.heightAnchor.constraint(equalToConstant: 80),
-            shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
             
+            shippingOptionsTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.19),
+
             totalPaymentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
             totalPaymentView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
-            
+
             paymentMethodView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.1),
+
+            itemsCountLabel.widthAnchor.constraint(equalToConstant: 30),
+            itemsCountLabel.heightAnchor.constraint(equalToConstant: 30),
+
+            addVoucherButton.heightAnchor.constraint(equalTo: itemsContainer.heightAnchor),
+            addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.25),
             
-            itemsCountLabel.widthAnchor.constraint(equalToConstant: 22),
-            itemsCountLabel.heightAnchor.constraint(equalToConstant: 22),
-            
-            addVoucherButton.heightAnchor.constraint(equalToConstant: 44),
-            addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.35),
-            itemsContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 23),
             closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             closeButton.widthAnchor.constraint(equalToConstant: 30),
             closeButton.heightAnchor.constraint(equalToConstant: 30),
-            
+
             paymentDoneView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             paymentDoneView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             paymentDoneView.widthAnchor.constraint(equalToConstant: 347),
-            paymentDoneView.heightAnchor.constraint(equalToConstant: 194)
+            paymentDoneView.heightAnchor.constraint(equalToConstant: 194),
         ])
+
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewHeightConstraint?.isActive = true
-    }
 
+    }
+    
     func updateTableViewHeight() {
         tableView.layoutIfNeeded()
         let contentHeight = tableView.contentSize.height
         tableViewHeightConstraint?.constant = contentHeight
         view.layoutIfNeeded()
     }
-    
 }

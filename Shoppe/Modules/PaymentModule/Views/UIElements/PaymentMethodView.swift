@@ -24,7 +24,7 @@ final class PaymentMethodView: UIView {
         button.setTitle("Card", for: .normal)
         button.setTitleColor(UIColor.customBlueText, for: .normal)
         button.titleLabel?.font = Fonts.ralewayBold15
-        button.backgroundColor = UIColor.customLightGray
+        button.backgroundColor = UIColor.customLightBlue
         button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -66,7 +66,7 @@ final class PaymentMethodView: UIView {
             editButton.widthAnchor.constraint(equalToConstant: 30),
             editButton.heightAnchor.constraint(equalToConstant: 30),
 
-            cardButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            cardButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
             cardButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             cardButton.widthAnchor.constraint(equalToConstant: 80),
             cardButton.heightAnchor.constraint(equalToConstant: 35),
