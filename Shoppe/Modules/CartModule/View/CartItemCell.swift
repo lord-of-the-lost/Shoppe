@@ -40,7 +40,7 @@ final class CartItemCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.nunitoRegular.withSize(12)
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -127,7 +127,7 @@ private extension CartItemCell {
             productImageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: -4),
             
             // Title Label
-            titleLabel.topAnchor.constraint(equalTo: shadowView.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: shadowView.trailingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
             
@@ -139,7 +139,7 @@ private extension CartItemCell {
             // Price Label
             priceLabel.topAnchor.constraint(equalTo: detailsLabel.bottomAnchor, constant: 8),
             priceLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            priceLabel.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
+            priceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
             // Quantity Stepper
             quantityStepper.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

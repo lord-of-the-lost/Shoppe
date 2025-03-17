@@ -54,9 +54,9 @@ private extension CartViewController {
         
         tableView.register(CartItemCell.self, forCellReuseIdentifier: CartItemCell.reuseID)
         tableView.dataSource = self
+        tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 140
+        tableView.rowHeight = 130
         
         titleView.updateHandler = { [weak self] count in
             self?.updateCartCount()
