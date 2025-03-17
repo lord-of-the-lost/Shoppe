@@ -13,6 +13,7 @@ protocol SettingsPresenterProtocol: AnyObject {
     func setupView(_ view: SettingsViewProtocol, viewController: UIViewController)
     func saveButtonTapped(user: User)
     func viewDidLoad()
+    func viewWillAppear()
     func didTapEditButton()
     func didSelectImage(_ image: UIImage)
 }
@@ -38,8 +39,11 @@ final class SettingsPresenter: SettingsPresenterProtocol {
     }
     
     func viewDidLoad() {
-        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
-        view?.updateUI(user: user)
+        loadUserData()
+    }
+    
+    func viewWillAppear() {
+        loadUserData()
     }
     
     func didTapEditButton() {
@@ -59,13 +63,18 @@ final class SettingsPresenter: SettingsPresenterProtocol {
 
 private extension SettingsPresenter {
     func updateUser(username: String, email: String, password: String, image: Data) {
-        guard var user: User =  UserDefaultsService.shared.get(forKey: .userModel) else { return }
+        guard var user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
         user.name = username
         user.email = email
         user.password = password
         user.avatarData = image
         UserDefaultsService.shared.saveCustomObject(user, forKey: .userModel)
         view?.showAlert(title: "Profile successfully updated", message: nil)
+    }
+    
+    func loadUserData() {
+        guard let user: User = UserDefaultsService.shared.getCustomObject(forKey: .userModel) else { return }
+        view?.updateUI(user: user)
     }
 }
 

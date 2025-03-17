@@ -27,7 +27,7 @@ final class AddressView: UIView {
     private let addressLabel: UILabel = {
         let label = UILabel()
         label.text = "26, Duong So 2, Thao Dien Ward, An Phu, District 2, Ho Chi Minh city"
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         label.textAlignment = .left
         label.font = Fonts.nunitoRegular.withSize(12)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +94,7 @@ private extension AddressView {
                 stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
                 
                 // EditButton constraints
-                editButton.topAnchor.constraint(equalTo: addressLabel.topAnchor, constant: -2),
+                editButton.centerYAnchor.constraint(equalTo: addressLabel.centerYAnchor),
                 editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
                 editButton.widthAnchor.constraint(equalToConstant: 30),
                 editButton.heightAnchor.constraint(equalToConstant: 30)

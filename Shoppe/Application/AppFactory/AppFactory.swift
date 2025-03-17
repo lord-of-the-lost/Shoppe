@@ -33,8 +33,7 @@ final class AppFactory {
     }
     
     static func makeCartModule(router: AppRouterProtocol) -> UIViewController {
-        let addressService = AddressService.shared
-        let presenter = CartPresenter(addressService: addressService, router: router)
+        let presenter = CartPresenter(router: router)
         let viewController = CartViewController(presenter: presenter)
         presenter.view = viewController
         return viewController

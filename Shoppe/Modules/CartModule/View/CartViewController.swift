@@ -32,6 +32,7 @@ final class CartViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateCartCount()
+        presenter.viewWillAppear()
     }
     
     override func viewDidLoad() {
@@ -48,7 +49,6 @@ final class CartViewController: UIViewController {
 private extension CartViewController {
     func setupView() {
         view.backgroundColor = .systemBackground
-        addressView.delegate = self
         addressView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addressView)
         
@@ -85,7 +85,7 @@ private extension CartViewController {
             tableView.topAnchor.constraint(equalTo: addressView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: addressView.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: addressView.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: footerView.topAnchor, constant: -16),
+            tableView.bottomAnchor.constraint(equalTo: footerView.topAnchor),
             
             footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -143,12 +143,5 @@ extension CartViewController: UITableViewDataSource {
             self?.presenter.decreaseQuantity(at: indexPath.row)
         }
         return cell
-    }
-}
-
-// MARK: - AddressViewDelegate
-extension CartViewController: AddressViewDelegate {
-    func editAddressTapped() {
-        presenter.editAddressTapped()
     }
 }

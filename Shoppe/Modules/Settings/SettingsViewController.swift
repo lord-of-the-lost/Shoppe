@@ -113,6 +113,12 @@ final class SettingsViewController: UIViewController {
         setDelegate()
         hideKeyboardWhenTappedAround()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+        dismissKeyboard()
+    }
 }
 
 extension SettingsViewController: SettingsViewProtocol {
@@ -124,7 +130,11 @@ extension SettingsViewController: SettingsViewProtocol {
         usernameTF.text = user.name
         emailTF.text = user.email
         passwordTF.text = user.password
-        avatarView.image = UIImage(data: user.avatarData)
+        if !user.avatarData.isEmpty {
+            avatarView.image = UIImage(data: user.avatarData)
+        } else {
+            avatarView.image = UIImage(resource: .avatar)
+        }
     }
 }
 
@@ -229,6 +239,10 @@ private extension SettingsViewController {
     }
     
     @objc func dismissKeyboard() {
+        [usernameTF, emailTF, passwordTF].forEach { textField in
+            textField.resignFirstResponder()
+        }
+
         view.endEditing(true)
     }
     
