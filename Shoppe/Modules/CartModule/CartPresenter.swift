@@ -63,6 +63,7 @@ extension CartPresenter {
     }
     
     func viewWillAppear() {
+        updateCartItems()
         view?.updateAddress(currentAddress)
         calculateTotal()
     }

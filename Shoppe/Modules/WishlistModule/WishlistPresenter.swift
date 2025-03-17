@@ -112,24 +112,27 @@ private extension WishlistPresenter {
     func setupNotifications() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleWishlistUpdate),
+            selector: #selector(reloadView),
             name: .wishlistDidUpdate,
             object: nil
         )
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleBasketUpdate),
+            selector: #selector(reloadView),
             name: .basketDidUpdate,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadView),
+            name: .locationAndCurrencyDidUpdate,
             object: nil
         )
     }
     
-    @objc func handleWishlistUpdate() {
-        view?.reloadData()
-    }
-    
-    @objc func handleBasketUpdate() {
+    @objc func reloadView() {
         view?.reloadData()
     }
 }

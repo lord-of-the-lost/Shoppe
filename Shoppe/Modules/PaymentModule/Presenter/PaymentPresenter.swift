@@ -23,6 +23,13 @@ final class PaymentPresenter {
     private let basketService: BasketServiceProtocol
     private var _isLoading = true
     var isLoading: Bool { return _isLoading }
+    private var user: User? {
+        UserDefaultsService.shared.getCustomObject(forKey: .userModel)
+     }
+     
+     func getShippingAddress() -> String {
+         user?.address ?? "No address selected"
+     }
     
     // MARK: - Init
     init(
@@ -42,6 +49,7 @@ extension PaymentPresenter: PaymentPresenterProtocol {
 
     func viewDidLoad() {
         updateData()
+        view?.updateShippingAddress(getShippingAddress())
     }
 
     func updateData() {

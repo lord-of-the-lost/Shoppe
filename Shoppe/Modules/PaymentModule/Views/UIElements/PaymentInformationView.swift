@@ -76,6 +76,10 @@ final class PaymentInformationView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func updateAddress(_ address: String) {
+        infoLabel.text = address
+    }
 }
 
 // MARK: - Private Methods

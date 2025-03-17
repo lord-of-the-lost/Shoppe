@@ -11,6 +11,7 @@ import UIKit
 protocol PaymentViewProtocol: AnyObject {
     func updateUI(itemsCount: Int, total: Double)
     func reloadTableView()
+    func updateShippingAddress(_ address: String)
 }
 
 enum PaymentVCInteraction {
@@ -32,6 +33,18 @@ final class PaymentViewController: UIViewController {
     private let shippingOptionsTableView = ShippingOptionsTableView()
     private let paymentMethodView = PaymentMethodView()
     private let totalPaymentView = TotalPaymentView()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Payment"
+        label.textColor = .black
+        label.font = Fonts.ralewayBold.withSize(28)
+        label.textAlignment = .center
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
 
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -159,12 +172,16 @@ final class PaymentViewController: UIViewController {
 // MARK: - PaymentViewProtocol
 extension PaymentViewController: PaymentViewProtocol {
     func updateUI(itemsCount: Int, total: Double) {
-          itemsCountLabel.text = "\(itemsCount)"
-          totalPaymentView.updateTotal(to: total)
-      }
+        itemsCountLabel.text = "\(itemsCount)"
+        totalPaymentView.updateTotal(to: total)
+    }
     
     func reloadTableView() {
         tableView.reloadData()
+    }
+    
+    func updateShippingAddress(_ address: String) {
+        shippingView.updateAddress(address)
     }
 }
 
@@ -266,6 +283,7 @@ private extension PaymentViewController {
         scrollView.addSubview(contentView)
         contentView.addSubview(stackView)
         stackView.addArrangedSubviews(
+            titleLabel,
             addressView,
             shippingView,
             itemsContainer,
@@ -311,7 +329,7 @@ private extension PaymentViewController {
             addVoucherButton.heightAnchor.constraint(equalTo: itemsContainer.heightAnchor),
             addVoucherButton.widthAnchor.constraint(equalTo: itemsContainer.widthAnchor, multiplier: 0.25),
             
-            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            closeButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             closeButton.widthAnchor.constraint(equalToConstant: 30),
             closeButton.heightAnchor.constraint(equalToConstant: 30),
@@ -324,7 +342,6 @@ private extension PaymentViewController {
 
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewHeightConstraint?.isActive = true
-
     }
     
     func updateTableViewHeight() {

@@ -120,6 +120,10 @@ private extension HeaderAddressView {
                 equalTo: leadingAnchor,
                 constant: Drawings.addressLeadingSpacing
             ),
+            addressButton.trailingAnchor.constraint(
+                lessThanOrEqualTo: cartButton.leadingAnchor,
+                constant: -8
+            ),
             addressButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             cartButton.trailingAnchor.constraint(equalTo: trailingAnchor),
