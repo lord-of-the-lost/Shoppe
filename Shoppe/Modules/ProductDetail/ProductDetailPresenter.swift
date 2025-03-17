@@ -13,6 +13,7 @@ protocol ProductDetailPresenterProtocol: AnyObject {
     func toggleCart()
     func buyNowTapped()
     func backButtonTapped()
+    func trackMyOrderTapped()
 }
 
 final class ProductDetailPresenter {
@@ -75,7 +76,20 @@ extension ProductDetailPresenter: ProductDetailPresenterProtocol {
     }
     
     func buyNowTapped() {
-        print(#function)
+        if basketService.contains(product) {
+            basketService.removeItem(product)
+            view?.updateCartState(false)
+        }
+        view?.showPaymentDoneView()
+    }
+    
+    func trackMyOrderTapped() {
+        view?.hidePaymentDoneView()
+        if basketService.contains(product) {
+            basketService.removeItem(product)
+            view?.updateCartState(false)
+        }
+        router.popViewController(animated: true)
     }
     
     func backButtonTapped() {

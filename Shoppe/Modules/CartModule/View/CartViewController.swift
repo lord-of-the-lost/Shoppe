@@ -56,6 +56,7 @@ private extension CartViewController {
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
+        tableView.allowsSelection = false
         tableView.rowHeight = 130
         
         titleView.updateHandler = { [weak self] count in

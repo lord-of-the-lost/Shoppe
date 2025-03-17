@@ -19,10 +19,19 @@ protocol ProductDetailViewProtocol: AnyObject {
     func updateView(with viewModel: ProductDetailViewModel)
     func updateLikeState(_ isLiked: Bool)
     func updateCartState(_ isInCart: Bool)
+    func showPaymentDoneView()
+    func hidePaymentDoneView()
 }
 
 final class ProductDetailViewController: UIViewController {
     let presenter: ProductDetailPresenterProtocol
+    
+    private lazy var paymentDoneView: PaymentDoneView = {
+        let view = PaymentDoneView()
+        view.delegate = self
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -165,6 +174,25 @@ extension ProductDetailViewController: ProductDetailViewProtocol {
     func updateCartState(_ isInCart: Bool) {
         let title = isInCart ? "Remove from cart" : "Add to cart"
         addToCartButton.setTitle(title, for: .normal)
+    }
+    
+    func showPaymentDoneView() {
+        paymentDoneView.show(in: view)
+    }
+    
+    func hidePaymentDoneView() {
+        UIView.animate(withDuration: 0.3) {
+            self.paymentDoneView.alpha = 0
+        } completion: { _ in
+            self.paymentDoneView.removeFromSuperview()
+        }
+    }
+}
+
+// MARK: - PaymentDoneViewDelegate
+extension ProductDetailViewController: PaymentDoneViewDelegate {
+    func trackMyOrderTapped() {
+        presenter.trackMyOrderTapped()
     }
 }
 
