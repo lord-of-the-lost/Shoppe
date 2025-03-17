@@ -30,7 +30,7 @@ final class ShippingOptionsTableView: UIView {
         table.dataSource = self
         table.isScrollEnabled = false
         table.translatesAutoresizingMaskIntoConstraints = false
-        table.rowHeight = 60
+        table.rowHeight = 50
         return table
     }()
     
@@ -66,15 +66,15 @@ private extension ShippingOptionsTableView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-
+            
             tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-            deliveryDateLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 10),
+            deliveryDateLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 8),
             deliveryDateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             deliveryDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            deliveryDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
+            deliveryDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 }
@@ -101,7 +101,7 @@ extension ShippingOptionsTableView: UITableViewDataSource {
         if indexPath.row == 0 {
             cell.setMockData(title: "Standard", deliveryTime: "5-7 days", price: "FREE")
         } else {
-            cell.setMockData(title: "Express", deliveryTime: "1-2 days", price: "$12.00")
+            cell.setMockData(title: "Express", deliveryTime: "1-2 days", price: "FREE")
         }
         
         let isSelected = indexPath.row == selectedIndex
