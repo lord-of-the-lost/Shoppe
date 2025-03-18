@@ -245,15 +245,15 @@ private extension ProductDetailViewController {
         ])
     }
     
-    @objc private func toggleLike() {
+    @objc func toggleLike() {
         presenter.toggleLike()
     }
     
-    @objc private func toggleCart() {
+    @objc func toggleCart() {
         presenter.toggleCart()
     }
     
-    @objc private func buyNowTapped() {
+    @objc func buyNowTapped() {
         presenter.buyNowTapped()
     }
     
